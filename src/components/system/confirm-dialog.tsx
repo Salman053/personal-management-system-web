@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AlertDescription } from "../ui/alert";
+import { Input } from "../ui/input";
 
 export type ConfirmDialogProps = {
   open?: boolean;
@@ -176,11 +177,11 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
                 Please type <span className="font-bold">{requireMatch}</span> to
                 confirm:
               </label>
-              <input
+              <Input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+           
                 placeholder={requireMatch}
               />
             </div>

@@ -27,6 +27,7 @@ import type { Habit } from "@/types";
 import { CustomSelect } from "../shared/custom-select";
 import TimeInput from "../ui/time-input";
 import { TopicCombobox } from "../shared/quotes-topic-combobox";
+import { toast } from "sonner";
 
 interface HabitDialogProps {
   open: boolean;
@@ -99,8 +100,7 @@ export function HabitDialog({
         title: "",
         color: "",
         priority: "Medium",
-        motivationQuotes: [],
-
+        motivationQuote:"",
         description: "",
         type: "Maintain",
         frequency: { type: "Daily", timesPerPeriod: 1, daysOfWeek: [] },
@@ -120,13 +120,14 @@ export function HabitDialog({
       };
 
       if (habit) {
-        await habitsService.updateHabit(habit.id, habitData);
+        await habitsService.updateHabit(habit.id, habitData).then(()=>toast.success("Habit updated successfully "))
       } else {
-        await habitsService.createHabit(habitData);
+        await habitsService.createHabit(habitData).then(()=>toast.success("Habit created successfully now track your habit"))
       }
       onSave();
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error saving habit:", error);
+      toast.success("Error : " + error.message)
     } finally {
       setLoading(false);
     }
@@ -176,7 +177,7 @@ export function HabitDialog({
               <Label>Frequency</Label>
               <CustomSelect
                 options={["Daily", "Weekly", "Monthly", "Custom"]}
-                value={formData.frequency.type}
+                value={formData.frequency?.type}
                 onChange={(v) =>
                   setFormData((prev) => ({
                     ...prev,
@@ -191,10 +192,10 @@ export function HabitDialog({
 
             {/* Times per period */}
             <div className="space-y-2">
-              <Label>Times per {formData.frequency.type}</Label>
+              <Label>Times per {formData.frequency?.type}</Label>
               <Input
                 type="number"
-                value={formData.frequency.timesPerPeriod}
+                value={formData.frequency?.timesPerPeriod}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,

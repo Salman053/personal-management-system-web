@@ -98,7 +98,7 @@ export function ProjectDialog({
     e.preventDefault();
 
     if (!user) return;
-    if (formData.clientPhone.length < 11 ) {
+    if (formData.type === "client" && formData.clientPhone.length < 11 ) {
       toast.error("Please enter a valid phone number")
       return;
     }

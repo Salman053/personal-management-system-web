@@ -16,127 +16,186 @@ import { Habit } from "@/types";
 import { useModalState } from "@/hooks/use-modal-state";
 import { toast } from "sonner";
 import { useMainContext } from "@/contexts/app-context";
+import ConfirmDialog from "@/components/system/confirm-dialog";
+import { CustomSelect } from "@/components/shared/custom-select";
 
 export default function HabitsPage() {
+  const { habits, loading } = useMainContext();
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  // Schedule notifications for habits with reminders enabled
+  useEffect(() => {
+    if (!habits || !Array.isArray(habits)) return;
+    if (Notification.permission !== "granted") return;
+
+    const now = new Date();
+    habits.forEach((habit: any) => {
+      if (habit.reminder?.enabled && habit.reminder?.timeOfDay) {
+        // Only schedule for today
+        const [hour, minute] = habit.reminder.timeOfDay.split(":").map(Number);
+        const reminderTime = new Date(now);
+        reminderTime.setHours(hour, minute, 0, 0);
+        const msUntilReminder = reminderTime.getTime() - now.getTime();
+        if (msUntilReminder > 0 && msUntilReminder < 86400000) {
+          setTimeout(() => {
+            new Notification(`Habit Reminder: ${habit.title}`, {
+              body: habit.description || "It's time for your habit!",
+              icon: habit.color || undefined,
+            });
+          }, msUntilReminder);
+        }
+      }
+    });
+    // Cleanup: no need for now, as timeouts are per session
+  }, [habits]);
   const { user } = useAuth();
-  const {habits} = useMainContext()
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<"All" | "Maintain" | "Quit">(
     "All"
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
+  const [editingHabit, setEditingHabit] = useState<Habit | string | null>("");
   const [activeTab, setActiveTab] = useState("overview");
-  const [habitsData, setHabitsData] = useState<Habit | any>({});
+  // const [habitsData, setHabitsData] = useState<Habit | any>({});
   const { modalState, toggleModal } = useModalState({
     isHabitDialogOpen: false,
+    isHabitDeleteModalOpen: false,
   });
-  // useEffect(() => {
-  //   if (user) {
-  //     loadHabits()
-  //   }
-  // }, [user])
 
-  // const loadHabits = async () => {
-  //   if (!user) return
-
-  //   try {
-  //     setLoading(true)
-  //     const habits = await habitsService.getHabits(user.uid)
-
-  //     // Calculate streaks for each habit
-  //     const habitsWithStreaks = habits.map((habit) => ({
-  //       ...habit,
-  //       streak: habitsService.calculateStreak(habit.completedDates, habit.type),
-  //     }))
-
-  //     dispatch({ type: "SET_HABITS", payload: habitsWithStreaks })
-  //   } catch (error) {
-  //     console.error("Error loading habits:", error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
-  const handleCreateHabit = () => {
-    setEditingHabit(null);
-    setIsDialogOpen(true);
-  };
+  const habitsWithStreaks = habits.map((habit: any) => ({
+    ...habit,
+    streak: habitsService.calculateStreak(habit.completedDates),
+  }));
 
   const handleEditHabit = (habit: Habit) => {
     setEditingHabit(habit);
-    setIsDialogOpen(true);
+    toggleModal("isHabitDialogOpen");
   };
 
-  const handleDeleteHabit = async (habitId: string) => {
-    if (!confirm("Are you sure you want to delete this habit?")) return;
-
+  const handleDeleteHabit = async () => {
     try {
-      await habitsService.deleteHabit(habitId);
+      await habitsService
+        .deleteHabit(habitToDelete as any)
+        .then(() => toast.success("Habit deleted successfully"));
       // await loadHabits()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting habit:", error);
+      toast.error("Error : " + error?.message);
+    } finally {
+      toggleModal("isHabitDeleteModalOpen");
+      setHabitToDelete(null);
     }
   };
 
   const handleHabitSaved = async () => {
     toggleModal("isHabitDialogOpen");
-    toast.success("Habit is Created Successfully now can track your habit");
     setEditingHabit(null);
     // await loadHabits()
   };
 
-  // const handleToggleCompletion = async (habitId: string, date: Date, completed: boolean) => {
-  //   try {
-  //     const habit = state.habits.find((h) => h.id === habitId)
-  //     if (!habit) return
+  function calculateStats(completedDates: string[], createdAt: Date) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  //     const dateString = date.toDateString()
-  //     let updatedCompletedDates = [...habit.completedDates]
+    const totalDays =
+      Math.floor(
+        (today.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+      ) + 1;
 
-  //     if (completed) {
-  //       // Add the date if not already present
-  //       if (!updatedCompletedDates.some((d) => d.toDateString() === dateString)) {
-  //         updatedCompletedDates.push(date)
-  //       }
-  //     } else {
-  //       // Remove the date
-  //       updatedCompletedDates = updatedCompletedDates.filter((d) => d.toDateString() !== dateString)
-  //     }
+    const totalCompletions = completedDates.length;
+    const missedDays = totalDays - totalCompletions;
+    const completionRate =
+      totalDays > 0 ? (totalCompletions / totalDays) * 100 : 0;
 
-  //     const newStreak = habitsService.calculateStreak(updatedCompletedDates, habit.type)
+    return {
+      totalCompletions,
+      missedDays,
+      completionRate: Math.round(completionRate),
+    };
+  }
+  const handleToggleCompletion = async (
+    habitId: string,
+    date: Date,
+    completed: boolean
+  ) => {
+    try {
+      const habit = habits.find((h: any) => h.id === habitId);
+      if (!habit) return;
 
-  //     await habitsService.updateHabit(habitId, {
-  //       completedDates: updatedCompletedDates,
-  //       streak: newStreak,
-  //     })
+      const dateString = date.toISOString().split("T")[0]; // YYYY-MM-DD
+      let updatedCompletedDates = [...habit.completedDates];
 
-  //     await loadHabits()
-  //   } catch (error) {
-  //     console.error("Error updating habit completion:", error)
-  //   }
-  // }
+      if (completed) {
+        if (!updatedCompletedDates.includes(dateString)) {
+          updatedCompletedDates.push(dateString);
+        }
+      } else {
+        updatedCompletedDates = updatedCompletedDates.filter(
+          (d) => d !== dateString
+        );
+      }
 
-  // Filter habits
-  // const filteredHabits = state.habits.filter((habit) => {
-  //   const matchesSearch =
-  //     habit.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     habit.description.toLowerCase().includes(searchTerm.toLowerCase())
-  //   const matchesType = filterType === "all" || habit.type === filterType
-  //   return matchesSearch && matchesType
-  // })
+      // === Recalculate derived values ===
+      const { current, longest } = await habitsService.calculateStreak(
+        updatedCompletedDates
+      );
 
-  // // Calculate stats
-  // const stats = {
-  //   total: state.habits.length,
-  //   maintain: state.habits.filter((h) => h.type === "maintain").length,
-  //   quit: state.habits.filter((h) => h.type === "quit").length,
-  //   activeStreaks: state.habits.filter((h) => h.streak > 0).length,
-  //   averageStreak:
-  //     state.habits.length > 0
-  //       ? Math.round(state.habits.reduce((sum, h) => sum + h.streak, 0) / state.habits.length)
-  //       : 0,
-  // }
+      const stats = calculateStats(
+        updatedCompletedDates,
+        habit.createdAt.toDate?.() || new Date(habit.createdAt) // supports Firestore Timestamp
+      );
+
+      await habitsService.updateHabit(habitId, {
+        completedDates: updatedCompletedDates,
+        streak: {
+          current,
+          longest,
+          lastCompleted: completed ? date : null,
+        },
+        stats,
+      });
+    } catch (error) {
+      console.error("Error updating habit completion:", error);
+    }
+  };
+
+  // Filter habits by search and type
+  const filteredHabits = habits.filter((habit: any) => {
+    const matchesSearch =
+      habit.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      habit.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType =
+      filterType === "All" ||
+      habit.type?.toLowerCase() === filterType.toLowerCase();
+    return matchesSearch && matchesType;
+  });
+
+  // Calculate stats
+  const stats = {
+    total: filteredHabits.length,
+    maintain: filteredHabits.filter(
+      (h: any) => h.type?.toLowerCase() === "maintain"
+    ).length,
+    quit: filteredHabits.filter((h: any) => h.type?.toLowerCase() === "quit")
+      .length,
+    activeStreaks: filteredHabits.filter((h: any) => h.streak?.current > 0)
+      .length,
+    averageStreak:
+      filteredHabits.length > 0
+        ? Math.round(
+            filteredHabits.reduce(
+              (sum: number, h: any) => sum + (h.streak?.current || 0),
+              0
+            ) / filteredHabits.length
+          )
+        : 0,
+  };
 
   console.log(habits);
 
@@ -164,7 +223,7 @@ export default function HabitsPage() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {/* <div className="text-2xl font-bold">{stats.total}</div> */}
+            <div className="text-2xl font-bold">{stats.total}</div>
           </CardContent>
         </Card>
 
@@ -176,7 +235,9 @@ export default function HabitsPage() {
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            {/* <div className="text-2xl font-bold text-green-600">{stats.maintain}</div> */}
+            <div className="text-2xl font-bold text-green-600">
+              {stats.maintain}
+            </div>
           </CardContent>
         </Card>
 
@@ -186,7 +247,7 @@ export default function HabitsPage() {
             <Target className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
-            {/* <div className="text-2xl font-bold text-red-600">{stats.quit}</div> */}
+            <div className="text-2xl font-bold text-red-600">{stats.quit}</div>
           </CardContent>
         </Card>
 
@@ -198,7 +259,9 @@ export default function HabitsPage() {
             <TrendingUp className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            {/* <div className="text-2xl font-bold text-blue-600">{stats.activeStreaks}</div> */}
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.activeStreaks}
+            </div>
           </CardContent>
         </Card>
 
@@ -208,7 +271,9 @@ export default function HabitsPage() {
             <BarChart3 className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            {/* <div className="text-2xl font-bold text-purple-600">{stats.averageStreak}</div> */}
+            <div className="text-2xl font-bold text-purple-600">
+              {stats.averageStreak}
+            </div>
             <p className="text-xs text-muted-foreground">days</p>
           </CardContent>
         </Card>
@@ -239,28 +304,28 @@ export default function HabitsPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <select
+                  <CustomSelect
                     value={filterType}
-                    onChange={(e) => setFilterType(e.target.value as any)}
-                    className="px-3 py-2 border rounded-md bg-background"
-                  >
-                    <option value="all">All Types</option>
-                    <option value="maintain">Maintain</option>
-                    <option value="quit">Quit</option>
-                  </select>
+                    onChange={(v) => setFilterType(v as any)}
+                    options={["All", "Maintain", "Quit"]}
+                  />
+                 
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Habits Grid */}
-          {/* <HabitsGrid
+          <HabitsGrid
             habits={filteredHabits}
             loading={loading}
             onEdit={handleEditHabit}
-            onDelete={handleDeleteHabit}
+            onDelete={(habitId) => {
+              setHabitToDelete(habitId);
+              toggleModal("isHabitDeleteModalOpen");
+            }}
             onToggleCompletion={handleToggleCompletion}
-          /> */}
+          />
         </TabsContent>
 
         <TabsContent value="calendar" className="space-y-6">
@@ -278,8 +343,18 @@ export default function HabitsPage() {
         onOpenChange={() => {
           toggleModal("isHabitDialogOpen");
         }}
-        habit={editingHabit}
+        habit={editingHabit as Habit}
         onSave={handleHabitSaved}
+      />
+      <ConfirmDialog
+        open={modalState.isHabitDeleteModalOpen}
+        onCancel={() => {
+          toggleModal("isHabitDeleteModalOpen");
+          setEditingHabit("");
+        }}
+        lockWhilePending
+        confirmVariant={"destructive"}
+        onConfirm={handleDeleteHabit}
       />
     </div>
   );

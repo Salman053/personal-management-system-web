@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Edit, Trash2, Target, TrendingUp, Check, X, Flame } from "lucide-react"
-import type { Habit } from "@/contexts/app-context"
+import { Habit } from "@/types"
 
 interface HabitsGridProps {
   habits: Habit[]
@@ -93,7 +93,7 @@ export function HabitsGrid({ habits, loading, onEdit, onDelete, onToggleCompleti
                   <CardTitle className="text-lg leading-tight">{habit.title}</CardTitle>
                   <div className="flex items-center gap-2">
                     <Badge className={getTypeColor(habit.type)}>
-                      {habit.type === "maintain" ? (
+                      {habit.type === "Maintain" ? (
                         <>
                           <TrendingUp className="h-3 w-3 mr-1" /> Maintain
                         </>
@@ -131,9 +131,9 @@ export function HabitsGrid({ habits, loading, onEdit, onDelete, onToggleCompleti
               {/* Streak Display */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Flame className={`h-4 w-4 ${getStreakColor(habit.streak)}`} />
-                  <span className={`font-medium ${getStreakColor(habit.streak)}`}>
-                    {habit.streak} day{habit.streak !== 1 ? "s" : ""} streak
+                  <Flame className={`h-4 w-4 ${getStreakColor(habit.streak.current)}`} />
+                  <span className={`font-medium ${getStreakColor(habit.streak.current)}`}>
+                    {habit.streak.current} day{habit.streak.current !== 1 ? "s" : ""} streak
                   </span>
                 </div>
               </div>
@@ -150,12 +150,12 @@ export function HabitsGrid({ habits, loading, onEdit, onDelete, onToggleCompleti
                   {completedToday ? (
                     <>
                       <Check className="h-4 w-4 mr-1" />
-                      {habit.type === "maintain" ? "Done" : "Avoided"}
+                      {habit.type === "Maintain" ? "Done" : "Avoided"}
                     </>
                   ) : (
                     <>
                       <X className="h-4 w-4 mr-1" />
-                      {habit.type === "maintain" ? "Mark Done" : "Mark Avoided"}
+                      {habit.type === "Maintain" ? "Mark Done" : "Mark Avoided"}
                     </>
                   )}
                 </Button>
@@ -203,7 +203,7 @@ export function HabitsGrid({ habits, loading, onEdit, onDelete, onToggleCompleti
                         key={i}
                         className={`h-2 flex-1 rounded-sm ${
                           isCompleted
-                            ? habit.type === "maintain"
+                            ? habit.type === "Maintain"
                               ? "bg-green-500"
                               : "bg-blue-500"
                             : "bg-gray-200 dark:bg-gray-700"

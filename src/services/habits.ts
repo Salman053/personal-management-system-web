@@ -61,6 +61,7 @@ export const habitsService = {
 
   // Delete a habit
   async deleteHabit(habitId: string): Promise<void> {
+    console.log(habitId + "asdasd")
     await deleteDoc(doc(db, "habits", habitId))
   },
 
@@ -85,38 +86,45 @@ export const habitsService = {
     })) as HabitCompletion[]
   },
 
-  // Calculate streak for a habit
-  calculateStreak(completedDates: Date[], type: "maintain" | "quit"): number {
-    if (completedDates.length === 0) return 0
+  async calculateStreak(completedDates: string[]): Promise<{ current: number; longest: number }> {
+  const completedSet = new Set(completedDates);
+  let current = 0;
+  let longest = 0;
 
-    const sortedDates = completedDates
-      .map((date) => new Date(date.getFullYear(), date.getMonth(), date.getDate()))
-      .sort((a, b) => b.getTime() - a.getTime())
+  // Sort dates chronologically
+  const sortedDates = [...completedSet].sort();
 
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+  // Track longest streak
+  let streak = 0;
+  let prevDate: Date | null = null;
 
-    let streak = 0
-    const currentDate = new Date(today)
-
-    // For maintain habits, we count consecutive days of completion
-    // For quit habits, we count consecutive days without the habit
-    for (let i = 0; i < 365; i++) {
-      // Check up to a year back
-      const dateString = currentDate.toDateString()
-      const hasCompletion = sortedDates.some((date) => date.toDateString() === dateString)
-
-      if (type === "maintain" && hasCompletion) {
-        streak++
-      } else if (type === "quit" && !hasCompletion) {
-        streak++
-      } else {
-        break
-      }
-
-      currentDate.setDate(currentDate.getDate() - 1)
+  for (const d of sortedDates) {
+    const date = new Date(d);
+    if (
+      prevDate &&
+      (date.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24) === 1
+    ) {
+      streak++;
+    } else {
+      streak = 1;
     }
+    longest = Math.max(longest, streak);
+    prevDate = date;
+  }
 
-    return streak
-  },
+  // Calculate current streak (backward from today)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let cursor = new Date(today);
+  while (completedSet.has(cursor.toISOString().split("T")[0])) {
+    current++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  return { current, longest };
+}
+
+,
+  
 }
