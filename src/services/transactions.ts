@@ -11,9 +11,10 @@ import {
   Timestamp,
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
+import { FinanceRecord } from "@/types"
 // import { Transaction } from "@/types"
 
-export const transactionsService = {
+export const financeServices = {
   // Get all transactions for a user
   // async getTransactions(userId: string): Promise<Transaction[]> {
   //   const q = query(collection(db, "transactions"), where("userId", "==", userId), orderBy("date", "desc"))
@@ -26,29 +27,27 @@ export const transactionsService = {
   //   })) as Transaction[]
   // },
 
-  // // Create a new transaction
-  // async createTransaction(userId: string, transactionData: Omit<Transaction, "id" | "createdAt">): Promise<string> {
-  //   const docRef = await addDoc(collection(db, "transactions"), {
-  //     ...transactionData,
-  //     userId,
-  //     createdAt: Timestamp.now(),
-  //     updatedAt: Timestamp.now(),
-  //   })
-  //   return docRef.id
-  // },
+  // Create a new transaction
+  async createFinanceRecord( transactionData: Omit<FinanceRecord, "id" | "createdAt">): Promise<string> {
+    const docRef = await addDoc(collection(db, "finances"), {
+      ...transactionData,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    })
+    return docRef.id
+  },
 
   // // Update a transaction
-  // async updateTransaction(transactionId: string, updates: Partial<Transaction>): Promise<void> {
-  //   const transactionRef = doc(db, "projectPayments", transactionId)
-  //   const updateData: any = { ...updates,updatedAt:Timestamp.now() }
+  async updateTransaction(recordId: string, updates: Partial<FinanceRecord>): Promise<void> {
+    const transactionRef = doc(db, "finances", recordId)
+    const updateData: any = { ...updates,updatedAt:Timestamp.now() }
+    await updateDoc(transactionRef, updateData)
+  },
 
-  //   await updateDoc(transactionRef, updateData)
-  // },
-
-  // // Delete a transaction
-  // async deleteTransaction(transactionId: string): Promise<void> {
-  //   await deleteDoc(doc(db, "projectPayments", transactionId))
-  // },
+  // Delete a transaction
+  async deleteRecord(recordId: string): Promise<void> {
+    await deleteDoc(doc(db, "finances", recordId))
+  },
 
   // Get transactions by type
   // async getTransactionsByType(userId: string, type: string): Promise<Transaction[]> {

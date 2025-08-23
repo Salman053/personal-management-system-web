@@ -1,17 +1,15 @@
 "use client"
-
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Edit, Trash2, TrendingUp, TrendingDown, CreditCard } from "lucide-react"
-import { Transaction } from "@/types"
+import { TrendingUp, TrendingDown, CreditCard } from "lucide-react"
+import type { FinanceRecord } from "@/types/index"
+import { ActionMenu } from "../ui/action-menu"
 
 interface TransactionsTableProps {
-  transactions: Transaction[]
+  transactions: FinanceRecord[]
   loading: boolean
-  onEdit: (transaction: Transaction) => void
+  onEdit: (transaction: FinanceRecord) => void
   onDelete: (transactionId: string) => void
 }
 
@@ -81,7 +79,7 @@ export function TransactionsTable({ transactions, loading, onEdit, onDelete }: T
   }
 
   return (
-    <Card className="p-10"> 
+    <Card className="p-10">
       <CardContent className="p-0">
         <Table>
           <TableHeader>
@@ -98,7 +96,7 @@ export function TransactionsTable({ transactions, loading, onEdit, onDelete }: T
           <TableBody>
             {transactions.map((transaction) => (
               <TableRow key={transaction.id}>
-                <TableCell>{transaction.paidDate}</TableCell>
+                <TableCell>{new Date(transaction.date).toDateString()}</TableCell>
                 <TableCell>
                   <Badge className={getTypeColor(transaction.type)}>
                     <div className="flex items-center gap-1">
@@ -111,8 +109,8 @@ export function TransactionsTable({ transactions, loading, onEdit, onDelete }: T
                   <Badge variant="outline">{transaction.medium}</Badge>
                 </TableCell>
                 <TableCell>
-                  <div className="max-w-[200px] truncate" title={transaction.description}>
-                    {transaction.description}
+                  <div className="max-w-[200px] truncate text-ellipsis" title={transaction.description}>
+                    {transaction.description || "---------"}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -126,23 +124,13 @@ export function TransactionsTable({ transactions, loading, onEdit, onDelete }: T
                   {formatAmount(transaction.amount, transaction.type)}
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onEdit(transaction)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onDelete(transaction.id as string)} className="text-red-600">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <ActionMenu
+                    item={transaction}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    editLabel="Edit Transaction"
+                    deleteLabel="Remove"
+                  />
                 </TableCell>
               </TableRow>
             ))}

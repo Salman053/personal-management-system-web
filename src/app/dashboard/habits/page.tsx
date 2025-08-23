@@ -309,7 +309,6 @@ export default function HabitsPage() {
                     onChange={(v) => setFilterType(v as any)}
                     options={["All", "Maintain", "Quit"]}
                   />
-                 
                 </div>
               </div>
             </CardContent>
@@ -317,6 +316,7 @@ export default function HabitsPage() {
 
           {/* Habits Grid */}
           <HabitsGrid
+            onArchive={() => null}
             habits={filteredHabits}
             loading={loading}
             onEdit={handleEditHabit}
@@ -329,11 +329,14 @@ export default function HabitsPage() {
         </TabsContent>
 
         <TabsContent value="calendar" className="space-y-6">
-          {/* <HabitCalendar habits={state.habits} onToggleCompletion={handleToggleCompletion} /> */}
+          <HabitCalendar
+            habits={habits}
+            onToggleCompletion={handleToggleCompletion}
+          />
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          {/* <HabitsCharts habits={state.habits} /> */}
+          <HabitsCharts habits={habits} />
         </TabsContent>
       </Tabs>
 

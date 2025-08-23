@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { Transaction } from "@/contexts/app-context"
+import type { FinanceRecord } from "@/types/index"
 import {
   BarChart,
   Bar,
@@ -22,7 +22,7 @@ import {
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8", "#82CA9D", "#FFC658", "#FF7C7C"]
 
 interface FinancialChartsProps {
-  transactions: Transaction[]
+  transactions: FinanceRecord[]
   detailed?: boolean
 }
 
@@ -30,7 +30,10 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
   // Prepare monthly data
   const monthlyData = transactions.reduce(
     (acc, transaction) => {
-      const month = new Date(transaction.date).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+      const month = new Date(transaction.date).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      })
       if (!acc[month]) {
         acc[month] = { month, income: 0, expenses: 0, borrowed: 0, lent: 0 }
       }
@@ -46,7 +49,7 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
 
   // Prepare expense categories data
   const expensesByCategory = transactions
-    .filter((t) => t.type === "expense")
+    .filter((t) => t.type === "Expense")
     .reduce(
       (acc, transaction) => {
         acc[transaction.category] = (acc[transaction.category] || 0) + transaction.amount
@@ -62,7 +65,7 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
 
   // Prepare income categories data
   const incomeByCategory = transactions
-    .filter((t) => t.type === "income")
+    .filter((t) => t.type === "Income")
     .reduce(
       (acc, transaction) => {
         acc[transaction.category] = (acc[transaction.category] || 0) + transaction.amount
@@ -123,7 +126,7 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ category, percent }) => `${category} ${(percent * 100).toFixed(0)}%`}
+                label={({ category, percent }) => `${category} ${(percent || 0 * 100).toFixed(0)}%`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="amount"

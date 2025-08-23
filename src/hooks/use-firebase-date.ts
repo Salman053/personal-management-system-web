@@ -1,15 +1,15 @@
 import { db } from '@/lib/firebase';
-import { Habit, Project, ProjectPayment,  } from '@/types';
+import { FinanceRecord, Habit, Project, ProjectPayment,  } from '@/types';
 import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 
 export const useFirestoreData = (userId: string) => {
-    console.log(userId)
+    // console.log(userId)
     const [users, setUsers] = useState<any[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
     const [projectPayments, setProjectPayments] = useState<ProjectPayment[]>([]);
     const [habits, setHabits] = useState<Habit[]>([]);
-    // const [sales, setSales] = useState<SalesType[]>([]);
+    const [finances, setFinances] = useState<FinanceRecord[]>([]);
     // const [returns, setReturns] = useState<ReturnTransaction[]>([]);
     // const [customers, setCustomers] = useState<CustomerType[]>([]);
     // const [dues, setDues] = useState<DuesType[]>([])
@@ -48,7 +48,7 @@ export const useFirestoreData = (userId: string) => {
             const unsubscribeProjects = handleSnapshot('projects', setProjects);
             const unsubscribeProjectPayments = handleSnapshot('projectPayments', setProjectPayments);
             const unsubscribeHabits = handleSnapshot('habits', setHabits);
-            // const unsubscribeCustomers = handleSnapshot('customers', setCustomers);
+            const unsubscribeFinances = handleSnapshot('finances', setFinances);
             // const unsubscribeDues = handleSnapshot('dues', setDues);
             // const unsubscribeSales = handleSnapshot('sales', setSales);
             // const unsubscribeReturns = handleSnapshot('returns', setReturns);
@@ -60,6 +60,7 @@ export const useFirestoreData = (userId: string) => {
                 unsubscribeProjects?.();
                 unsubscribeProjectPayments?.();
                 unsubscribeHabits?.();
+                unsubscribeFinances?.();
               
             };
         };
@@ -77,5 +78,5 @@ export const useFirestoreData = (userId: string) => {
         setLoading(false);
     };
 
-    return { users, loading, error, projects,projectPayments ,habits};
+    return { users, loading, error, projects,projectPayments ,habits,finances};
 };

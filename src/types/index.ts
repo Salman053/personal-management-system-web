@@ -10,6 +10,81 @@ export interface ProjectPayment extends TransactionBase {
   createdAt?: Date
 }
 
+
+// Transaction Type
+export enum TransactionType {
+  Income = "Income",
+  Expense = "Expense",
+  Borrowed = "Borrowed",
+  Lent = "Lent",
+}
+
+// Payment Medium
+export enum PaymentMedium {
+  Cash = "Cash",
+  Bank = "Bank",
+  Easypaisa = "Easypaisa",
+  Card = "Card",
+  Cheque = "Cheque",
+  Other = "Other",
+}
+
+// Loan/Expense Status
+export enum TransactionStatus {
+  Pending = "Pending",
+  Paid = "Paid",
+  Overdue = "Overdue",
+}
+
+// Transaction Categories
+export enum TransactionCategory {
+  // Income
+  Salary = "Salary",
+  Business = "Business",
+  Investment = "Investment",
+  Gift = "Gift",
+  OtherIncome = "Other Income",
+
+  // Expense
+  Food = "Food",
+  Transport = "Transport",
+  Rent = "Rent",
+  Utilities = "Utilities",
+  Shopping = "Shopping",
+  Entertainment = "Entertainment",
+  Education = "Education",
+  Healthcare = "Healthcare",
+  OtherExpense = "Other Expense",
+
+  // Borrowed/Lent
+  Loan = "Loan",
+  FriendFamily = "Friend/Family",
+  Credit = "Credit",
+  OtherDebt = "Other Debt",
+}
+export interface FinanceRecord {
+  id?: string
+  userId: string
+
+  type: TransactionType
+  amount: number
+  currency?: string // default "PKR"
+
+  category: TransactionCategory
+  medium: PaymentMedium
+
+  counterparty?: string // for borrowed/lent
+  dueDate?: Date // only for borrowed/lent
+  status?: TransactionStatus // only for borrowed/lent or pending payments
+
+  description?: string
+  receiptUrl?: string
+
+  date: any // actual date of transaction
+  createdAt?: Date
+  updatedAt?: Date
+}
+
 export interface TransactionBase {
   id?: string
   docId?: string
