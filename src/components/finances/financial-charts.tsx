@@ -35,12 +35,13 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
         year: "numeric",
       })
       if (!acc[month]) {
-        acc[month] = { month, income: 0, expenses: 0, borrowed: 0, lent: 0 }
+        acc[month] = { month, Income: 0, Expenses: 0, Borrowed: 0, Lent: 0 }
       }
-      acc[month][transaction.type] += transaction.amount
+      // console.log(console.log(acc))
+      acc[month][transaction.type] += Number(transaction.amount)
       return acc
     },
-    {} as Record<string, { month: string; income: number; expenses: number; borrowed: number; lent: number }>,
+    {} as Record<string, { month: string; Income: number; Expenses: number; Borrowed: number; Lent: number }>,
   )
 
   const monthlyChartData = Object.values(monthlyData)
@@ -81,7 +82,7 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
   // Prepare net worth trend
   const netWorthData = monthlyChartData.map((month) => ({
     month: month.month,
-    netWorth: month.income - month.expenses + month.lent - month.borrowed,
+    netWorth: month.Income - month.Expenses + month.Lent - month.Borrowed,
     cumulative: 0, // Will be calculated below
   }))
 
@@ -105,9 +106,14 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]} />
-              <Bar dataKey="income" fill="#00C49F" name="Income" />
-              <Bar dataKey="expenses" fill="#FF8042" name="Expenses" />
+
+              <Tooltip cursor={false} 
+                contentStyle={{
+                borderRadius:10,
+                color:"black",
+              }} formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]} />
+              <Bar dataKey="Income" fill="#00C49F" name="Income" />
+              <Bar dataKey="Expenses" fill="#FF8042" name="Expenses" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -135,7 +141,11 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]} />
+              <Tooltip cursor={false} 
+                contentStyle={{
+                borderRadius:10,
+                color:"black",
+              }}  formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]} />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
@@ -154,8 +164,13 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]} />
+                  <Tooltip  cursor={false} 
+                contentStyle={{
+                borderRadius:10,
+                color:"black",
+              }} formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]} />
                   <Area
+                  
                     type="monotone"
                     dataKey="cumulative"
                     stroke="#8884d8"
@@ -179,7 +194,11 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" />
                   <YAxis dataKey="category" type="category" width={100} />
-                  <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]} />
+                  <Tooltip cursor={false} 
+                contentStyle={{
+                borderRadius:10,
+                color:"black",
+              }}  formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]} />
                   <Bar dataKey="amount" fill="#00C49F" />
                 </BarChart>
               </ResponsiveContainer>
@@ -197,9 +216,13 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]} />
-                  <Bar dataKey="borrowed" fill="#FF8042" name="Borrowed" />
-                  <Bar dataKey="lent" fill="#0088FE" name="Lent" />
+                  <Tooltip cursor={false} 
+                contentStyle={{
+                borderRadius:10,
+                color:"black",
+              }}  formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]} />
+                  <Bar dataKey="Borrowed" fill="#FF8042" name="Borrowed" />
+                  <Bar dataKey="Lent" fill="#0088FE" name="Lent" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -216,7 +239,11 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]} />
+                  <Tooltip cursor={false} 
+                contentStyle={{
+                borderRadius:10,
+                color:"black",
+              }} formatter={(value) => [`$${Number(value).toLocaleString()}`, ""]} />
                   <Line type="monotone" dataKey="netWorth" stroke="#8884d8" strokeWidth={2} name="Monthly Net Flow" />
                 </LineChart>
               </ResponsiveContainer>

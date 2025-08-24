@@ -108,7 +108,7 @@ export function AdvancedFilters({
         </div>
 
         {/* Quick Type Filter - Always visible */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        {/* <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
           {["all", "Income", "Expense", "Borrowed", "Lent"].map((type) => (
             <Button
               key={type}
@@ -120,7 +120,7 @@ export function AdvancedFilters({
               {type}
             </Button>
           ))}
-        </div>
+        </div> */}
 
         {/* Expanded Filters */}
         {isExpanded && (

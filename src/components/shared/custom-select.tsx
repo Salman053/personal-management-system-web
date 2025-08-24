@@ -1,31 +1,33 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-type Option = { label: string; value: string }
+type Option = { label: string; value: string };
 
 // Can be string[] or Option[]
-type OptionsType = string[] | Option[]
+type OptionsType = string[] | Option[];
 
 interface CustomSelectProps {
-  value: string
-  onChange: (value: string) => void
-  options: OptionsType
-  placeholder?: string
-  className?: string
+  value: string;
+  onChange: (value: string) => void;
+  options: OptionsType;
+  placeholder?: string;
+  className?: string;
+  required?: boolean;
 }
 
 export function CustomSelect({
   value,
   onChange,
   options,
+  required = false,
   placeholder = "Select an option",
   className,
 }: CustomSelectProps) {
@@ -34,10 +36,10 @@ export function CustomSelect({
     ? typeof options[0] === "string"
       ? (options as string[]).map((o) => ({ label: o, value: o }))
       : (options as Option[])
-    : []
+    : [];
 
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select required={required} value={value} onValueChange={onChange}>
       <SelectTrigger className={`w-full ${className}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
@@ -49,5 +51,5 @@ export function CustomSelect({
         ))}
       </SelectContent>
     </Select>
-  )
+  );
 }

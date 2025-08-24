@@ -26,12 +26,13 @@ import {
   CreditCard,
 } from "lucide-react";
 import { ProjectPayment } from "@/types";
+import { ActionMenu } from "../ui/action-menu";
 
 interface PaymentTableProps {
   payments: ProjectPayment[];
   loading: boolean;
   onEdit: (payment: ProjectPayment) => void;
-  onDelete: (payment:ProjectPayment) => void;
+  onDelete: (payment: ProjectPayment) => void;
 }
 
 export function PaymentTable({
@@ -159,28 +160,12 @@ export function PaymentTable({
                   {formatAmount(payment.amount, payment.type)}
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onEdit(payment)}>
-                        <Edit className="mr-2 hover:text-foreground h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          onDelete(payment)
-                        }
-                        className="text-red-600"
-                      >
-                        <Trash2 className="mr-2 hover:text-foreground h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  
+                  <ActionMenu
+                    item={payment}
+                    onEdit={() => onEdit(payment)}
+                    onDelete={() => onDelete(payment)}
+                  />
                 </TableCell>
               </TableRow>
             ))}

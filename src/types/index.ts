@@ -11,13 +11,7 @@ export interface ProjectPayment extends TransactionBase {
 }
 
 
-// Transaction Type
-export enum TransactionType {
-  Income = "Income",
-  Expense = "Expense",
-  Borrowed = "Borrowed",
-  Lent = "Lent",
-}
+
 
 // Payment Medium
 export enum PaymentMedium {
@@ -35,33 +29,60 @@ export enum TransactionStatus {
   Paid = "Paid",
   Overdue = "Overdue",
 }
+// types/index.ts
 
-// Transaction Categories
-export enum TransactionCategory {
-  // Income
+export enum TransactionType {
+  Income = "Income",
+  Expense = "Expense",
+  Borrowed = "Borrowed",
+  Lent = "Lent",
+}
+
+export enum IncomeCategory {
   Salary = "Salary",
   Business = "Business",
-  Investment = "Investment",
-  Gift = "Gift",
+  Investments = "Investments",
   OtherIncome = "Other Income",
+}
 
-  // Expense
+export enum ExpenseCategory {
   Food = "Food",
-  Transport = "Transport",
   Rent = "Rent",
   Utilities = "Utilities",
-  Shopping = "Shopping",
-  Entertainment = "Entertainment",
-  Education = "Education",
+  Transport = "Transport",
   Healthcare = "Healthcare",
+  Education = "Education",
+  Entertainment = "Entertainment",
   OtherExpense = "Other Expense",
-
-  // Borrowed/Lent
-  Loan = "Loan",
-  FriendFamily = "Friend/Family",
-  Credit = "Credit",
-  OtherDebt = "Other Debt",
 }
+
+export enum BorrowedCategory {
+  FromFriend = "From Friend",
+  FromFamily = "From Family",
+  FromBank = "From Bank",
+  OtherBorrowed = "Other Borrowed",
+}
+
+export enum LentCategory {
+  ToFriend = "To Friend",
+  ToFamily = "To Family",
+  ToBusiness = "To Business",
+  OtherLent = "Other Lent",
+}
+
+export type TransactionCategory =
+  | IncomeCategory
+  | ExpenseCategory
+  | BorrowedCategory
+  | LentCategory;
+
+
+export const categoryOptions: Record<TransactionType, string[]> = {
+  [TransactionType.Income]: Object.values(IncomeCategory),
+  [TransactionType.Expense]: Object.values(ExpenseCategory),
+  [TransactionType.Borrowed]: Object.values(BorrowedCategory),
+  [TransactionType.Lent]: Object.values(LentCategory),
+};
 export interface FinanceRecord {
   id?: string
   userId: string

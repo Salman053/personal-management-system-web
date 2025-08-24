@@ -1,12 +1,12 @@
 "use client";
 
-import { Transaction } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { ProjectPayment } from "@/types";
 
 type Props = {
-  transactions: Transaction[];
+  transactions: ProjectPayment[];
 };
 
 export default function PaymentList({ transactions }: Props) {
@@ -32,7 +32,7 @@ export default function PaymentList({ transactions }: Props) {
             </div>
 
             <p className="text-xs text-muted-foreground mt-1">
-              {format(new Date(txn.paidDate), "PPP")}
+              {format(new Date(txn.date), "PPP")}
             </p>
           </CardContent>
         </Card>

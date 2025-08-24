@@ -85,7 +85,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
     className,
     contentClassName,
     headerClassName,
-    footerClassName,
+    footerClassName="mt-4",
     returnFocusTo,
     footerRender,
   } = props;
@@ -172,13 +172,14 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         </AlertDialogHeader>
         <AlertDescription>
           {requireMatch && (
-            <div className="mt-4">
+            <div className="flex flex-col gap-1 w-full">
               <label className="text-sm font-medium">
                 Please type <span className="font-bold">{requireMatch}</span> to
                 confirm:
               </label>
               <Input
                 type="text"
+                className="w-full "
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
            

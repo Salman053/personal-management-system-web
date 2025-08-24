@@ -20,8 +20,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Project } from "@/types";
+import { Project, ProjectPayment } from "@/types";
 import { ActionMenu } from "../ui/action-menu";
+import { useMainContext } from "@/contexts/app-context";
 // import { ProjectDetailDialog } from "./project-detail-dialog"
 
 interface ProjectsTableProps {
@@ -38,6 +39,7 @@ export function ProjectsTable({
   onDelete,
 }: ProjectsTableProps) {
   const router = useRouter();
+  const { projectPayments } = useMainContext();
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -149,7 +151,11 @@ export function ProjectsTable({
                         </div>
                         {project.advanceAmount !== undefined && (
                           <div className="text-sm text-muted-foreground">
-                            Paid: Rs. {project.advanceAmount.toLocaleString()}
+                            Paid: Rs.{" "}
+                            {project.advanceAmount +
+                              projectPayments
+                                .filter((p:ProjectPayment) => p.projectId === project.id)
+                                .reduce((sum:number, p:ProjectPayment) => p.amount + sum, 0)}
                           </div>
                         )}
                       </div>
@@ -178,7 +184,6 @@ export function ProjectsTable({
                       onEdit={() => onEdit(project)}
                       onDelete={() => onDelete(project.id as string)}
                     />
-                    
                   </TableCell>
                 </TableRow>
               ))}

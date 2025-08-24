@@ -12,15 +12,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TrendingDown, Plus, AlertTriangle } from 'lucide-react';
-import { FinanceRecord } from "@/types/index";
+import { TrendingDown, Plus, AlertTriangle } from "lucide-react";
+import { FinanceRecord, TransactionType } from "@/types/index";
 import { format } from "date-fns";
+import { ActionMenu } from "../ui/action-menu";
 
 interface ExpenseManagerProps {
   transactions: FinanceRecord[];
   onEdit: (transaction: FinanceRecord) => void;
   onDelete: (transactionId: string) => void;
-  onAdd: () => void;
+  onAdd: (type: TransactionType) => void;
 }
 
 export function ExpenseManager({
@@ -30,8 +31,11 @@ export function ExpenseManager({
   onAdd,
 }: ExpenseManagerProps) {
   const expenseTransactions = transactions.filter((t) => t.type === "Expense");
-  
-  const totalExpenses = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpenses = expenseTransactions.reduce(
+    (sum, t) => sum + t.amount,
+    0
+  );
   const monthlyExpenses = expenseTransactions
     .filter((t) => {
       const transactionDate = new Date(t.date);
@@ -46,7 +50,8 @@ export function ExpenseManager({
 
   // Group by category
   const expensesByCategory = expenseTransactions.reduce((acc, transaction) => {
-    acc[transaction.category] = (acc[transaction.category] || 0) + transaction.amount;
+    acc[transaction.category] =
+      (acc[transaction.category] || 0) + transaction.amount;
     return acc;
   }, {} as Record<string, number>);
 
@@ -58,9 +63,11 @@ export function ExpenseManager({
     <div className="space-y-6">
       {/* Expense Overview */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="border-l-4 border-l-red-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Expenses
+            </CardTitle>
             <TrendingDown className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
@@ -71,7 +78,7 @@ export function ExpenseManager({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-l-4 border-l-red-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">This Month</CardTitle>
             <AlertTriangle className="h-4 w-4 text-red-600" />
@@ -86,10 +93,12 @@ export function ExpenseManager({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-l-4 border-l-red-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Categories</CardTitle>
-            <Badge variant="secondary">{Object.keys(expensesByCategory).length}</Badge>
+            <Badge variant="secondary">
+              {Object.keys(expensesByCategory).length}
+            </Badge>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -105,7 +114,11 @@ export function ExpenseManager({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Expenses by Category</CardTitle>
-            <Button onClick={onAdd} size="sm" variant="destructive">
+            <Button
+              onClick={() => onAdd("Expense" as TransactionType)}
+              size="sm"
+              variant="destructive"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Expense
             </Button>
@@ -125,7 +138,12 @@ export function ExpenseManager({
                     <div>
                       <p className="font-medium">{category}</p>
                       <p className="text-sm text-muted-foreground">
-                        {expenseTransactions.filter(t => t.category === category).length} transactions
+                        {
+                          expenseTransactions.filter(
+                            (t) => t.category === category
+                          ).length
+                        }{" "}
+                        transactions
                       </p>
                     </div>
                     <div className="text-right">
@@ -157,17 +175,21 @@ export function ExpenseManager({
                 <TableHead>Category</TableHead>
                 <TableHead>Medium</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
+                <TableHead >Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {expenseTransactions
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .sort(
+                  (a, b) =>
+                    new Date(b.date).getTime() - new Date(a.date).getTime()
+                )
                 .slice(0, 10)
                 .map((transaction) => (
                   <TableRow
                     key={transaction.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => onEdit(transaction)}
+                
                   >
                     <TableCell>
                       {format(new Date(transaction.date), "MMM dd, yyyy")}
@@ -183,6 +205,13 @@ export function ExpenseManager({
                     </TableCell>
                     <TableCell className="text-right font-medium text-red-600">
                       -Rs. {transaction.amount.toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      <ActionMenu
+                        item={transaction}
+                        onDelete={onDelete}
+                        onEdit={onEdit}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

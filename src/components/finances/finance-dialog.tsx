@@ -25,6 +25,7 @@ import {
   PaymentMedium,
   TransactionCategory,
   TransactionStatus,
+  categoryOptions,
 } from "@/types/index"; // <- your enums + interface
 import { useAuth } from "@/contexts/auth-context";
 import { financeServices } from "@/services/transactions";
@@ -34,21 +35,23 @@ interface FinanceDialogProps {
   onOpenChange: (open: boolean) => void;
   record?: FinanceRecord | null;
   onSave: () => void;
+  recordType?: TransactionType;
 }
 
 export function FinanceRecordDialog({
   open,
   onOpenChange,
   record,
+  recordType,
   onSave,
 }: FinanceDialogProps) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState<FinanceRecord>({
-    type: TransactionType.Expense,
+    type: recordType || TransactionType.Expense,
     amount: "" as any,
-    category: TransactionCategory.OtherExpense,
+    category: "" as any,
     medium: PaymentMedium.Cash,
     description: "",
     date: new Date().toISOString().split("T")[0],
@@ -61,9 +64,9 @@ export function FinanceRecordDialog({
       setFormData(record);
     } else {
       setFormData({
-        type: TransactionType.Expense,
+        type: recordType || TransactionType.Expense,
         amount: "" as any,
-        category: TransactionCategory.OtherExpense,
+        category: "" as any,
         medium: PaymentMedium.Cash,
         description: "",
         date: new Date().toISOString().split("T")[0],
@@ -81,6 +84,10 @@ export function FinanceRecordDialog({
 
     if (!user) {
       toast.error("Session expired. Please login again.");
+      return;
+    }
+    if (formData.category === ("" as any)) {
+      toast.error("Please select any category");
       return;
     }
     if (Number(formData.amount) <= 0) {
@@ -107,7 +114,7 @@ export function FinanceRecordDialog({
       console.error("Error saving finance record:", error);
     } finally {
       setLoading(false);
-      onSave()
+      onSave();
     }
   };
 
@@ -157,11 +164,10 @@ export function FinanceRecordDialog({
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <CustomSelect
-                options={Object.values(TransactionCategory) as any}
+                required
+                options={categoryOptions[formData.type]} // Dynamic categories
                 value={formData.category}
-                onChange={(value) =>
-                  handleChange("category", value as TransactionCategory)
-                }
+                onChange={(value) => handleChange("category", value)}
               />
             </div>
 
