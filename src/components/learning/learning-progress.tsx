@@ -3,8 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import type { LearningItem } from "@/contexts/app-context"
 import { BookOpen, Target, FileText, StickyNote, TrendingUp } from "lucide-react"
+import { LearningItem } from "@/types"
 
 interface LearningProgressProps {
   items: LearningItem[]
@@ -42,7 +42,7 @@ export function LearningProgress({ items }: LearningProgressProps) {
 
   const calculateOverallProgress = () => {
     if (items.length === 0) return 0
-    const totalProgress = items.reduce((sum, item) => sum + item.progress, 0)
+    const totalProgress = items.reduce((sum, item) => sum + Number(item?.progress), 0)
     return Math.round(totalProgress / items.length)
   }
 
@@ -78,7 +78,7 @@ export function LearningProgress({ items }: LearningProgressProps) {
               <span className={`font-medium ${getProgressColor(overallProgress)}`}>{overallProgress}%</span>
             </div>
             <Progress value={overallProgress} className="h-3" />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 text-sm">
               <div className="text-center">
                 <div className="font-medium">{items.length}</div>
                 <div className="text-muted-foreground">Total Items</div>
@@ -89,14 +89,11 @@ export function LearningProgress({ items }: LearningProgressProps) {
               </div>
               <div className="text-center">
                 <div className="font-medium text-blue-600">
-                  {items.filter((i) => i.progress > 0 && !i.completed).length}
+                  {items.filter((i) => Number(i?.progress) > 0 && !i.completed).length}
                 </div>
                 <div className="text-muted-foreground">In Progress</div>
               </div>
-              <div className="text-center">
-                <div className="font-medium text-gray-600">{items.filter((i) => i.progress === 0).length}</div>
-                <div className="text-muted-foreground">Not Started</div>
-              </div>
+              
             </div>
           </div>
         </CardContent>
@@ -125,7 +122,7 @@ export function LearningProgress({ items }: LearningProgressProps) {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Progress</span>
-                    <span className={`font-medium ${getProgressColor(roadmap.progress)}`}>{roadmap.progress}%</span>
+                    <span className={`font-medium ${getProgressColor(Number(roadmap.progress))}`}>{Number(roadmap.progress)}%</span>
                   </div>
                   <Progress value={roadmap.progress} className="h-2" />
                 </div>
@@ -143,11 +140,11 @@ export function LearningProgress({ items }: LearningProgressProps) {
                         <div key={topic.id} className="flex items-center justify-between text-xs">
                           <span className="truncate flex-1 mr-2">{topic.title}</span>
                           <div className="flex items-center gap-2">
-                            <span className={getProgressColor(topic.progress)}>{topic.progress}%</span>
+                            <span className={getProgressColor(Number(topic.progress))}>{Number(topic.progress)}%</span>
                             <div className="w-16 bg-gray-200 rounded-full h-1">
                               <div
                                 className="bg-primary h-1 rounded-full"
-                                style={{ width: `${topic.progress}%` }}
+                                style={{ width: `${Number(topic.progress)}%` }}
                               ></div>
                             </div>
                           </div>

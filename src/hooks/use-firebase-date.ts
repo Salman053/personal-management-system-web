@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase';
-import { FinanceRecord, Habit, Project, ProjectPayment,  } from '@/types';
+import { FinanceRecord, Habit, LearningItem, Project, ProjectPayment,  } from '@/types';
 import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 
@@ -10,7 +10,7 @@ export const useFirestoreData = (userId: string) => {
     const [projectPayments, setProjectPayments] = useState<ProjectPayment[]>([]);
     const [habits, setHabits] = useState<Habit[]>([]);
     const [finances, setFinances] = useState<FinanceRecord[]>([]);
-    // const [returns, setReturns] = useState<ReturnTransaction[]>([]);
+    const [learning, setLearning] = useState<LearningItem[]>([]);
     // const [customers, setCustomers] = useState<CustomerType[]>([]);
     // const [dues, setDues] = useState<DuesType[]>([])
     const [loading, setLoading] = useState<boolean>(true);
@@ -49,7 +49,7 @@ export const useFirestoreData = (userId: string) => {
             const unsubscribeProjectPayments = handleSnapshot('projectPayments', setProjectPayments);
             const unsubscribeHabits = handleSnapshot('habits', setHabits);
             const unsubscribeFinances = handleSnapshot('finances', setFinances);
-            // const unsubscribeDues = handleSnapshot('dues', setDues);
+            const unsubscribeLearning = handleSnapshot('learning', setLearning);
             // const unsubscribeSales = handleSnapshot('sales', setSales);
             // const unsubscribeReturns = handleSnapshot('returns', setReturns);
 
@@ -61,6 +61,7 @@ export const useFirestoreData = (userId: string) => {
                 unsubscribeProjectPayments?.();
                 unsubscribeHabits?.();
                 unsubscribeFinances?.();
+                unsubscribeLearning?.();
               
             };
         };
@@ -78,5 +79,5 @@ export const useFirestoreData = (userId: string) => {
         setLoading(false);
     };
 
-    return { users, loading, error, projects,projectPayments ,habits,finances};
+    return { users, loading, error, projects,projectPayments ,habits,finances,learning};
 };

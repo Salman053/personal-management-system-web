@@ -40,12 +40,12 @@ export function CustomSelect({
 
   return (
     <Select required={required} value={value} onValueChange={onChange}>
-      <SelectTrigger className={`w-full ${className}`}>
+      <SelectTrigger className={`w-full capitalize ${className}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {normalizedOptions.map((opt) => (
-          <SelectItem key={opt.value} value={opt.value}>
+          <SelectItem className="capitalize" key={opt.value} value={opt.value}>
             {opt.label}
           </SelectItem>
         ))}

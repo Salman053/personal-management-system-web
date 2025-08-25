@@ -88,7 +88,7 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const { users, loading, error, projects,projectPayments,habits,finances } = useFirestoreData(
+  const { users, loading, error, projects,projectPayments,habits,finances ,learning} = useFirestoreData(
     user?.uid || ""
   );
   // Define the values to provide through context
@@ -101,6 +101,7 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     toggleTheme,
     isSidebarOpen,
     currentUser,
+    learning,
     setCurrentUser,
     isAuthLoading,
     toggleSidebar,

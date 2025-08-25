@@ -84,6 +84,7 @@ export function TransactionsTable({ transactions, loading, onEdit, onDelete }: T
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Counter Party</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Medium</TableHead>
@@ -96,6 +97,7 @@ export function TransactionsTable({ transactions, loading, onEdit, onDelete }: T
           <TableBody>
             {transactions.map((transaction) => (
               <TableRow key={transaction.id}>
+                <TableCell>{transaction.counterparty || "----------"}</TableCell>
                 <TableCell>{new Date(transaction.date).toDateString()}</TableCell>
                 <TableCell>
                   <Badge className={getTypeColor(transaction.type)}>

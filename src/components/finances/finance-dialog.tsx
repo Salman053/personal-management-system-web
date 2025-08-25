@@ -1,5 +1,5 @@
 "use client";
-
+import  {memo} from "react"
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,13 +38,13 @@ interface FinanceDialogProps {
   recordType?: TransactionType;
 }
 
-export function FinanceRecordDialog({
+function FinanceRecordDialog({
   open,
   onOpenChange,
   record,
   recordType,
   onSave,
-}: FinanceDialogProps) {
+}: FinanceDialogProps){
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
@@ -267,3 +267,6 @@ export function FinanceRecordDialog({
     </Dialog>
   );
 }
+
+
+export default FinanceRecordDialog

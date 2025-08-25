@@ -1,15 +1,35 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { generateReport, exportReportData, type ReportData } from "@/services/reports"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import {
+  generateReport,
+  exportReportData,
+  type ReportData,
+} from "@/services/reports";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import {
   CalendarIcon,
   Download,
@@ -19,8 +39,8 @@ import {
   Target,
   BookOpen,
   CheckCircle,
-} from "lucide-react"
-import { format, subDays, subMonths, subYears } from "date-fns"
+} from "lucide-react";
+import { format, subDays, subMonths, subYears } from "date-fns";
 import {
   LineChart,
   Line,
@@ -37,78 +57,94 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts"
+} from "recharts";
+import { useMainContext } from "@/contexts/app-context";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 export default function ReportsPage() {
-  const { user } = useAuth()
-  const [reportData, setReportData] = useState<ReportData | null>(null)
-  const [loading, setLoading] = useState(false)
+  const { user } = useAuth();
+  const { projects, finances, habits, projectPayments, learning } =
+    useMainContext();
+  const [reportData, setReportData] = useState<ReportData | null>(null);
+  console.log(reportData);
+
+  const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: subMonths(new Date(), 3),
     to: new Date(),
-  })
-  const [showCalendar, setShowCalendar] = useState(false)
+  });
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const loadReport = async () => {
-    if (!user) return
+    if (!user) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const data = await generateReport(user.uid, dateRange.from, dateRange.to)
-      setReportData(data)
+      const data = await generateReport(
+        projects,
+        projectPayments,
+        habits,
+        learning,
+        finances,
+        user?.uid,
+        dateRange.from,
+        dateRange.to
+      );
+      setReportData(data);
     } catch (error) {
-      console.error("Error loading report:", error)
+      console.error("Error loading report:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    loadReport()
-  }, [user, dateRange])
+    loadReport();
+  }, [user, dateRange]);
 
   const handleQuickDateRange = (range: string) => {
-    const today = new Date()
+    const today = new Date();
     switch (range) {
       case "7d":
-        setDateRange({ from: subDays(today, 7), to: today })
-        break
+        setDateRange({ from: subDays(today, 7), to: today });
+        break;
       case "30d":
-        setDateRange({ from: subDays(today, 30), to: today })
-        break
+        setDateRange({ from: subDays(today, 30), to: today });
+        break;
       case "3m":
-        setDateRange({ from: subMonths(today, 3), to: today })
-        break
+        setDateRange({ from: subMonths(today, 3), to: today });
+        break;
       case "1y":
-        setDateRange({ from: subYears(today, 1), to: today })
-        break
+        setDateRange({ from: subYears(today, 1), to: today });
+        break;
     }
-  }
+  };
 
   const handleExport = (format: "csv" | "json") => {
     if (reportData) {
-      exportReportData(reportData, format)
+      exportReportData(reportData, format);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
-  if (!reportData) return null
+  if (!reportData) return null;
 
   const overviewCards = [
     {
       title: "Total Revenue",
       value: `$${reportData.projects.revenue.toLocaleString()}`,
       change: reportData.finances.netIncome > 0 ? "+" : "",
-      changeValue: `$${Math.abs(reportData.finances.netIncome).toLocaleString()}`,
+      changeValue: `$${Math.abs(
+        reportData.finances.netIncome
+      ).toLocaleString()}`,
       icon: DollarSign,
       trend: reportData.finances.netIncome > 0 ? "up" : "down",
     },
@@ -136,20 +172,27 @@ export default function ReportsPage() {
       icon: BookOpen,
       trend: reportData.learning.progressPercentage > 50 ? "up" : "down",
     },
-  ]
+  ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold">Reports & Analytics</h1>
-          <p className="text-muted-foreground">Comprehensive insights across all your activities</p>
+          <p className="text-muted-foreground">
+            Comprehensive insights across all your activities
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex gap-1">
             {["7d", "30d", "3m", "1y"].map((range) => (
-              <Button key={range} variant="outline" size="sm" onClick={() => handleQuickDateRange(range)}>
+              <Button
+                key={range}
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickDateRange(range)}
+              >
                 {range}
               </Button>
             ))}
@@ -157,10 +200,16 @@ export default function ReportsPage() {
 
           <Popover open={showCalendar} onOpenChange={setShowCalendar}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-[240px] justify-start text-left font-normal bg-transparent">
+              <Button
+                variant="outline"
+                className="w-[240px] justify-start text-left font-normal bg-transparent"
+              >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {dateRange.from && dateRange.to
-                  ? `${format(dateRange.from, "MMM dd")} - ${format(dateRange.to, "MMM dd")}`
+                  ? `${format(dateRange.from, "MMM dd")} - ${format(
+                      dateRange.to,
+                      "MMM dd"
+                    )}`
                   : "Pick a date range"}
               </Button>
             </PopoverTrigger>
@@ -170,8 +219,8 @@ export default function ReportsPage() {
                 selected={{ from: dateRange.from, to: dateRange.to }}
                 onSelect={(range) => {
                   if (range?.from && range?.to) {
-                    setDateRange({ from: range.from, to: range.to })
-                    setShowCalendar(false)
+                    setDateRange({ from: range.from, to: range.to });
+                    setShowCalendar(false);
                   }
                 }}
                 numberOfMonths={2}
@@ -197,14 +246,20 @@ export default function ReportsPage() {
         {overviewCards.map((card, index) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {card.title}
+              </CardTitle>
               <card.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{card.value}</div>
               <div className="flex items-center text-xs text-muted-foreground">
-                {card.trend === "up" && <TrendingUp className="mr-1 h-3 w-3 text-green-500" />}
-                {card.trend === "down" && <TrendingDown className="mr-1 h-3 w-3 text-red-500" />}
+                {card.trend === "up" && (
+                  <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
+                )}
+                {card.trend === "down" && (
+                  <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
+                )}
                 {card.changeValue}
               </div>
             </CardContent>
@@ -260,17 +315,29 @@ export default function ReportsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Habits Completion</CardTitle>
-                <CardDescription>Daily completion rate over time</CardDescription>
+                <CardDescription>
+                  Daily completion rate over time
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={reportData.habits.completionTrend}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" tickFormatter={(value) => format(new Date(value), "MMM dd")} />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={(value) =>
+                        format(new Date(value), "MMM dd")
+                      }
+                    />
                     <YAxis />
                     <Tooltip
-                      labelFormatter={(value) => format(new Date(value), "MMM dd, yyyy")}
-                      formatter={(value) => [`${Number(value).toFixed(1)}%`, "Completion"]}
+                      labelFormatter={(value) =>
+                        format(new Date(value), "MMM dd, yyyy")
+                      }
+                      formatter={(value) => [
+                        `${Number(value).toFixed(1)}%`,
+                        "Completion",
+                      ]}
                     />
                     <Line
                       type="monotone"
@@ -328,7 +395,13 @@ export default function ReportsPage() {
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t">
                   <span className="font-medium">Net Income</span>
-                  <Badge variant={reportData.finances.netIncome > 0 ? "default" : "destructive"}>
+                  <Badge
+                    variant={
+                      reportData.finances.netIncome > 0
+                        ? "default"
+                        : "destructive"
+                    }
+                  >
                     ${reportData.finances.netIncome.toLocaleString()}
                   </Badge>
                 </div>
@@ -348,11 +421,19 @@ export default function ReportsPage() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={reportData.habits.completionTrend}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" tickFormatter={(value) => format(new Date(value), "dd")} />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={(value) => format(new Date(value), "dd")}
+                    />
                     <YAxis />
                     <Tooltip
-                      labelFormatter={(value) => format(new Date(value), "MMM dd")}
-                      formatter={(value) => [`${Number(value).toFixed(1)}%`, "Completion"]}
+                      labelFormatter={(value) =>
+                        format(new Date(value), "MMM dd")
+                      }
+                      formatter={(value) => [
+                        `${Number(value).toFixed(1)}%`,
+                        "Completion",
+                      ]}
                     />
                     <Line
                       type="monotone"
@@ -374,15 +455,23 @@ export default function ReportsPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Total Habits</span>
-                  <Badge variant="secondary">{reportData.habits.totalHabits}</Badge>
+                  <Badge variant="secondary">
+                    {reportData.habits.totalHabits}
+                  </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Average Completion</span>
-                  <Badge variant="secondary">{reportData.habits.averageCompletion.toFixed(1)}%</Badge>
+                  <span className="text-sm font-medium">
+                    Average Completion
+                  </span>
+                  <Badge variant="secondary">
+                    {reportData.habits.averageCompletion.toFixed(1)}%
+                  </Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Longest Streak</span>
-                  <Badge variant="secondary">{reportData.habits.longestStreak} days</Badge>
+                  <Badge variant="secondary">
+                    {reportData.habits.longestStreak} days
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
@@ -401,32 +490,53 @@ export default function ReportsPage() {
                   <PieChart>
                     <Pie
                       data={[
-                        { name: "Completed", value: reportData.projects.completed },
-                        { name: "In Progress", value: reportData.projects.inProgress },
+                        {
+                          name: "Completed",
+                          value: reportData.projects.completed,
+                        },
+                        {
+                          name: "In Progress",
+                          value: reportData.projects.inProgress,
+                        },
                         {
                           name: "Pending",
                           value:
-                            reportData.projects.total - reportData.projects.completed - reportData.projects.inProgress,
+                            reportData.projects.total -
+                            reportData.projects.completed -
+                            reportData.projects.inProgress,
                         },
                       ]}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) =>
+                        `${name} ${(percent || 0 * 100).toFixed(0)}%`
+                      }
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
                     >
                       {[
-                        { name: "Completed", value: reportData.projects.completed },
-                        { name: "In Progress", value: reportData.projects.inProgress },
+                        {
+                          name: "Completed",
+                          value: reportData.projects.completed,
+                        },
+                        {
+                          name: "In Progress",
+                          value: reportData.projects.inProgress,
+                        },
                         {
                           name: "Pending",
                           value:
-                            reportData.projects.total - reportData.projects.completed - reportData.projects.inProgress,
+                            reportData.projects.total -
+                            reportData.projects.completed -
+                            reportData.projects.inProgress,
                         },
                       ].map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -457,7 +567,11 @@ export default function ReportsPage() {
                   <span className="text-sm font-medium">Completion Rate</span>
                   <Badge variant="secondary">
                     {reportData.projects.total > 0
-                      ? ((reportData.projects.completed / reportData.projects.total) * 100).toFixed(1)
+                      ? (
+                          (reportData.projects.completed /
+                            reportData.projects.total) *
+                          100
+                        ).toFixed(1)
                       : 0}
                     %
                   </Badge>
@@ -468,5 +582,5 @@ export default function ReportsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

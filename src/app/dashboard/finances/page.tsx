@@ -22,9 +22,9 @@ import { AdvancedFilters } from "@/components/finances/advance-filter";
 import { useAuth } from "@/contexts/auth-context";
 import { financeServices } from "@/services/transactions";
 import { toast } from "sonner";
-import { FinanceRecordDialog } from "@/components/finances/finance-dialog";
 import { useModalState } from "@/hooks/use-modal-state";
 import ConfirmDialog from "@/components/system/confirm-dialog";
+import FinanceRecordDialog from "@/components/finances/finance-dialog";
 
 interface DateFilter {
   from: Date | null;
@@ -45,7 +45,6 @@ export default function FinancesPage() {
   const { user } = useAuth();
   const [recordType, setRecordType] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [deletingRecord, setDeletingRecord] = useState("");
   const [editingRecord, setEditingRecord] = useState<FinanceRecord | null>(
     null
@@ -155,22 +154,27 @@ export default function FinancesPage() {
   const netWorth =
     totals.income - totals.expenses + totals.lent - totals.borrowed;
 
-  const handleAddTransaction = () => {
+  const handleAddTransaction = (
+    type: "Income" | "Lent" | "Borrowed" | "Expense"
+  ) => {
     setEditingRecord(null);
-    setRecordType("Income");
+    setRecordType(type);
     toggleModal("isFinanceDialogOpen");
   };
 
   const handleEditTransaction = async (transaction: FinanceRecord) => {
     setEditingRecord(transaction);
+    console.log(modalState.isFinanceDialogOpen, "THis is FInal Dialog");
     toggleModal("isFinanceDialogOpen");
   };
 
   const handleDeleteTransaction = async () => {
     console.log("Delete transaction:", deletingRecord);
     try {
-      await financeServices.deleteRecord(deletingRecord);
-      toggleModal("isDeletingRecordModalOpen");
+      await financeServices.deleteRecord(deletingRecord).then(() => {
+        toggleModal("isDeletingRecordModalOpen");
+        setDeletingRecord("")
+      });
       toast.success("Transaction deleted successfully");
     } catch (error) {
       console.error("Error deleting transaction:", error);
@@ -191,14 +195,14 @@ export default function FinancesPage() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight">
+              <h1 className="text-3xl font-bold tracking-tight">
                 Financial Manager
               </h1>
               <p className="text-muted-foreground text-lg">
                 Professional financial tracking and management system
               </p>
             </div>
-            <Button onClick={handleAddTransaction} size="lg">
+            <Button onClick={() => handleAddTransaction("Income")} >
               <Plus className="mr-2 h-5 w-5" />
               Add Transaction
             </Button>
@@ -315,7 +319,7 @@ export default function FinancesPage() {
                   toggleModal("isDeletingRecordModalOpen");
                   setDeletingRecord(recordId);
                 }}
-                onAdd={handleAddTransaction}
+                onAdd={() => handleAddTransaction("Income")}
               />
             </TabsContent>
 
@@ -327,7 +331,7 @@ export default function FinancesPage() {
                   toggleModal("isDeletingRecordModalOpen");
                   setDeletingRecord(recordId);
                 }}
-                onAdd={handleAddTransaction}
+                onAdd={() => handleAddTransaction("Expense")}
               />
             </TabsContent>
 

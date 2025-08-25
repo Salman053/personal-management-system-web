@@ -1,14 +1,14 @@
-export interface ProjectPayment extends TransactionBase {
-  projectId: string
-  clientId?: string
-  clientName?: string
-  medium: "Cash" | "Easypaisa" | "Bank" | "Cheque" | "Other"
-  type: "Income" | "Expense" | "Borrowed" | "Lent"
-  receipt?: string
-  //   status: "pending" | "paid" | "overdue"
-  description: string
-  createdAt?: Date
-}
+  export interface ProjectPayment extends TransactionBase {
+    projectId: string
+    clientId?: string
+    clientName?: string
+    medium: "Cash" | "Easypaisa" | "Bank" | "Cheque" | "Other"
+    type: "Income" | "Expense" | "Borrowed" | "Lent"
+    receipt?: string
+    //   status: "pending" | "paid" | "overdue"
+    description: string
+    createdAt?: Date
+  }
 
 
 
@@ -195,16 +195,32 @@ export interface Habit {
   archived?: boolean
 }
 
-
+// Complete LearningItem interface
 export interface LearningItem {
   id: string;
   title: string;
   type: "roadmap" | "topic" | "subtopic" | "note";
   parentId?: string;
+  
+  // Core content
   description: string;
-  progress: number;
-  completed: boolean;
-  resources: string[];
+  resources: { label: string; url: string }[];
+  tags: string[];
+  
+  // Progress & tracking
+  progress?: number; // 0-100
+  completed?: boolean;
+  estimatedTime?: number; // in week
+  actualTime?: number; // tracked weeks spent in minutes
+  priority: "low" | "medium" | "high";
+  dueDate?: any;
+  
+  // Assessment (optional, for quizzes/tasks)
+  hasAssessment?: boolean;
+  score?: number; // 0-100
+  
+  // System fields
+  userId: string; // Firebase user ID
   createdAt: Date;
   updatedAt: Date;
 }

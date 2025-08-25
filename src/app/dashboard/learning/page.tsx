@@ -1,144 +1,160 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth } from "@/contexts/auth-context"
-import { learningService } from "@/services/learning"
-import { LearningDialog } from "@/components/learning/learning-dialog"
-import { LearningTree } from "@/components/learning/learning-tree"
-import { LearningProgress } from "@/components/learning/learning-progress"
-import { TemplateDialog } from "@/components/learning/template-dialog"
-import { Plus, Search, BookOpen, Target, TrendingUp, Award } from "lucide-react"
-import { LearningItem } from "@/types"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/auth-context";
+import { learningService } from "@/services/learning";
+import { LearningDialog } from "@/components/learning/learning-dialog";
+import { LearningTree } from "@/components/learning/learning-tree";
+import { LearningProgress } from "@/components/learning/learning-progress";
+import { TemplateDialog } from "@/components/learning/template-dialog";
+import {
+  Plus,
+  Search,
+  BookOpen,
+  Target,
+  TrendingUp,
+  Award,
+} from "lucide-react";
+import { LearningItem } from "@/types";
+import { useModalState } from "@/hooks/use-modal-state";
+import { useMainContext } from "@/contexts/app-context";
+import { CustomSelect } from "@/components/shared/custom-select";
+import { toast } from "sonner";
+import ConfirmDialog from "@/components/system/confirm-dialog";
 
 export default function LearningPage() {
-  const { user } = useAuth()
+  const { learning, loading } = useMainContext();
   // const { state, dispatch } = useApp()
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState<"all" | "roadmap" | "topic" | "subtopic" | "note">("all")
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<LearningItem | null>(null)
-  const [selectedParent, setSelectedParent] = useState<LearningItem | null>(null)
-  const [activeTab, setActiveTab] = useState("roadmaps")
+  const { user } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState<
+    "all" | "roadmap" | "topic" | "subtopic" | "note"
+  >("all");
+  // const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<LearningItem | null>(null);
+  const [selectedParent, setSelectedParent] = useState<LearningItem | null>(
+    null
+  );
+  const [deletingItem, setDeletingItem] = useState("");
+  const [activeTab, setActiveTab] = useState("roadmaps");
 
-  // useEffect(() => {
-  //   if (user) {
-  //     loadLearningItems()
-  //   }
-  // }, [user])
+  // console.log(learning);
 
-  // const loadLearningItems = async () => {
-  //   if (!user) return
+  const { modalState, toggleModal } = useModalState({
+    isDeleteModalOpen: false,
+    isDialogModalOpen: false,
+  });
 
-  //   try {
-  //     setLoading(true)
-  //     const items = await learningService.getLearningItems(user.uid)
-
-  //     // Calculate progress for each item
-  //     const itemsWithProgress = items.map((item) => ({
-  //       ...item,
-  //       progress: learningService.calculateProgress(item, items),
-  //     }))
-
-  //     dispatch({ type: "SET_LEARNING", payload: itemsWithProgress })
-  //   } catch (error) {
-  //     console.error("Error loading learning items:", error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
-  const handleCreateItem = (type: "roadmap" | "topic" | "subtopic" | "note", parent?: LearningItem) => {
-    setEditingItem(null)
-    setSelectedParent(parent || null)
-    setIsDialogOpen(true)
-  }
+  const handleCreateItem = (
+    type: "roadmap" | "topic" | "subtopic" | "note",
+    parent?: LearningItem
+  ) => {
+    setEditingItem(null);
+    setSelectedParent(parent || null);
+    toggleModal("isDialogModalOpen");
+  };
 
   const handleEditItem = (item: LearningItem) => {
-    setEditingItem(item)
-    setSelectedParent(null)
-    setIsDialogOpen(true)
-  }
+    setEditingItem(item);
+    setSelectedParent(null);
+    toggleModal("isDialogModalOpen");
+  };
 
-  // const handleDeleteItem = async (itemId: string) => {
-  //   if (!confirm("Are you sure you want to delete this item? This will also delete all child items.")) return
+  const handleDeleteItem = async () => {
+    try {
+      await learningService
+        .deleteLearningItem(user?.uid as string, deletingItem)
+        .then(() => {
+          toast.success("The Item is deleted successfully and also it's sub ");
+          toggleModal("isDeleteModalOpen");
+        });
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setDeletingItem("")
+    }
+  };
 
-  //   try {
-  //     await learningService.deleteLearningItem(itemId)
-  //     await loadLearningItems()
-  //   } catch (error) {
-  //     console.error("Error deleting learning item:", error)
-  //   }
-  // }
+  const handleItemSaved = async () => {
+    toggleModal("isDialogModalOpen");
+    setEditingItem(null);
+    setSelectedParent(null);
+  };
 
-  // const handleItemSaved = async () => {
-  //   setIsDialogOpen(false)
-  //   setEditingItem(null)
-  //   setSelectedParent(null)
-  //   await loadLearningItems()
-  // }
+  const handleToggleCompletion = async (itemId: string, completed: boolean) => {
+    try {
+      await learningService.updateLearningItem(itemId, { completed });
+    } catch (error) {
+      console.error("Error updating completion:", error);
+    }
+  };
 
-  // const handleToggleCompletion = async (itemId: string, completed: boolean) => {
-  //   try {
-  //     await learningService.updateLearningItem(itemId, { completed })
-  //     await loadLearningItems()
-  //   } catch (error) {
-  //     console.error("Error updating completion:", error)
-  //   }
-  // }
+  const handleUpdateProgress = async (itemId: string, progress: number) => {
+    try {
+      await learningService.updateLearningItem(itemId, { progress });
+    } catch (error) {
+      console.error("Error updating progress:", error);
+    }
+  };
 
-  // const handleUpdateProgress = async (itemId: string, progress: number) => {
-  //   try {
-  //     await learningService.updateLearningItem(itemId, { progress })
-  //     await loadLearningItems()
-  //   } catch (error) {
-  //     console.error("Error updating progress:", error)
-  //   }
-  // }
-
-  // const handleTemplateSelected = async () => {
-  //   setIsTemplateDialogOpen(false)
-  //   await loadLearningItems()
-  // }
+  const handleTemplateSelected = async () => {
+    setIsTemplateDialogOpen(false);
+    // await loadLearningItems()
+  };
 
   // // Filter learning items
-  // const filteredItems = state.learning.filter((item) => {
-  //   const matchesSearch =
-  //     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     item.description.toLowerCase().includes(searchTerm.toLowerCase())
-  //   const matchesType = filterType === "all" || item.type === filterType
-  //   return matchesSearch && matchesType
-  // })
+  const filteredItems = learning.filter((item: any) => {
+    const matchesSearch =
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === "all" || item.type === filterType;
+    return matchesSearch && matchesType;
+  });
 
   // // Get root items (roadmaps)
-  // const roadmaps = filteredItems.filter((item) => item.type === "roadmap")
+  const roadmaps = filteredItems.filter(
+    (item: LearningItem) => item.type === "roadmap"
+  );
 
   // // Calculate stats
-  // const stats = {
-  //   totalItems: state.learning.length,
-  //   roadmaps: state.learning.filter((item) => item.type === "roadmap").length,
-  //   completedItems: state.learning.filter((item) => item.completed).length,
-  //   averageProgress:
-  //     state.learning.length > 0
-  //       ? Math.round(state.learning.reduce((sum, item) => sum + item.progress, 0) / state.learning.length)
-  //       : 0,
-  // }
+  const stats = {
+    totalItems: learning.length,
+    roadmaps: learning.filter((item: LearningItem) => item.type === "roadmap")
+      .length,
+    completedItems: learning.filter((item: LearningItem) => item.completed)
+      .length,
+    averageProgress:
+      learning.length > 0
+        ? Math.round(
+            learning.reduce(
+              (sum: number, item: LearningItem) => sum + Number(item.progress),
+              0
+            ) / learning.length
+          )
+        : 0,
+  };
 
+  // console.log(  learning.filtere((l: LearningItem) => l.id === "ZwdJJ0exbJdbDCipzjIa "))
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Learning</h1>
-          <p className="text-muted-foreground">Organize your learning journey with structured roadmaps</p>
+          <p className="text-muted-foreground">
+            Organize your learning journey with structured roadmaps
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setIsTemplateDialogOpen(true)}>
+          <Button
+            variant="outline"
+            onClick={() => setIsTemplateDialogOpen(true)}
+          >
             <BookOpen className="mr-2 h-4 w-4" />
             Use Template
           </Button>
@@ -153,7 +169,9 @@ export default function LearningPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Learning Items</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Learning Items
+            </CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -167,7 +185,9 @@ export default function LearningPage() {
             <Target className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats.roadmaps}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.roadmaps}
+            </div>
           </CardContent>
         </Card>
 
@@ -177,7 +197,9 @@ export default function LearningPage() {
             <Award className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.completedItems}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats.completedItems}
+            </div>
           </CardContent>
         </Card>
 
@@ -187,7 +209,9 @@ export default function LearningPage() {
             <TrendingUp className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{stats.averageProgress}%</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {stats.averageProgress}%
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -195,6 +219,7 @@ export default function LearningPage() {
       {/* Tabs for different views */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
+          {/* <TabsTrigger value="topics">Topics</TabsTrigger> */}
           <TabsTrigger value="roadmaps">Roadmaps</TabsTrigger>
           <TabsTrigger value="progress">Progress Overview</TabsTrigger>
         </TabsList>
@@ -216,55 +241,61 @@ export default function LearningPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <select
+                  <CustomSelect
+                    onChange={(value) => setFilterType(value as any)}
+                    options={["all", "roadmap", "topic", "subtopic", "note"]}
                     value={filterType}
-                    onChange={(e) => setFilterType(e.target.value as any)}
-                    className="px-3 py-2 border rounded-md bg-background"
-                  >
-                    <option value="all">All Types</option>
-                    <option value="roadmap">Roadmaps</option>
-                    <option value="topic">Topics</option>
-                    <option value="subtopic">Subtopics</option>
-                    <option value="note">Notes</option>
-                  </select>
+                  />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Learning Tree */}
-          {/* <LearningTree
-            items={state.learning}
-            roadmaps={roadmaps}
+          <LearningTree
             loading={loading}
+            items={learning}
+            onDelete={(id) => {
+              setDeletingItem(id);
+              toggleModal("isDeleteModalOpen");
+            }}
+            roadmaps={roadmaps}
             onEdit={handleEditItem}
-            onDelete={handleDeleteItem}
             onCreateChild={handleCreateItem}
             onToggleCompletion={handleToggleCompletion}
             onUpdateProgress={handleUpdateProgress}
-          /> */}
+          />
         </TabsContent>
 
         <TabsContent value="progress" className="space-y-6">
-          <LearningProgress items={state.learning} />
+          <LearningProgress items={learning} />
         </TabsContent>
       </Tabs>
 
       {/* Learning Dialog */}
       <LearningDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        item={editingItem}
+        open={modalState.isDialogModalOpen}
+        onOpenChange={() => toggleModal("isDialogModalOpen")}
+        item={editingItem as any}
         parent={selectedParent}
-        // onSave={handleItemSaved}
+        onSave={handleItemSaved}
+      />
+      <ConfirmDialog
+        open={modalState.isDeleteModalOpen}
+        onCancel={() => toggleModal("isDeleteModalOpen")}
+        onConfirm={handleDeleteItem}
+        lockWhilePending
+        description="This process is not reversible it delete all data related to this item like , topic , subtopics , notes etc"
+        requireText="Delete"
+        destructive
       />
 
       {/* Template Dialog */}
       <TemplateDialog
         open={isTemplateDialogOpen}
         onOpenChange={setIsTemplateDialogOpen}
-        // onTemplateSelected={handleTemplateSelected}
+        onTemplateSelected={handleTemplateSelected}
       />
     </div>
-  )
+  );
 }
