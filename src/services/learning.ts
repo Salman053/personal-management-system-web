@@ -4,18 +4,12 @@ import {
   doc,
   addDoc,
   updateDoc,
-  deleteDoc,
   getDocs,
   getDoc,
   query,
   where,
-  orderBy,
   Timestamp,
   writeBatch,
-  DocumentSnapshot,
-  QueryDocumentSnapshot,
-  limit,
-  startAfter,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { LearningItem } from "@/types";

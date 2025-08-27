@@ -4,16 +4,7 @@ import { Habit } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Flame,
-  Check,
-  X,
-  TrendingUp,
-  Target,
-  Trash2,
-  Edit,
-  Archive,
-} from "lucide-react";
+import { Check, X, TrendingUp, Target, Trash2, Edit, Archive } from "lucide-react";
 import { HabitStreak } from "./habit-streak";
 import { HabitProgress } from "./habit-weekly-progress";
 

@@ -1,6 +1,5 @@
 import { toast } from "sonner";
 import { NotificationService } from "@/services/notification-service";
-import { SubTask } from "@/types"; // adjust import
 
 type NotificationType = "whatsapp" | "email" | "share";
 

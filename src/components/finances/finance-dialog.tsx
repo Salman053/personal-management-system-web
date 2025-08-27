@@ -1,5 +1,4 @@
 "use client";
-import { memo } from "react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +22,6 @@ import {
   FinanceRecord,
   TransactionType,
   PaymentMedium,
-  TransactionCategory,
   TransactionStatus,
   categoryOptions,
 } from "@/types/index"; // <- your enums + interface
@@ -57,6 +55,7 @@ function FinanceRecordDialog({
       email: "",
       phone: "",
     },
+
     medium: PaymentMedium.Cash,
     description: "",
     date: new Date().toISOString().split("T")[0],
@@ -83,9 +82,9 @@ function FinanceRecordDialog({
         userId: user?.uid as string,
       });
     }
-  }, [record, open, user]);
+  }, [record, open, user, recordType]);
 
-  const handleChange = (field: keyof any, value: any) => {
+  const handleChange = (field: keyof any, value: string) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
@@ -120,7 +119,10 @@ function FinanceRecordDialog({
     }
 
     // Fixed validation for Borrowed/Lent
-    if (formData.type === TransactionType.Lent || formData.type === TransactionType.Borrowed) {
+    if (
+      formData.type === TransactionType.Lent ||
+      formData.type === TransactionType.Borrowed
+    ) {
       if (
         !formData.counterpartyDetails?.phone ||
         formData.counterpartyDetails.phone.length < 10 || // Fixed phone validation
@@ -138,7 +140,10 @@ function FinanceRecordDialog({
     try {
       if (record?.id) {
         await financeServices
-          .updateFinanceRecord(record.id, formData)
+          .updateFinanceRecord(record.id, {
+            ...formData,
+            amount: Number(formData.amount),
+          })
           .then(() => toast.success("Record updated successfully"));
       } else {
         await financeServices.createFinanceRecord(formData).then(() => {
@@ -190,7 +195,7 @@ function FinanceRecordDialog({
                 id="amount"
                 type="number"
                 value={formData.amount}
-                onChange={(e) => handleChange("amount", Number(e.target.value))}
+                onChange={(e) => handleChange("amount", e.target.value)}
                 min={0}
                 required
               />
@@ -231,11 +236,13 @@ function FinanceRecordDialog({
                   <Input
                     id="counterparty"
                     value={formData.counterparty || ""}
-                    onChange={(e) => handleChange("counterparty", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("counterparty", e.target.value)
+                    }
                     placeholder="Person/Company Name"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email *</Label>
                   <Input
@@ -243,7 +250,11 @@ function FinanceRecordDialog({
                     type="email"
                     value={formData.counterpartyDetails?.email || ""}
                     onChange={(e) =>
-                      handleNestedChange("counterpartyDetails", "email", e.target.value)
+                      handleNestedChange(
+                        "counterpartyDetails",
+                        "email",
+                        e.target.value
+                      )
                     }
                     placeholder="counterparty@example.com"
                     required
@@ -259,20 +270,28 @@ function FinanceRecordDialog({
                     value={formData.counterpartyDetails?.phone || ""}
                     type="tel"
                     onChange={(e) =>
-                      handleNestedChange("counterpartyDetails", "phone", e.target.value)
+                      handleNestedChange(
+                        "counterpartyDetails",
+                        "phone",
+                        e.target.value
+                      )
                     }
                     placeholder="+1234567890"
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="address">Address</Label>
                   <Input
                     id="address"
                     value={formData.counterpartyDetails?.address || ""}
                     onChange={(e) =>
-                      handleNestedChange("counterpartyDetails", "address", e.target.value)
+                      handleNestedChange(
+                        "counterpartyDetails",
+                        "address",
+                        e.target.value
+                      )
                     }
                     placeholder="Street address"
                   />
@@ -292,7 +311,7 @@ function FinanceRecordDialog({
                     onChange={(e) => handleChange("dueDate", e.target.value)}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
                   <CustomSelect
@@ -308,21 +327,21 @@ function FinanceRecordDialog({
           )}
 
           {/* Transaction Date - Always show */}
-          {(formData.type !== TransactionType.Borrowed &&
-            formData.type !== TransactionType.Lent) && (
-            <div className="space-y-2">
-              <Label htmlFor="date">Transaction Date</Label>
-              <DateInput
-                id="date"
-                value={
-                  formData.date
-                    ? new Date(formData.date).toISOString().split("T")[0]
-                    : ""
-                }
-                onChange={(e) => handleChange("date", e.target.value)}
-              />
-            </div>
-          )}
+          {formData.type !== TransactionType.Borrowed &&
+            formData.type !== TransactionType.Lent && (
+              <div className="space-y-2">
+                <Label htmlFor="date">Transaction Date</Label>
+                <DateInput
+                  id="date"
+                  value={
+                    formData.date
+                      ? new Date(formData.date).toISOString().split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) => handleChange("date", e.target.value)}
+                />
+              </div>
+            )}
 
           {/* Description */}
           <div className="space-y-2">

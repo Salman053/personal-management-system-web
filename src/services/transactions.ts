@@ -1,17 +1,6 @@
-import {
-  collection,
-  doc,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  Timestamp,
-} from "firebase/firestore"
+import { collection, doc, addDoc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase"
-import { FinanceRecord, TransactionType } from "@/types"
+import { FinanceRecord } from "@/types";
 import { reminderServices } from "./reminders"
 import { getDaysBefore } from "@/lib/oneDayBeforeDate"
 import { toast } from "sonner"

@@ -1,12 +1,10 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
@@ -22,9 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CustomSelect } from "../shared/custom-select";
 import DateInput from "../ui/date-input";
-import { Loader2, Plus, X, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { learningService } from "@/services/learning";
 import { LearningItem } from "@/types";
@@ -95,7 +92,6 @@ export function LearningDialog({
 }: LearningDialogProps) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const [formData, setFormData] = useState<
     Omit<LearningItem, "id" | "createdBy" | "createdAt" | "updatedAt">
@@ -158,8 +154,7 @@ export function LearningDialog({
     }
 
     // Clear errors and success states when dialog opens/closes
-    setShowSuccess(false);
-  }, [item, parent, open]);
+  }, [item, parent, open, user]);
 
   const getChildType = (parentType: string): "topic" | "subtopic" | "note" => {
     switch (parentType) {
@@ -174,91 +169,6 @@ export function LearningDialog({
     }
   };
 
-  // const validateForm = () => {
-  //   // Title validation
-  //   if (!formData.title.trim()) {
-  //     toast.error("Please Enter the Title");
-  //     return false;
-  //     // newErrors.title = "Title is required";
-  //   } else if (formData.title.trim().length < 2) {
-  //     toast.error("Please ");
-  //     return false;
-  //   } else if (formData.title.trim().length > 100) {
-  //     toast.error("title must not exceed 100 words");
-  //     return false;
-  //   }
-
-  //   // Description validation
-  //   if (formData.description.length > 500) {
-  //     toast.error("Description must be less than 500");
-  //     return false;
-  //   }
-
-  //   // Time validation
-  //   if (formData.estimatedTime && formData.estimatedTime < 0) {
-  //     toast.error("Estimated time cannot be negative");
-  //     return false;
-  //     // newErrors.estimatedTime = "";
-  //   }
-
-  //   if (formData.actualTime && formData.actualTime < 0) {
-  //     toast.error("Actual time cannot be negative");
-  //     return false;
-  //     // newErrors.actualTime = "Actual time cannot be negative";
-  //   }
-
-  //   // Score validation
-  //   if (formData.hasAssessment && formData.score !== undefined) {
-  //     if (formData.score < 0 || formData.score > 100) {
-  //       toast.error("The score must between 0 to 100");
-  //       return false;
-  //     }
-  //   }
-
-  //   // Resources validation
-  //   const invalidResources = formData.resources.some(
-  //     (resource) =>
-  //       (resource.label.trim() && !resource.url.trim()) ||
-  //       (!resource.label.trim() && resource.url.trim())
-  //   );
-
-  //   if (invalidResources) {
-  //     toast.error("Both label and URL are required for each resource");
-  //     return false;
-  //   }
-
-  //   // URL validation for resources
-  //   const invalidUrls = formData.resources.some((resource) => {
-  //     if (!resource.url.trim()) return false;
-  //     try {
-  //       new URL(resource.url);
-  //       return false;
-  //     } catch {
-  //       return true;
-  //     }
-  //   });
-
-  //   if (invalidUrls) {
-  //     toast.error("Please provide valid URLs for all resources");
-  //     return false;
-  //     // newErrors.resources = "";
-  //   }
-
-  //   // Due date validation
-  //   if (formData.dueDate) {
-  //     const dueDate = new Date(formData.dueDate);
-  //     const today = new Date();
-  //     today.setHours(0, 0, 0, 0);
-
-  //     if (dueDate < today) {
-  //       toast.error("Due date cannot be in the past");
-  //       return false;
-  //       // newErrors.dueDate = "";
-  //     }
-  //   }
-  //   return true;
-  //   // setErrors(newErrors);
-  // };
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!user) return;
@@ -308,7 +218,6 @@ export function LearningDialog({
           });
       }
 
-      setShowSuccess(true);
       setTimeout(() => {
         onSave();
         onOpenChange(false);

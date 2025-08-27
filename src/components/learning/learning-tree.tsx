@@ -15,12 +15,11 @@ import {
   StickyNote,
   Check,
   ExternalLink,
-  Edit,
-  Trash2,
   Plus,
 } from "lucide-react";
 import { LearningItem } from "@/types";
 import { ActionMenu } from "../ui/action-menu";
+import Loading from "@/app/dashboard/finances/loading";
 
 interface LearningTreeProps {
   items?: LearningItem[];
@@ -39,7 +38,7 @@ interface LearningTreeProps {
 export function LearningTree({
   items,
   roadmaps,
-  loading,
+  loading = false,
   onEdit,
   onDelete,
   onCreateChild,
@@ -47,6 +46,9 @@ export function LearningTree({
 }: LearningTreeProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
+  if (loading) {
+    return <Loading />;
+  }
   const toggle = (id: string) => {
     setExpanded((prev) => {
       const copy = new Set(prev);
@@ -136,7 +138,7 @@ export function LearningTree({
                   {item.type !== "note" && (
                     <div className="flex items-center gap-3 mt-2">
                       <Progress
-                        value={item.completed ? 100 : item.progress ?? 0}
+                        value={item.completed ? 100 : (item.progress ?? 0)}
                         className="h-2 flex-1 rounded-full"
                       />
                       <span className="text-xs font-medium w-12 text-right">
@@ -186,9 +188,8 @@ export function LearningTree({
                     <Plus className="h-4 w-4" />
                   </Button>
                 )}
-               
 
-                <ActionMenu item={item} onDelete={onDelete} onEdit={onEdit}  />
+                <ActionMenu item={item} onDelete={onDelete} onEdit={onEdit} />
               </div>
             </div>
           </CardHeader>

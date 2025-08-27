@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Loader2, ShieldCheck } from "lucide-react"
+import { ShieldCheck } from "lucide-react";
 
 export default function AuthLoadingScreen() {
   return (

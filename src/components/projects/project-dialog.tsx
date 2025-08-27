@@ -1,5 +1,4 @@
-"use client";
-
+"use client";;
 import type React from "react";
 
 import { useState, useEffect } from "react";
@@ -24,11 +23,10 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/contexts/auth-context";
 import { projectsService } from "@/services/projects";
-import { Calendar, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import DateInput from "../ui/date-input";
 import { toast } from "sonner";
 import { Project } from "@/types";
-import { validatePhoneNumber } from "@/lib/number-validator";
 
 interface ProjectDialogProps {
   open: boolean;

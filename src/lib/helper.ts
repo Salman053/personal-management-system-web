@@ -1,5 +1,3 @@
-import { Task } from "@/types";
-
 export const formatCurrency = (amount: number, currency = "PKR") => {
     try {
         return new Intl.NumberFormat("en-PK", { style: "currency", currency }).format(amount)

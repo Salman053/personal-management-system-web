@@ -1,4 +1,4 @@
-"use client";
+"use client";;
 import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,21 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Plus,
-  ArrowLeft,
-  Settings,
-  CheckCircle2,
-  Clock,
-  Calendar,
-  Check,
-  Search,
-  Filter,
-  MoreHorizontal,
-  MessageCircle,
-  Mail,
-  Share2,
-} from "lucide-react";
+import { Plus, Settings, Calendar, Search, Filter, MessageCircle, Mail, Share2 } from "lucide-react";
 import { useMainContext } from "@/contexts/app-context";
 import {
   type SubTask,
@@ -37,8 +23,7 @@ import { TaskService } from "@/services/daily-task-planner";
 import { EnhancedSubTaskDialog } from "./enhanced-sub-task-dialog";
 import { NotificationContactsDialog } from "./notification-contacts-dialog";
 import { toast } from "sonner";
-import { format } from "date-fns";
-import { formatDate, formatDateTime } from "@/lib/date-utility";
+import { formatDate } from "@/lib/date-utility";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import {
@@ -60,7 +45,6 @@ import {
 import { Checkbox } from "../ui/checkbox";
 import { Progress } from "../ui/progress";
 import { NotificationService } from "@/services/notification-service";
-import { CustomSelect } from "../shared/custom-select";
 
 export default function EnhancedSingleTask() {
   const { taskId } = useParams();

@@ -38,7 +38,7 @@ export class TaskService {
   static async getAllTasks(): Promise<Task[]> {
     const q = query(collection(db, "dailyTasks"))
     const snapshot = await getDocs(q)
-    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Task)
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Task));
   }
 
   static async updateTask(taskId: string, updates: Partial<Task>) {
@@ -81,7 +81,7 @@ export class TaskService {
   static async getSubtasks(taskId: string): Promise<SubTask[]> {
     const q = query(collection(db, "subtasks"), where("taskId", "==", taskId))
     const snapshot = await getDocs(q)
-    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as SubTask)
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as SubTask));
   }
 
   static async updateSubtask(subtaskId: string, updates: Partial<SubTask>) {

@@ -1,5 +1,4 @@
-"use client";
-
+"use client";;
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,13 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useAuth } from "@/contexts/auth-context";
 import { habitsService } from "@/services/habits";
 import { Loader2 } from "lucide-react";
@@ -133,7 +125,7 @@ export function HabitDialog({
     }
   };
 
-  const handleChange = (field: keyof Habit, value: any) => {
+  const handleChange = (field: keyof Habit, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 

@@ -1,18 +1,8 @@
-"use client";
-
+"use client";;
 import type React from "react";
-import {
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 import { useAuth } from "./auth-context";
-import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { useFirestoreData } from "@/hooks/use-firebase-date";
+import { useFirestoreData } from "@/hooks/use-firebase-data";
 
 // interface AppState {
 //   projects: Project[];

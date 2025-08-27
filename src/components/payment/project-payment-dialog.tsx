@@ -1,5 +1,4 @@
 "use client";
-
 import type React from "react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,7 +21,6 @@ import { toast } from "sonner";
 import DateInput from "../ui/date-input";
 import { useMainContext } from "@/contexts/app-context";
 import { CustomSelect } from "../shared/custom-select";
-import { validatePhoneNumber } from "@/lib/number-validator";
 
 const MEDIUMS = ["Cash", "Easypaisa", "Bank", "Cheque", "Other"];
 
@@ -82,7 +80,7 @@ export function ProjectPaymentDialog({
         projectId: project?.id as string,
       });
     }
-  }, [payment, open]);
+  }, [payment, open, user, project]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,12 +124,25 @@ export function ProjectPaymentDialog({
       };
 
       if (payment) {
-        await projectsService.updateProjectPayment(
-          payment.id as string,
-          paymentData
-        );
+        await projectsService
+          .updateProjectPayment(payment.id as string, paymentData)
+          .then(() => {
+            toast.success(
+              `${payment.amount} is updated to ${formData.amount} successfully`
+            );
+          })
+          .catch((e) => {
+            toast.error(e.message);
+          });
       } else {
-        await projectsService.createProjectPayment(user.uid, paymentData);
+        await projectsService
+          .createProjectPayment(user.uid, paymentData)
+          .then(() => {
+            toast.success(`${formData.amount} is added successfully`);
+          })
+          .catch((e) => {
+            toast.error(e.message);
+          });
       }
 
       onSave();

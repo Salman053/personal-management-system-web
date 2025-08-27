@@ -117,8 +117,8 @@ export const useFormattedDate = (
 export function formatDate(input: string | number | Date | [any, any, (1 | undefined)?, (0 | undefined)?, (0 | undefined)?, (0 | undefined)?, (0 | undefined)?] | null | undefined, options = {}) {
   const defaultOptions = {
     locale: 'en-US',
-    dateStyle: 'long',
-    timeStyle: undefined,
+    dateStyle: 'long' as 'full' | 'long' | 'medium' | 'short' | undefined,
+    timeStyle: undefined as 'full' | 'long' | 'medium' | 'short' | undefined,
     timeZone: 'UTC'
   };
 
@@ -173,8 +173,8 @@ export function formatDate(input: string | number | Date | [any, any, (1 | undef
     const formatter = new Intl.DateTimeFormat(
       finalOptions.locale,
       {
-        dateStyle: finalOptions.dateStyle,
-        timeStyle: finalOptions.timeStyle,
+        dateStyle: finalOptions.dateStyle as 'full' | 'long' | 'medium' | 'short' | undefined,
+        timeStyle: finalOptions.timeStyle as 'full' | 'long' | 'medium' | 'short' | undefined,
         timeZone: finalOptions.timeZone
       }
     );

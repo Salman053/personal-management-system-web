@@ -1,6 +1,4 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
+"use client";;
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -11,20 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  TrendingUp,
-  TrendingDown,
-  CreditCard,
-} from "lucide-react";
+import { TrendingUp, TrendingDown, CreditCard } from "lucide-react";
 import { ProjectPayment } from "@/types";
 import { ActionMenu } from "../ui/action-menu";
 

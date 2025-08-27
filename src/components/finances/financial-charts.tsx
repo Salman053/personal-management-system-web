@@ -38,7 +38,7 @@ export function FinancialCharts({ transactions, detailed = false }: FinancialCha
         acc[month] = { month, Income: 0, Expenses: 0, Borrowed: 0, Lent: 0 }
       }
       // console.log(console.log(acc))
-      acc[month][transaction.type] += Number(transaction.amount)
+      acc[month][transaction.type as "Income" | "Expenses" | "Borrowed" | "Lent"] += Number(transaction.amount)
       return acc
     },
     {} as Record<string, { month: string; Income: number; Expenses: number; Borrowed: number; Lent: number }>,

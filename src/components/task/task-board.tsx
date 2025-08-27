@@ -1,6 +1,6 @@
 "use client";
 
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase"; // your Firebase config
 import {

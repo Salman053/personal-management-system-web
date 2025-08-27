@@ -1,7 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+"use client";;
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -12,18 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Project, ProjectPayment } from "@/types";
 import { ActionMenu } from "../ui/action-menu";
 import { useMainContext } from "@/contexts/app-context";
-// import { ProjectDetailDialog } from "./project-detail-dialog"
 
 interface ProjectsTableProps {
   projects: Project[];

@@ -103,7 +103,7 @@ export function IncomeManager({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Income by Category</CardTitle>
-            <Button onClick={() => onAdd("Income" as any)} size="sm">
+            <Button onClick={() => onAdd("Income" as TransactionType)} size="sm">
               <Plus className="h-4 w-4 mr-2" />
               Add Income
             </Button>

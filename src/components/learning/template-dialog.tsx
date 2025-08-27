@@ -1,5 +1,4 @@
-"use client";
-
+"use client";;
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,16 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  BookOpen,
-  Loader2,
-  Clock,
-  Target,
-  AlertCircle,
-  CheckCircle2,
-  Star,
-} from "lucide-react";
+import { BookOpen, Loader2, Clock, Target, Star } from "lucide-react";
 import { learningService } from "@/services/learning";
 import { useAuth } from "@/contexts/auth-context";
 import { getPredefinedTemplates } from "@/constants";

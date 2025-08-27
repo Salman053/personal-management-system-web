@@ -1,6 +1,6 @@
 import { db } from '@/lib/firebase';
 import { FinanceRecord, Habit, LearningItem, Project, ProjectPayment, Reminder, SubTask, Task, } from '@/types';
-import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 
 export const useFirestoreData = (userId: string) => {

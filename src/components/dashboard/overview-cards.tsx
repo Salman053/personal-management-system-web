@@ -1,8 +1,5 @@
-"use client"
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+"use client";
 import { useMainContext } from "@/contexts/app-context"
-import { DollarSign, TrendingUp, TrendingDown, Target, BookOpen, FolderOpen } from "lucide-react"
 
 export function OverviewCards() {
   const { projects } = useMainContext()
@@ -70,7 +67,7 @@ export function OverviewCards() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {[].map((card) => (
+      {[].map((card,i) => (
         // <Card key={card.title}>
         //   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         //     <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
@@ -81,7 +78,7 @@ export function OverviewCards() {
         //     <p className="text-xs text-muted-foreground">{card.description}</p>
         //   </CardContent>
         // </Card>
-        <h4>asdasd</h4>
+        <h4 key={i}>asdasd</h4>
       ))}
     </div>
   )

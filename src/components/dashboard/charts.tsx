@@ -1,9 +1,7 @@
-"use client";
-
+"use client";;
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMainContext } from "@/contexts/app-context";
 import { useAuth } from "@/contexts/auth-context";
-import { useDashboardData } from "@/hooks/use-dashborad-calculations";
 import {
   BarChart,
   Bar,
@@ -16,7 +14,6 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import {motion} from "framer-motion"
 import { FinanceRecord, Habit } from "@/types";
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
