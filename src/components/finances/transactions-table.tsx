@@ -65,7 +65,7 @@ export function TransactionsTable({ transactions, loading, onEdit, onDelete }: T
     )
   }
 
-  if (transactions.length === 0) {
+  if (transactions?.length === 0) {
     return (
       <Card>
         <CardContent className="p-6">

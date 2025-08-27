@@ -59,6 +59,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useMainContext } from "@/contexts/app-context";
+import ReportsLoading from "./loading";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
@@ -67,7 +68,6 @@ export default function ReportsPage() {
   const { projects, finances, habits, projectPayments, learning } =
     useMainContext();
   const [reportData, setReportData] = useState<ReportData | null>(null);
-  console.log(reportData);
 
   const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
@@ -129,9 +129,7 @@ export default function ReportsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
+      <ReportsLoading/>
     );
   }
 
@@ -140,9 +138,9 @@ export default function ReportsPage() {
   const overviewCards = [
     {
       title: "Total Revenue",
-      value: `$${reportData.projects.revenue.toLocaleString()}`,
+      value: `Rs. ${reportData.projects.revenue.toLocaleString()}`,
       change: reportData.finances.netIncome > 0 ? "+" : "",
-      changeValue: `$${Math.abs(
+      changeValue: `Rs. ${Math.abs(
         reportData.finances.netIncome
       ).toLocaleString()}`,
       icon: DollarSign,
@@ -383,14 +381,14 @@ export default function ReportsPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Total Earnings</span>
-                  <Badge variant="secondary" className="text-green-600">
-                    ${reportData.finances.totalEarnings.toLocaleString()}
+                  <Badge  variant={"outline"}>
+                    Rs. {reportData.finances.totalEarnings.toLocaleString()}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Total Expenses</span>
-                  <Badge variant="secondary" className="text-red-600">
-                    ${reportData.finances.totalExpenses.toLocaleString()}
+                  <Badge  variant={"outline"}>
+                    Rs. {reportData.finances.totalExpenses.toLocaleString()}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t">
@@ -402,7 +400,7 @@ export default function ReportsPage() {
                         : "destructive"
                     }
                   >
-                    ${reportData.finances.netIncome.toLocaleString()}
+                    Rs. {reportData.finances.netIncome.toLocaleString()}
                   </Badge>
                 </div>
               </CardContent>
@@ -455,7 +453,7 @@ export default function ReportsPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Total Habits</span>
-                  <Badge variant="secondary">
+                  <Badge variant={"outline"}>
                     {reportData.habits.totalHabits}
                   </Badge>
                 </div>
@@ -463,13 +461,13 @@ export default function ReportsPage() {
                   <span className="text-sm font-medium">
                     Average Completion
                   </span>
-                  <Badge variant="secondary">
+                  <Badge variant={"outline"}>
                     {reportData.habits.averageCompletion.toFixed(1)}%
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Longest Streak</span>
-                  <Badge variant="secondary">
+                  <Badge variant={"outline"}>
                     {reportData.habits.longestStreak} days
                   </Badge>
                 </div>
@@ -553,19 +551,19 @@ export default function ReportsPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Total Revenue</span>
-                  <Badge variant="secondary" className="text-green-600">
-                    ${reportData.projects.revenue.toLocaleString()}
+                  <Badge variant={"outline"} className="text-green-600">
+                    Rs. {reportData.projects.revenue.toLocaleString()}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Pending Payments</span>
-                  <Badge variant="secondary" className="text-orange-600">
-                    ${reportData.projects.pending.toLocaleString()}
+                  <Badge variant={"outline"} className="text-orange-600">
+                    Rs. {reportData.projects.pending.toLocaleString()}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Completion Rate</span>
-                  <Badge variant="secondary">
+                  <Badge variant={"outline"}>
                     {reportData.projects.total > 0
                       ? (
                           (reportData.projects.completed /

@@ -50,7 +50,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    await authService.signOut()
+    await authService.signOut().then(()=>{
+      window.location.replace("/")
+    })
   }
 
   const resetPassword = async (email: string) => {

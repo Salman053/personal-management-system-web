@@ -1,14 +1,14 @@
-  export interface ProjectPayment extends TransactionBase {
-    projectId: string
-    clientId?: string
-    clientName?: string
-    medium: "Cash" | "Easypaisa" | "Bank" | "Cheque" | "Other"
-    type: "Income" | "Expense" | "Borrowed" | "Lent"
-    receipt?: string
-    //   status: "pending" | "paid" | "overdue"
-    description: string
-    createdAt?: Date
-  }
+export interface ProjectPayment extends TransactionBase {
+  projectId: string
+  clientId?: string
+  clientName?: string
+  medium: "Cash" | "Easypaisa" | "Bank" | "Cheque" | "Other"
+  type: "Income" | "Expense" | "Borrowed" | "Lent"
+  receipt?: string
+  //   status: "pending" | "paid" | "overdue"
+  description: string
+  createdAt?: Date
+}
 
 
 
@@ -95,6 +95,11 @@ export interface FinanceRecord {
   medium: PaymentMedium
 
   counterparty?: string // for borrowed/lent
+  counterpartyDetails?: {
+    email: string,
+    phone: string,
+    address?: string,
+  }
   dueDate?: Date // only for borrowed/lent
   status?: TransactionStatus // only for borrowed/lent or pending payments
 
@@ -201,12 +206,12 @@ export interface LearningItem {
   title: string;
   type: "roadmap" | "topic" | "subtopic" | "note";
   parentId?: string;
-  
+
   // Core content
   description: string;
   resources: { label: string; url: string }[];
   tags: string[];
-  
+
   // Progress & tracking
   progress?: number; // 0-100
   completed?: boolean;
@@ -214,11 +219,11 @@ export interface LearningItem {
   actualTime?: number; // tracked weeks spent in minutes
   priority: "low" | "medium" | "high";
   dueDate?: any;
-  
+
   // Assessment (optional, for quizzes/tasks)
   hasAssessment?: boolean;
   score?: number; // 0-100
-  
+
   // System fields
   userId: string; // Firebase user ID
   createdAt: Date;
@@ -232,3 +237,78 @@ export interface LearningItem {
 //   learning: LearningItem[];
 //   loading: boolean;
 // }
+
+
+
+export interface Reminder {
+  id?: string;
+  userId: string;
+  documentId?: string; // link to F
+  // inanceRecord / Habit / Project / LearningItem
+  type: "Finance" | "Habit" | "Learning" | "Project";
+
+  title: string;
+  description?: string;
+
+  priority: "High" | "Medium" | "Low";
+  channel: ("push" | "email")[]; // multi-channel
+
+  schedule: {
+    dateTime: Date;          // when to notify
+    repeat?: "none" | "daily" | "weekly" | "monthly";
+  };
+
+  status: "scheduled" | "sent" | "cancelled";
+
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
+
+export type taskType = "Personal" | "Work" | "Grocery"
+
+export interface Task {
+  id: string
+  title: string
+  description?: string
+  type: taskType
+  dueDate?: any
+  userId: string
+  for: string
+  status: "pending" | "in-progress" | "completed"
+  createdAt: Date
+  updatedAt: Date
+  completedAt?: any
+}
+
+export interface SubTask {
+  id: string
+  title: string
+  description: string
+  userId: string
+  for: string
+  isCompleted: boolean // Fixed type from string to boolean
+  taskId: string
+  completedAt: any
+  updatedAt?:any
+}
+
+export interface NotificationContact {
+  id: string
+  name: string
+  email?: string
+  phone?: string // WhatsApp number
+  relationship: string
+}
+
+
+export const predefinedContacts: NotificationContact[] = [
+  {
+    id: "contact1",
+    name: "Muhammad Salman Khan",
+    email: "salmankhanm859@gmail.com",
+    phone: "+92 335 2313245",
+    relationship: "Self"
+  }
+]

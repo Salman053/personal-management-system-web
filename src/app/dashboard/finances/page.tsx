@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { IncomeManager } from "@/components/finances/income-manager";
 import { ExpenseManager } from "@/components/finances/expense-manager";
-import { LendingManager } from "@/components/finances/lending-manager";
+import LendingManager from "@/components/finances/lending-manager";
 import { TransactionsTable } from "@/components/finances/transactions-table";
 import { FinancialCharts } from "@/components/finances/financial-charts";
 import { FinanceRecord } from "@/types";
@@ -41,7 +41,7 @@ interface Filters {
 }
 
 export default function FinancesPage() {
-  const { finances } = useMainContext();
+  const { finances, loading } = useMainContext();
   const { user } = useAuth();
   const [recordType, setRecordType] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
@@ -49,7 +49,7 @@ export default function FinancesPage() {
   const [editingRecord, setEditingRecord] = useState<FinanceRecord | null>(
     null
   );
-  const { modalState, toggleModal } = useModalState({
+  const { modalState, toggleModal, closeModal, openModal } = useModalState({
     isDeletingRecordModalOpen: false,
     isFinanceDialogOpen: false,
   });
@@ -159,21 +159,21 @@ export default function FinancesPage() {
   ) => {
     setEditingRecord(null);
     setRecordType(type);
-    toggleModal("isFinanceDialogOpen");
+    openModal("isFinanceDialogOpen");
   };
 
   const handleEditTransaction = async (transaction: FinanceRecord) => {
     setEditingRecord(transaction);
     console.log(modalState.isFinanceDialogOpen, "THis is FInal Dialog");
-    toggleModal("isFinanceDialogOpen");
+    openModal("isFinanceDialogOpen");
   };
 
   const handleDeleteTransaction = async () => {
     console.log("Delete transaction:", deletingRecord);
     try {
       await financeServices.deleteRecord(deletingRecord).then(() => {
-        toggleModal("isDeletingRecordModalOpen");
-        setDeletingRecord("")
+        closeModal("isDeletingRecordModalOpen");
+        setDeletingRecord("");
       });
       toast.success("Transaction deleted successfully");
     } catch (error) {
@@ -202,7 +202,7 @@ export default function FinancesPage() {
                 Professional financial tracking and management system
               </p>
             </div>
-            <Button onClick={() => handleAddTransaction("Income")} >
+            <Button onClick={() => handleAddTransaction("Income")}>
               <Plus className="mr-2 h-5 w-5" />
               Add Transaction
             </Button>
@@ -350,7 +350,7 @@ export default function FinancesPage() {
             <TabsContent value="transactions" className="space-y-6">
               <TransactionsTable
                 transactions={filteredTransactions}
-                loading={false}
+                loading={loading}
                 onEdit={handleEditTransaction}
                 onDelete={(recordId) => {
                   toggleModal("isDeletingRecordModalOpen");

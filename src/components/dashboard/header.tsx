@@ -14,6 +14,7 @@ import {
 import { useTheme } from "next-themes"
 import { Moon, Sun, LogOut, User, Settings } from "lucide-react"
 import Link from "next/link"
+import { TestReminder } from "../system/TestReminder"
 
 export function Header() {
   const { user, userProfile, signOut } = useAuth()

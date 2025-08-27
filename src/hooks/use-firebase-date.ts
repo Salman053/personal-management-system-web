@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase';
-import { FinanceRecord, Habit, LearningItem, Project, ProjectPayment,  } from '@/types';
+import { FinanceRecord, Habit, LearningItem, Project, ProjectPayment, Reminder, SubTask, Task, } from '@/types';
 import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 
@@ -11,8 +11,9 @@ export const useFirestoreData = (userId: string) => {
     const [habits, setHabits] = useState<Habit[]>([]);
     const [finances, setFinances] = useState<FinanceRecord[]>([]);
     const [learning, setLearning] = useState<LearningItem[]>([]);
-    // const [customers, setCustomers] = useState<CustomerType[]>([]);
-    // const [dues, setDues] = useState<DuesType[]>([])
+    const [reminders, setReminders] = useState<Reminder[]>([]);
+    const [dailyTasks, setDailyTasks] = useState<Task[]>([])
+    const [dailyTaskSubTask, setDailyTaskSubTask] = useState<SubTask[]>([])
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +36,7 @@ export const useFirestoreData = (userId: string) => {
                         id: doc.id,
                         docId: doc.id,
                         ...doc.data()
-                    })).sort((a:any, b:any) => {
+                    })).sort((a: any, b: any) => {
                         const aTime = a.createdAt?.seconds ?? 0;
                         const bTime = b.createdAt?.seconds ?? 0;
                         return bTime - aTime; // newest first
@@ -50,8 +51,9 @@ export const useFirestoreData = (userId: string) => {
             const unsubscribeHabits = handleSnapshot('habits', setHabits);
             const unsubscribeFinances = handleSnapshot('finances', setFinances);
             const unsubscribeLearning = handleSnapshot('learning', setLearning);
-            // const unsubscribeSales = handleSnapshot('sales', setSales);
-            // const unsubscribeReturns = handleSnapshot('returns', setReturns);
+            const unsubscribeReminders = handleSnapshot('reminders', setReminders);
+            const unsubscribeDailyTasks = handleSnapshot('dailyTasks', setDailyTasks);
+            const unsubscribeDailySubTasks = handleSnapshot('subtasks', setDailyTaskSubTask);
 
             setLoading(false);
 
@@ -62,7 +64,10 @@ export const useFirestoreData = (userId: string) => {
                 unsubscribeHabits?.();
                 unsubscribeFinances?.();
                 unsubscribeLearning?.();
-              
+                unsubscribeReminders?.();
+                unsubscribeDailyTasks?.();
+                unsubscribeDailySubTasks?.();
+
             };
         };
 
@@ -79,5 +84,5 @@ export const useFirestoreData = (userId: string) => {
         setLoading(false);
     };
 
-    return { users, loading, error, projects,projectPayments ,habits,finances,learning};
+    return { users, loading, error, dailyTaskSubTask, dailyTasks, projects, reminders, projectPayments, habits, finances, learning };
 };

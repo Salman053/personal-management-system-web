@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { memo } from "react";
 import {
   Table,
   TableBody,
@@ -28,7 +29,7 @@ interface LendingManagerProps {
   onAdd: (type: TransactionType) => void;
 }
 
-export function LendingManager({
+function LendingManager({
   transactions,
   onEdit,
   onDelete,
@@ -305,8 +306,8 @@ export function LendingManager({
                     <TableCell>
                       <ActionMenu
                         item={transaction}
-                        onDelete={onDelete}
-                        onEdit={onEdit}
+                        onDelete={(id)=>onDelete(id)}
+                        onEdit={(item)=>onEdit(item)}
                       />
                     </TableCell>
                   </TableRow>
@@ -318,3 +319,5 @@ export function LendingManager({
     </div>
   );
 }
+
+export default memo(LendingManager);

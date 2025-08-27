@@ -12,11 +12,15 @@ export const metadata: Metadata = {
   description: "Your personal life command center - manage projects, finances, habits, and learning all in one place",
 }
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -30,7 +34,7 @@ export default function RootLayout({
               {children}
               </ConfirmProvider>
               </MainContextProvider>
-            <Toaster duration={3000} swipeDirections={["left","right"]}/>
+            <Toaster expand visibleToasts={5}  duration={3000} swipeDirections={["left","right"]}/>
           </AuthProvider>
         </ThemeProvider>
       </body>

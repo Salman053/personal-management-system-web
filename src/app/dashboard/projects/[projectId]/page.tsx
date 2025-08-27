@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,93 +14,34 @@ import { useModalState } from "@/hooks/use-modal-state";
 import { useParams, useRouter } from "next/navigation";
 import { Edit } from "lucide-react";
 import { ProjectPaymentDialog } from "@/components/payment/project-payment-dialog";
+import { sendNotification } from "@/lib/sending-notification";
+import { formatDate } from "@/lib/date-utility";
+import { CooldownButton } from "@/components/system/useCoolDownButton";
 
-// Types
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: "active" | "completed" | "paused" | "review";
-  dueDate: Date;
-  assignedTo: string;
-  projectId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// Mock data based on your project data
-// const projects: Project = {
-//   id: "proj-001",
-//   title: "Eazy POS Management System",
-//   description: "This is a FINAL YEAR PROJECT",
-//   status: "completed",
-//   type: "client",
-//   clientName: "Jaseer",
-//   clientAddress: "Kohat",
-//   clientPhone: "012312312",
-//   startDate: new Date("2025-06-20"),
-//   endDate: null,
-//   totalAmount: 25000,
-//   paidAmount: 12000,
-//   createdAt: new Date("2025-08-20"),
-//   updatedAt: new Date("2025-08-20"),
-// };
-
-// // Mock tasks
-// const initialTasks: Task[] = [
-//   {
-//     id: "task-1",
-//     title: "Design Database Schema",
-//     description:
-//       "Create the initial database design with all necessary tables and relationships",
-//     status: "completed",
-//     dueDate: new Date("2025-07-01"),
-//     assignedTo: "Jaseer",
-//     projectId: "proj-001",
-//     createdAt: new Date("2025-06-21"),
-//     updatedAt: new Date("2025-06-28"),
-//   },
-//   {
-//     id: "task-2",
-//     title: "Implement User Authentication",
-//     description: "Set up secure user login and registration system",
-//     status: "active",
-//     dueDate: new Date("2025-07-15"),
-//     assignedTo: "Developer A",
-//     projectId: "proj-001",
-//     createdAt: new Date("2025-06-25"),
-//     updatedAt: new Date("2025-07-05"),
-//   },
-//   {
-//     id: "task-3",
-//     title: "Create POS Interface",
-//     description: "Design and implement the point of sale user interface",
-//     status: "review",
-//     dueDate: new Date("2025-07-20"),
-//     assignedTo: "Developer B",
-//     projectId: "proj-001",
-//     createdAt: new Date("2025-06-28"),
-//     updatedAt: new Date("2025-07-10"),
-//   },
-//   {
-//     id: "task-4",
-//     title: "Testing Phase",
-//     description: "Perform comprehensive testing of all system components",
-//     status: "paused",
-//     dueDate: new Date("2025-08-01"),
-//     assignedTo: "QA Team",
-//     projectId: "proj-001",
-//     createdAt: new Date("2025-07-01"),
-//     updatedAt: new Date("2025-07-15"),
-//   },
-// ];
+// // Types
+// interface Task {
+//   id: string;
+//   title: string;
+//   description: string;
+//   status: "active" | "completed" | "paused" | "review";
+//   dueDate: Date;
+//   assignedTo: string;
+//   projectId: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
 
 export default function ProjectManagementScreen() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const { projects, projectPayments } = useMainContext();
+  const {
+    projects,
+    projectPayments,
+  }: { projects: Project[]; projectPayments: ProjectPayment[] } =
+    useMainContext();
   const [project, setProject] = useState<Project | any>({});
+  const [payments, setPayments] = useState<ProjectPayment[] | any>({});
 
   // console.log(project);
   const { modalState, toggleModal } = useModalState({
@@ -126,6 +67,7 @@ export default function ProjectManagementScreen() {
         return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
     }
   };
+  console.log(projectPayments);
 
   // const paymentProgress =
   //   projects.totalAmount && projects.paidAmount !== undefined
@@ -133,14 +75,63 @@ export default function ProjectManagementScreen() {
   //     : 0;
 
   useEffect(() => {
-    if (projects) {
-      setProject(
-        projects.find((p: Project) => p.docId === params.projectId) || {}
+    if (projects && params.projectId) {
+      const foundProject = projects.find(
+        (p: Project) => p.docId === params.projectId
       );
-    } else {
-      setProject({});
+      setProject(foundProject || {});
     }
-  }, [projects]);
+  }, [projects, params.projectId]);
+
+  useEffect(() => {
+    if (project?.id) {
+      setPayments(
+        projectPayments.filter(
+          (p: ProjectPayment) => p.projectId === project.id
+        )
+      );
+    }
+  }, [project, projectPayments]);
+
+  const makePaymentList: any = () => {
+    if (!payments.length) return ["No payments yet."];
+    return payments.map(
+      (p: ProjectPayment) =>
+        `${p.description} — Rs. ${p.amount} (${p.medium}) dated: ${new Date(
+          p.date
+        ).toDateString()}`
+    );
+  };
+
+  const calculatePayments = useCallback(() => {
+    return (
+      payments.reduce(
+        (sum: number, p: ProjectPayment) => Number(p.amount) + sum,
+        0
+      ) + Number(project.advanceAmount)
+    );
+  }, [payments, project.advanceAmount]);
+
+  const sendEmail = async () => {
+    const totalPaid = calculatePayments();
+    const totalRemaining = project?.totalAmount - totalPaid;
+
+    await sendNotification({
+      type: "email",
+      contacts: [{ email: project.clientEmail }],
+      subject: `Project Payments Reminder`,
+      title: "Payment",
+
+      message: `Project ${project.title} is ${project.status} \n These are payments history. You have paid: Rs. ${totalPaid}, and remaining is: Rs. ${totalRemaining}.`,
+      list: [
+        ...makePaymentList(),
+        `${project.clientName} - Rs. ${project.advanceAmount} dated: ${formatDate(
+          project.createdAt
+        )}`,
+      ],
+      note: "Make the remaining payment as soon as possible thank you best regards from Fusion Team",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background ">
@@ -154,6 +145,12 @@ export default function ProjectManagementScreen() {
             <Edit className="h-4 w-4 mr-2" />
             Edit Project
           </Button>
+          <CooldownButton
+            label="Send Email"
+            cooldownMs={3600000} // 1 hour
+            storageKey="emailCooldown"
+            onClick={sendEmail}
+          />
         </div>
 
         {/* Project Overview */}

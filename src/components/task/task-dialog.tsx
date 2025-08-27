@@ -101,14 +101,14 @@ export default function TaskDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
+        <DialogHeader className="p-0">
           <DialogTitle>{editingTask ? "Edit Task" : "Create New Task"}</DialogTitle>
           <DialogDescription>
-            {editingTask ? "Update the task details below." : "Add a new task to the project."}
+            {editingTask ? "Update the task details below." : "Add a new task  to the project."}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 ">
           {/* Title */}
           <div className="grid gap-2">
             <label htmlFor="title" className="text-sm font-medium">

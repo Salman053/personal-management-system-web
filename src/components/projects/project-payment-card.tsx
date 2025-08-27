@@ -24,7 +24,12 @@ export default function PaymentStatusCard({
 
   const data = [
     { name: "Total", value: paymentData.totalAmount },
-    { name: "Paid", value: paymentData.advanceAmount },
+    {
+      name: "Paid",
+      value:
+        paymentData.advanceAmount +
+        projectPayments.reduce((sum, p) => p.amount + sum, 0),
+    },
     { name: "Remaining", value: remainingAmount },
   ];
 
@@ -58,19 +63,19 @@ export default function PaymentStatusCard({
             <div className="flex justify-between">
               <span className="text-muted-foreground">Total Amount:</span>
               <span className="font-medium text-blue-500">
-                Rs. {paymentData.totalAmount?.toLocaleString()}
+                Rs. {data[0].value}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Paid Amount:</span>
               <span className="font-medium text-green-600 ">
-                Rs. {paymentData.advanceAmount?.toLocaleString()}
+                Rs. {data[1].value}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Remaining Amount:</span>
               <span className="font-medium text-destructive">
-                Rs. {remainingAmount.toLocaleString()}
+                Rs. {data[2].value}
               </span>
             </div>
           </div>
