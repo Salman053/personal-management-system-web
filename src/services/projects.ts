@@ -83,7 +83,7 @@ export const projectsService = {
 
     // 3. Delete all payments for this project
     const paymentsQ = query(
-      collection(db, "payments"),
+      collection(db, "projectPayments"),
       where("projectId", "==", projectId)
     )
     const paymentsSnap = await getDocs(paymentsQ)

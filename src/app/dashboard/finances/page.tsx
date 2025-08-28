@@ -42,7 +42,6 @@ interface Filters {
 
 export default function FinancesPage() {
   const { finances, loading } = useMainContext();
-  const { user } = useAuth();
   const [recordType, setRecordType] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
   const [deletingRecord, setDeletingRecord] = useState("");
@@ -131,19 +130,19 @@ export default function FinancesPage() {
 
     return {
       income: incomeTransactions.reduce(
-        (sum: number, t: FinanceRecord) => sum + t.amount,
+        (sum: number, t: FinanceRecord) => sum + Number(t.amount),
         0
       ),
       expenses: expenseTransactions.reduce(
-        (sum: number, t: FinanceRecord) => sum + t.amount,
+        (sum: number, t: FinanceRecord) => sum + Number(t.amount),
         0
       ),
       borrowed: borrowedTransactions.reduce(
-        (sum: number, t: FinanceRecord) => sum + t.amount,
+        (sum: number, t: FinanceRecord) => sum + Number(t.amount),
         0
       ),
       lent: lentTransactions.reduce(
-        (sum: number, t: FinanceRecord) => sum + t.amount,
+        (sum: number, t: FinanceRecord) => sum + Number(t.amount),
         0
       ),
       incomeCount: incomeTransactions.length,

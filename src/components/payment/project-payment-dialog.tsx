@@ -16,11 +16,12 @@ import {
 import { useAuth } from "@/contexts/auth-context";
 import { projectsService } from "@/services/projects";
 import { Loader2 } from "lucide-react";
-import { Project, ProjectPayment } from "@/types";
+import { predefinedContacts, Project, ProjectPayment } from "@/types";
 import { toast } from "sonner";
 import DateInput from "../ui/date-input";
 import { useMainContext } from "@/contexts/app-context";
 import { CustomSelect } from "../shared/custom-select";
+import { sendNotification } from "@/lib/sending-notification";
 
 const MEDIUMS = ["Cash", "Easypaisa", "Bank", "Cheque", "Other"];
 
@@ -122,11 +123,25 @@ export function ProjectPaymentDialog({
         medium: formData.medium,
         userId: user.uid,
       };
-
       if (payment) {
         await projectsService
           .updateProjectPayment(payment.id as string, paymentData)
           .then(() => {
+            // sendNotification({
+            //   contacts: [
+            //     {
+            //       email: predefinedContacts[0].email,
+            //     },
+            //   ],
+            //   message: `Dear client Mr . ${project.clientName} have successfully paid Rs. ${formData.amount} at Dated : ${formData.date} for Project : ${project.title} \n You Paid Rs. ${totalPaid} out of ${project.totalAmount}  `,
+            //   type: "email",
+            //   title: `Payment Confirmation of ${project.title} status project status : ${project.status}.`,
+            //   note: `This is confirmation that you have successfully paid this above amount of your project please make sure to complete the whole payment ${project.endDate ? `before the due date of project which is ${project.endDate}` : "as soon as possible thank you best regards from Fusion Team"} `,
+            // }).then(() => {
+            //   toast.success(
+            //     `Confirmation Email sent to email ${predefinedContacts[0].email}`
+            //   );
+            // });
             toast.success(
               `${payment.amount} is updated to ${formData.amount} successfully`
             );
@@ -138,6 +153,21 @@ export function ProjectPaymentDialog({
         await projectsService
           .createProjectPayment(user.uid, paymentData)
           .then(() => {
+            sendNotification({
+              contacts: [
+                {
+                  email: predefinedContacts[0].email,
+                },
+              ],
+              message: `Dear client Mr . ${project.clientName} have successfully paid Rs. ${formData.amount} at Dated : ${formData.date} for Project : ${project.title} \n You Paid Rs. ${totalPaid} out of ${project.totalAmount}  `,
+              type: "email",
+              title: `Payment Confirmation of ${project.title} status project status : ${project.status}.`,
+              note: `This is confirmation that you have successfully paid this above amount of your project please make sure to complete the whole payment ${project.endDate ? `before the due date of project which is ${project.endDate}` : "as soon as possible thank you best regards from Fusion Team"} `,
+            }).then(() => {
+              toast.success(
+                `Confirmation Email sent to email ${predefinedContacts[0].email}`
+              );
+            });
             toast.success(`${formData.amount} is added successfully`);
           })
           .catch((e) => {

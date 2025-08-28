@@ -90,6 +90,7 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     dailyTasks,
     learning,
     reminders,
+    projectTasks
   } = useFirestoreData(user?.uid || "");
   // Define the values to provide through context
   const contextValue = {
@@ -101,6 +102,7 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     toggleTheme,
     isSidebarOpen,
     currentUser,
+    projectTasks,
     dailyTaskSubTask,
     dailyTasks,
     learning,

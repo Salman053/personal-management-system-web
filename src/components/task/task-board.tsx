@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase"; // your Firebase config
 import {
   collection,
-  onSnapshot,
   updateDoc,
   doc,
   deleteDoc,
@@ -16,8 +15,9 @@ import TaskDialog from "./task-dialog";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useMainContext } from "@/contexts/app-context";
 
-export type Task = {
+export type ProjectTask = {
   id: string;
   title: string;
   description: string;
@@ -25,6 +25,7 @@ export type Task = {
   assignedTo: string;
   dueDate: Date;
   updatedAt: Date;
+  projectId: string;
 };
 
 const STATUSES = ["active", "review", "paused", "completed"];
@@ -36,18 +37,10 @@ export default function TaskBoard({
   projectId: string;
   userId: string;
 }) {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { projectTasks }: { projectTasks: Task[] } = useMainContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-
   // 🔹 Fetch tasks from Firestore
-  useEffect(() => {
-    const unsub = onSnapshot(collection(db, "tasks"), (snap) => {
-      const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Task[];
-      setTasks(data);
-    });
-    return () => unsub();
-  }, []);
 
   // 🔹 Handle Drag End
   const handleDragEnd = async (result: any) => {
@@ -59,9 +52,9 @@ export default function TaskBoard({
     await updateDoc(taskRef, {
       status: destination.droppableId,
       updatedAt: new Date(),
-    }).then(()=>{
-      toast.success(`Task status updated to ${destination.droppableId}`)
-    })
+    }).then(() => {
+      toast.success(`Task status updated to ${destination.droppableId}`);
+    });
   };
 
   const handleDeleteTask = async (id: string) => {
@@ -101,7 +94,9 @@ export default function TaskBoard({
                 >
                   <TaskColumn
                     status={status}
-                    tasks={tasks.filter((t) => t.status === status)}
+                    tasks={projectTasks.filter(
+                      (t) => t.status === status && t.projectId === projectId
+                    )}
                     onEdit={(task) => {
                       setEditingTask(task);
                       setIsDialogOpen(true);

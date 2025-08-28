@@ -17,9 +17,8 @@ import { CustomSelect } from "@/components/shared/custom-select";
 import { Project } from "@/types";
 
 export default function ProjectsPage() {
-  const { user } = useAuth();
-  const { projects,projectPayments } = useMainContext();
-  const [loading, setLoading] = useState(true);
+  // const { user } = useAuth();
+  const { projects } = useMainContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<
     "all" | "active" | "completed" | "paused"

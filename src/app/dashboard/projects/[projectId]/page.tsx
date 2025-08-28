@@ -174,7 +174,7 @@ export default function ProjectManagementScreen() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Address:</span>
-                    <span className="font-medium">{project.clientAddress}</span>
+                    <span className="font-medium text-right">{project.clientAddress}</span>
                   </div>
                 </div>
               </CardContent>

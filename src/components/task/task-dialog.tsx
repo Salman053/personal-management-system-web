@@ -78,7 +78,6 @@ export default function TaskDialog({
       return
     }
 
-    console.log(formData)
     onSave({
       ...formData,
       updatedAt: new Date(), // helpful if you store in Firestore

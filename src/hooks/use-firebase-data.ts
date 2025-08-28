@@ -15,6 +15,7 @@ export const useFirestoreData = (userId: string) => {
     const [dailyTasks, setDailyTasks] = useState<Task[]>([])
     const [dailyTaskSubTask, setDailyTaskSubTask] = useState<SubTask[]>([])
     const [loading, setLoading] = useState<boolean>(true);
+    const [projectTasks, setProjectTasks] = useState<any>([]);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -54,6 +55,7 @@ export const useFirestoreData = (userId: string) => {
             const unsubscribeReminders = handleSnapshot('reminders', setReminders);
             const unsubscribeDailyTasks = handleSnapshot('dailyTasks', setDailyTasks);
             const unsubscribeDailySubTasks = handleSnapshot('subtasks', setDailyTaskSubTask);
+            const unsubscribeProjectTasks = handleSnapshot('tasks', setProjectTasks);
 
             setLoading(false);
 
@@ -67,6 +69,7 @@ export const useFirestoreData = (userId: string) => {
                 unsubscribeReminders?.();
                 unsubscribeDailyTasks?.();
                 unsubscribeDailySubTasks?.();
+                unsubscribeProjectTasks?.();
 
             };
         };
@@ -84,5 +87,5 @@ export const useFirestoreData = (userId: string) => {
         setLoading(false);
     };
 
-    return { users, loading, error, dailyTaskSubTask, dailyTasks, projects, reminders, projectPayments, habits, finances, learning };
+    return { users, loading, error, dailyTaskSubTask, projectTasks, dailyTasks, projects, reminders, projectPayments, habits, finances, learning };
 };
