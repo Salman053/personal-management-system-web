@@ -21,7 +21,7 @@ export function HabitProgress({ completedDates, type }: HabitProgressProps) {
       const cd = new Date(d)
       cd.setHours(0, 0, 0, 0)
       return cd.getTime()
-    })
+    }),
   )
 
   const completedInLast7 = last7Days.filter((d) => completedSet.has(d.getTime())).length
@@ -41,11 +41,7 @@ export function HabitProgress({ completedDates, type }: HabitProgressProps) {
             <div
               key={i}
               className={`h-2 flex-1 rounded-sm ${
-                isCompleted
-                  ? type === "Maintain"
-                    ? "bg-green-500"
-                    : "bg-blue-500"
-                  : "bg-gray-200 dark:bg-gray-700"
+                isCompleted ? (type === "Maintain" ? "bg-green-500" : "bg-blue-500") : "bg-gray-200 dark:bg-gray-700"
               }`}
             />
           )

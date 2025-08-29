@@ -146,60 +146,6 @@ export interface Project {
   updatedAt?: Date;
 }
 
-export interface Habit {
-  id: string
-  userId: string
-
-  // Core info
-  title: string
-  description?: string
-  type: "Maintain" | "Quit"
-  priority: "High" | "Medium" | "Relax"
-  color: string
-  motivationQuote: string
-  // Tracking & frequency
-  frequency: {
-    type: "Daily" | "Weekly" | "Monthly" | "Custom"
-    timesPerPeriod: number
-    daysOfWeek?: number[]
-  }
-
-  // Streaks
-  streak: {
-    current: number
-    longest: number
-    lastCompleted: Date | null
-  }
-
-  // Engagement stats
-  stats: {
-    totalCompletions: number
-    missedDays: number
-    completionRate: number
-  }
-
-  // Completion data
-  completedDates: string[] // ISO strings for easy DB storage
-
-  // Reminders
-  reminder?: {
-    enabled: boolean
-    timeOfDay: string
-    days?: number[]
-  }
-
-  // Optional notes / reflections
-  logs?: {
-    date: string
-    note?: string
-  }[]
-
-  // Lifecycle
-  createdAt: string
-  updatedAt: string
-  archived?: boolean
-}
-
 // Complete LearningItem interface
 export interface LearningItem {
   id: string;
@@ -291,7 +237,7 @@ export interface SubTask {
   isCompleted: boolean // Fixed type from string to boolean
   taskId: string
   completedAt: any
-  updatedAt?:any
+  updatedAt?: any
 }
 
 export interface NotificationContact {
@@ -312,3 +258,259 @@ export const predefinedContacts: NotificationContact[] = [
     relationship: "Self"
   }
 ]
+
+export interface Habit {
+  id: string
+  name: string
+  description?: string
+  category: HabitCategory
+  type: HabitType
+  frequency: HabitFrequency
+  priority: HabitPriority
+  targetValue?: number
+  unit?: string
+  color: string
+  icon: string
+  createdAt: Date
+  updatedAt: Date
+  isActive: boolean
+  tags: string[]
+  reminders: HabitReminder[]
+  streakTarget?: number
+  difficulty: HabitDifficulty
+  archived?: boolean
+}
+
+export interface HabitEntry {
+  id: string
+  habitId: string
+  date: string // YYYY-MM-DD format
+  completed: boolean
+  value?: number
+  notes?: string
+  mood?: number // 1-5 scale
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface HabitStreak {
+  habitId: string
+  currentStreak: number
+  longestStreak: number
+  lastCompletedDate?: string
+  streakStartDate?: string
+}
+
+export interface HabitStats {
+  habitId: string
+  totalCompletions: number
+  completionRate: number
+  averageValue?: number
+  weeklyCompletions: number
+  monthlyCompletions: number
+  streakData: HabitStreak
+  trendDirection: "up" | "down" | "stable"
+  lastSevenDays: boolean[]
+}
+
+export interface UserProfile {
+  id: string
+  name: string
+  email: string
+  level: number
+  badges: Badge[]
+  achievements: Achievement[]
+  preferences: UserPreferences
+  joinedAt: Date
+  streakCount: number
+  totalHabitsCompleted: number
+}
+
+export interface UserXP {
+  id: string
+  userId: string
+  habitId?: string
+  amount: number
+  reason: string
+  type: "habit_completion" | "streak_bonus" | "level_up" | "achievement" | "milestone" | "daily_bonus"
+  createdAt: Date
+}
+
+export interface XPSummary {
+  totalXP: number
+  currentXP: number
+  level: number
+  xpToNextLevel: number
+  habitXP: { [habitId: string]: number }
+}
+
+export interface Badge {
+  id: string
+  name: string
+  description: string
+  icon: string
+  color: string
+  unlockedAt: Date
+  rarity: "common" | "rare" | "epic" | "legendary"
+}
+
+export interface Achievement {
+  id: string
+  name: string
+  description: string
+  icon: string
+  progress: number
+  target: number
+  xpReward: number
+  completed: boolean
+  completedAt?: Date
+  category: AchievementCategory
+}
+
+export interface UserPreferences {
+  theme: "light" | "dark" | "system"
+  notifications: boolean
+  reminderTime: string
+  weekStartsOn: 0 | 1 // 0 = Sunday, 1 = Monday
+  timezone: string
+  language: string
+  motivationalQuotes: boolean
+  soundEffects: boolean
+}
+
+export interface HabitReminder {
+  id: string
+  time: string // HH:MM format
+  days: number[] // 0-6, Sunday = 0
+  enabled: boolean
+  message?: string
+}
+
+export interface Goal {
+  id: string
+  title: string
+  description: string
+  targetDate: Date
+  habitIds: string[]
+  milestones: Milestone[]
+  progress: number
+  status: "active" | "completed" | "paused" | "cancelled"
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface Milestone {
+  id: string
+  title: string
+  description: string
+  targetDate: Date
+  completed: boolean
+  completedAt?: Date
+  xpReward: number
+}
+
+export type HabitCategory =
+  | "health"
+  | "fitness"
+  | "productivity"
+  | "learning"
+  | "social"
+  | "mindfulness"
+  | "creativity"
+  | "finance"
+  | "environment"
+  | "other"
+
+export type HabitType = "build" | "quit" | "maintain"
+
+export type HabitFrequency = "daily" | "weekly" | "custom"
+
+export type HabitPriority = "low" | "medium" | "high" | "critical"
+
+export type HabitDifficulty = "easy" | "medium" | "hard" | "expert"
+
+export type AchievementCategory = "streak" | "completion" | "consistency" | "milestone" | "social" | "special"
+
+export interface HabitAnalytics {
+  totalHabits: number
+  activeHabits: number
+  completedToday: number
+  weeklyProgress: number
+  monthlyProgress: number
+  averageCompletionRate: number
+  topPerformingHabits: Habit[]
+  strugglingHabits: Habit[]
+  streakLeaderboard: Array<{
+    habit: Habit
+    streak: number
+  }>
+  categoryBreakdown: Array<{
+    category: HabitCategory
+    count: number
+    completionRate: number
+  }>
+  timeAnalysis: Array<{
+    hour: number
+    completions: number
+  }>
+  moodCorrelation: Array<{
+    mood: number
+    completionRate: number
+  }>
+}
+
+
+
+
+export type DoubtPriority = "Low" | "Medium" | "High" | "Critical";
+
+export type DoubtStatus = "open" | "in_review" | "resolved";
+
+export interface DoubtBase {
+  userId: string;
+  title: string;                 // Short question title
+  details?: string;              // Longer explanation / context
+  category: string;              // e.g. "React", "Math", "DSA"
+  tags?: string[];               // Free-form labels
+  priority: DoubtPriority;
+  status: DoubtStatus;           // Open -> In Review -> Resolved
+  reviewBy?: string | null;      // ISO date string (yyyy-mm-dd) or null
+  // Resolution block
+  isResolved: boolean;           // quick flag (mirrors status === 'resolved')
+  resolutionExplanation?: string;
+  sources?: string[];            // URLs or refs
+  resolvedBy?: string | null;    // userId if team
+
+  // Audit
+  createdAt: Date;               // client Date for UI
+  updatedAt: Date;
+  resolvedAt?: Date | null;
+}
+
+export interface Doubt extends DoubtBase {
+  id: string;
+}
+
+export type DoubtCreate = Omit<
+  DoubtBase,
+  "createdAt" | "updatedAt" | "resolvedAt" | "isResolved"
+> & { isResolved?: boolean };
+
+export type DoubtUpdate = Partial<Omit<DoubtBase, "userId" | "createdAt">>;
+
+// /types/template.ts
+export type TemplateCategory = "Job Application" | "Friendly" | "Professional" | "Custom";
+
+export interface EmailTemplate {
+  id: string;
+  userId: string;
+  title: string;
+  category: TemplateCategory;
+  subject: string;     // supports placeholders like {{position}} but placeholders array is authoritative
+  body: string;        // plain HTML or plain text (we store as plain text/HTML)
+  placeholders: string[]; // e.g. ["name","company"]
+  type: string;        // flexible (personal/business/academic etc.)
+  createdAt: number;
+  updatedAt: number;
+}
+

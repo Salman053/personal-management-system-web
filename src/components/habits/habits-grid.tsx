@@ -1,9 +1,11 @@
 "use client"
 
-import { Habit } from "@/types"
+import { useState, useEffect } from "react"
+import type { Habit, HabitEntry, HabitStats } from "@/types/index"
 import { Card, CardContent } from "@/components/ui/card"
 import { Target } from "lucide-react"
 import { HabitCard } from "./habit-card"
+import { habitService } from "@/services/habits"
 
 interface HabitsGridProps {
   habits: Habit[]
@@ -14,18 +16,83 @@ interface HabitsGridProps {
   onArchive: (habitId: string, archived: boolean) => void
 }
 
-export function HabitsGrid({
-  habits,
-  loading,
-  onEdit,
-  onDelete,
-  onToggleCompletion,
-  onArchive,
-}: HabitsGridProps) {
+export function HabitsGrid({ habits, loading, onEdit, onDelete, onToggleCompletion, onArchive }: HabitsGridProps) {
+  const [habitEntries, setHabitEntries] = useState<Record<string, HabitEntry[]>>({})
+  const [habitStats, setHabitStats] = useState<Record<string, HabitStats>>({})
+  const [loadingEntries, setLoadingEntries] = useState(true)
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+  const todayStr = today.toISOString().split("T")[0]
 
-  if (loading) {
+  useEffect(() => {
+    const loadHabitData = async () => {
+      if (habits.length === 0) return
+
+      setLoadingEntries(true)
+      try {
+        const entriesPromises = habits.map((habit) => habitService.getHabitEntries(habit.id))
+        const statsPromises = habits.map((habit) => habitService.getHabitStats(habit.id))
+
+        const [entriesResults, statsResults] = await Promise.all([
+          Promise.all(entriesPromises),
+          Promise.all(statsPromises),
+        ])
+
+        const entriesMap: Record<string, HabitEntry[]> = {}
+        const statsMap: Record<string, HabitStats> = {}
+
+        habits.forEach((habit, index) => {
+          entriesMap[habit.id] = entriesResults[index]
+          statsMap[habit.id] = statsResults[index]
+        })
+
+        setHabitEntries(entriesMap)
+        setHabitStats(statsMap)
+      } catch (error) {
+        console.error("Failed to load habit data:", error)
+      } finally {
+        setLoadingEntries(false)
+      }
+    }
+
+    loadHabitData()
+  }, [habits])
+
+  const handleToggleCompletion = async (habitId: string, date: Date, completed: boolean) => {
+    const dateStr = date.toISOString().split("T")[0]
+
+    try {
+      if (completed) {
+        // Mark as complete
+        const entry = await habitService.markHabitComplete(habitId, dateStr)
+        setHabitEntries((prev) => ({
+          ...prev,
+          [habitId]: [...(prev[habitId] || []).filter((e) => e.date !== dateStr), entry],
+        }))
+      } else {
+        // Mark as incomplete (remove entry)
+        setHabitEntries((prev) => ({
+          ...prev,
+          [habitId]: (prev[habitId] || []).filter((e) => e.date !== dateStr),
+        }))
+      }
+
+      // Refresh stats after completion change
+      const updatedStats = await habitService.getHabitStats(habitId)
+      setHabitStats((prev) => ({
+        ...prev,
+        [habitId]: updatedStats,
+      }))
+
+      // Call parent handler
+      await onToggleCompletion(habitId, date, completed)
+    } catch (error) {
+      console.error("Failed to toggle habit completion:", error)
+    }
+  }
+
+  if (loading || loadingEntries) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[...Array(6)].map((_, i) => (
@@ -49,9 +116,7 @@ export function HabitsGrid({
         <CardContent className="p-12">
           <div className="text-center space-y-4">
             <Target className="h-12 w-12 text-muted-foreground mx-auto" />
-            <h3 className="text-lg font-medium text-muted-foreground">
-              No habits found
-            </h3>
+            <h3 className="text-lg font-medium text-muted-foreground">No habits found</h3>
             <p className="text-sm text-muted-foreground mt-2">
               Create your first habit to start building better routines.
             </p>
@@ -64,17 +129,18 @@ export function HabitsGrid({
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {habits.map((habit) => {
-        const completedToday = habit.completedDates.some((d) => {
-          const date = new Date(d)
-          date.setHours(0, 0, 0, 0)
-          return date.getTime() === today.getTime()
-        })
+        const entries = habitEntries[habit.id] || []
+        const todayEntry = entries.find((entry) => entry.date === todayStr)
+        const completedToday = todayEntry?.completed || false
+        const stats = habitStats[habit.id]
+
         return (
           <HabitCard
             key={habit.id}
             habit={habit}
             completedToday={completedToday}
-            onToggle={onToggleCompletion}
+            stats={stats}
+            onToggle={handleToggleCompletion}
             onEdit={onEdit}
             onDelete={onDelete}
             onArchive={onArchive}

@@ -51,6 +51,7 @@ import {
   Task,
 } from "@/types";
 import { ProjectTask } from "@/components/task/task-board";
+import { useRouter } from "next/navigation";
 
 const COLORS = [
   "#4F46E5", // Indigo
@@ -63,7 +64,7 @@ const COLORS = [
 
 export default function AnalyticsDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
-
+  const router = useRouter();
   const {
     loading,
     error,
@@ -90,7 +91,7 @@ export default function AnalyticsDashboard() {
     projectTasks: ProjectTask[];
   } = useMainContext(); // Replace with actual user ID
 
-  // 
+  //
 
   const analytics = useMemo(() => {
     if (loading) return null;
@@ -158,14 +159,14 @@ export default function AnalyticsDashboard() {
     const avgHabitStreak =
       habits.length > 0
         ? Math.round(
-            habits.reduce((sum, h) => sum + (h.streak.current || 0), 0) /
+            habits.reduce((sum, h) => sum + (h.streakTarget || 0), 0) /
               habits.length
           )
         : 0;
     const avgCompletionRate =
       habits.length > 0
         ? Math.round(
-            habits.reduce((sum, h) => sum + (h.streak.longest || 0), 0) /
+            habits.reduce((sum, h) => sum + (h.streakTarget || 0), 0) /
               habits.length
           )
         : 0;
@@ -357,7 +358,10 @@ export default function AnalyticsDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-chart-4/10 to-chart-4/5 border-chart-4/20">
+          <Card
+            onClick={() => router.push("/dashboard/habit-dashboard")}
+            className="bg-gradient-to-br from-chart-4/10 to-chart-4/5 border-chart-4/20"
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Habit Performance
@@ -409,7 +413,10 @@ export default function AnalyticsDashboard() {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis />
-                      <Tooltip contentStyle={{color:"black"}} cursor={false} />
+                      <Tooltip
+                        contentStyle={{ color: "black" }}
+                        cursor={false}
+                      />
                       <Area
                         type="monotone"
                         dataKey="income"
@@ -659,7 +666,7 @@ export default function AnalyticsDashboard() {
                     paymentsSum + Number(project.advanceAmount || 0);
 
                   const progress =
-                    project.totalAmount > 0
+                    Number(project.totalAmount) > 0
                       ? Math.round(
                           (totalPaid / Number(project.totalAmount)) * 100
                         )
@@ -726,10 +733,10 @@ export default function AnalyticsDashboard() {
                 <Card key={habit.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{habit.title}</CardTitle>
+                      <CardTitle className="text-lg">{habit.name}</CardTitle>
                       <Badge
                         variant={
-                          habit.type === "Maintain" ? "default" : "destructive"
+                          habit.type === "maintain" ? "default" : "destructive"
                         }
                       >
                         {habit.type}
@@ -743,7 +750,7 @@ export default function AnalyticsDashboard() {
                           Current Streak
                         </span>
                         <span className="text-2xl font-bold text-primary">
-                          {habit.completedDates.length || 0} days
+                          {habit.unit || 0} days
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -751,7 +758,7 @@ export default function AnalyticsDashboard() {
                           Longest Streak
                         </span>
                         <span className="text-lg font-semibold text-muted-foreground">
-                          {habit.streak.longest || 0} days
+                          {habit.unit || 0} days
                         </span>
                       </div>
                       {/* <div className="space-y-2">
@@ -767,7 +774,7 @@ export default function AnalyticsDashboard() {
                       <div className="text-sm text-muted-foreground">
                         <span>Frequency: </span>
                         <span className="font-medium text-foreground capitalize">
-                          {habit.frequency.daysOfWeek}
+                          {habit.frequency}
                         </span>
                       </div>
                     </div>

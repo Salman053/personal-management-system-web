@@ -1,4 +1,4 @@
-"use client";;
+"use client";
 import type React from "react";
 import { createContext, useContext, useState } from "react";
 import { useAuth } from "./auth-context";
@@ -84,13 +84,17 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     error,
     projects,
     projectPayments,
-    habits,
     finances,
+    emailTemplates,
     dailyTaskSubTask,
     dailyTasks,
     learning,
     reminders,
-    projectTasks
+    habitEntries,
+    userXP,
+    habits,
+    doubts,
+    projectTasks,
   } = useFirestoreData(user?.uid || "");
   // Define the values to provide through context
   const contextValue = {
@@ -98,7 +102,10 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     projects,
     finances,
     projectPayments,
+    habitEntries,
+    userXP,
     habits,
+    emailTemplates,
     toggleTheme,
     isSidebarOpen,
     currentUser,
@@ -108,6 +115,7 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     learning,
     reminders,
     setCurrentUser,
+    doubts,
     isAuthLoading,
     toggleSidebar,
     userPreferences,

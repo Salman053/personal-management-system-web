@@ -13,10 +13,11 @@ import {
 import { useTheme } from "next-themes"
 import { Moon, Sun, LogOut, User, Settings } from "lucide-react"
 import Link from "next/link"
+import { ThemeSwitcher } from "../system/theme-switcher";
 
 export function Header() {
   const { user, userProfile, signOut } = useAuth()
-  const { theme, setTheme } = useTheme()
+  // const { theme, setTheme } = useTheme()
 
   const handleSignOut = async () => {
     try {
@@ -34,11 +35,12 @@ export function Header() {
 
       <div className="flex items-center gap-4">
         {/* Theme toggle */}
-        <Button variant="outline" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+        <ThemeSwitcher/>
+        {/* <Button variant="outline" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
           <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
-        </Button>
+        </Button> */}
 
         {/* User menu */}
         <DropdownMenu>

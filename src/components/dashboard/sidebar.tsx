@@ -17,6 +17,8 @@ import {
   Menu,
   X,
   Check,
+  Box,
+  DotSquareIcon,
 } from "lucide-react";
 
 const navigation = [
@@ -26,6 +28,8 @@ const navigation = [
   { name: "Habits", href: "/dashboard/habits", icon: Target },
   { name: "Learning", href: "/dashboard/learning", icon: BookOpen },
   { name: "Task Planner", href: "/dashboard/daily-tasks", icon: Check },
+  { name: "Doubt Box", href: "/dashboard/doubt", icon: Box },
+  { name: "Templates", href: "/dashboard/templates", icon: DotSquareIcon },
   { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];

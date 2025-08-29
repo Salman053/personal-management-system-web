@@ -1,6 +1,6 @@
-"use client";;
+"use client";
 import { useParams, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, Settings, Calendar, Search, Filter, MessageCircle, Mail, Share2 } from "lucide-react";
+import {
+  Plus,
+  Settings,
+  Calendar,
+  Search,
+  Filter,
+  MessageCircle,
+  Mail,
+  Share2,
+} from "lucide-react";
 import { useMainContext } from "@/contexts/app-context";
 import {
   type SubTask,
@@ -187,7 +196,10 @@ export default function EnhancedSingleTask() {
 
     // Example: show subtasks in the list
     const taskItems =
-      dailyTaskSubTask?.map((t:SubTask) => `- ${t.title}: ${t.isCompleted?"Completed":"Not Completed \n"}`) || [];
+      dailyTaskSubTask?.map(
+        (t: SubTask) =>
+          `- ${t.title}: ${t.isCompleted ? "Completed" : "Not Completed \n"}`
+      ) || [];
 
     for (const contact of emailContacts) {
       await NotificationService.sendEmail(
@@ -243,6 +255,17 @@ export default function EnhancedSingleTask() {
     filteredByFor.length > 0
       ? Math.round((completedSubtasks.length / filteredByFor.length) * 100)
       : 0;
+
+  // Whenever percentage changes → update Firestore
+  useEffect(() => {
+    if (currentTask.id) {
+      TaskService.updateTaskStatus(currentTask.id, completionPercentage)
+        
+        .catch((e) => {
+          toast.error(e.message);
+        });
+    }
+  }, [completionPercentage, currentTask]);
 
   if (!currentTask) {
     return (

@@ -30,7 +30,7 @@ export const financeServices = {
     });
 
 
-    console.log(transactionData.date, transactionData.dueDate)
+    
     // Only create reminder for Borrowed/Lent, not for normal Income/Expense
     if (transactionData.type !== "Income" && transactionData.type !== "Expense") {
       if (transactionData.dueDate) {

@@ -85,7 +85,7 @@ export class TaskService {
   }
 
   static async updateSubtask(subtaskId: string, updates: Partial<SubTask>) {
-    
+
     const ref = doc(db, "subtasks", subtaskId)
     await updateDoc(ref, { ...updates, updatedAt: serverTimestamp() })
   }
@@ -94,6 +94,22 @@ export class TaskService {
     const ref = doc(db, "subtasks", subtaskId)
     await deleteDoc(ref)
   }
+
+  // Function to update task status in Firestore
+  static async updateTaskStatus(taskId: string, completionPercentage: number) {
+    try {
+      const taskRef = doc(db, "dailyTasks", taskId);
+
+      // Decide status
+      const status = completionPercentage === 100 ? "completed" : "in-progress";
+
+      await updateDoc(taskRef, { status });
+
+      console.log(`✅ Task ${taskId} updated to ${status}`);
+    } catch (error) {
+      console.error("❌ Error updating task status:", error);
+    }
+  };
 
   static async toggleSubtaskCompletion(subtaskId: string, currentCompletedStatus: boolean) {
     try {
