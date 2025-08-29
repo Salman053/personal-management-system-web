@@ -168,7 +168,7 @@ export const learningService = {
 
       return ref.id;
     } catch (error: any) {
-      console.log(error)
+      
       // if (error instanceof LearningServiceError) throw error;
       // throw new LearningServiceError(
       //   "Failed to create learning item",
@@ -187,7 +187,7 @@ export const learningService = {
     try {
       const ref = doc(db, "learning", id);
       const clean: any = { updatedAt: Timestamp.now() };
-      console.log(clean)
+      
 
       if (updates.title !== undefined) {
         if (!updates.title.trim()) {
@@ -219,7 +219,7 @@ export const learningService = {
         await this.updateParentProgress(snap.data().userId, snap.data().parentId);
       }
     } catch (error: any) {
-      console.log(error)
+      
     }
   },
 
@@ -274,7 +274,7 @@ export const learningService = {
       await deleteRecursively(id);
       await batch.commit();
     } catch (error: any) {
-      console.log(error)
+      
     }
   },
 

@@ -32,7 +32,7 @@ export default function ProjectsPage() {
   });
   const [selectedProject, setSelectedProject] = useState<Project | any>(null);
 
-  // console.log(projects)
+  // 
 
   const handleCreateProject = () => {
     setSelectedProject(null);
@@ -72,7 +72,6 @@ export default function ProjectsPage() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  console.log("filter", filteredProjects);
   // Calculate stats
   const stats = {
     total: projects.length,
@@ -158,7 +157,7 @@ export default function ProjectsPage() {
 
       {/* Filters */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="">
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
             <div className="flex-1">
               <div className="relative">

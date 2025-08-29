@@ -23,7 +23,7 @@ export const TestReminder = () => {
     setIsTesting(true);
     try {
       await ReminderPollingService.checkDueReminders(auth.user.uid).then(() => {
-        console.log("hello");
+        
       });
       //   alert("Reminder check completed!");
     } catch (error: any) {

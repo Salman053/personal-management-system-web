@@ -74,7 +74,7 @@ export default function SingleTask() {
                       setDeleteModalOpen(true)
                     }}
                     onEdit={(t) => {
-                      console.log(t)
+                      
                       setEditingSubtask(t as any)
                       setSubTaskDialog(true)
                     }}

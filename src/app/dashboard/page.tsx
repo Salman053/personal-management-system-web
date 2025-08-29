@@ -52,7 +52,14 @@ import {
 } from "@/types";
 import { ProjectTask } from "@/components/task/task-board";
 
-const COLORS = ["red", "green", "blue", "yellow", "brown", "pink"];
+const COLORS = [
+  "#4F46E5", // Indigo
+  "#10B981", // Emerald / Green
+  "#F59E0B", // Amber / Orange
+  "#EF4444", // Red
+  "#3B82F6", // Blue
+  "#8B5CF6", // Violet
+];
 
 export default function AnalyticsDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -83,7 +90,7 @@ export default function AnalyticsDashboard() {
     projectTasks: ProjectTask[];
   } = useMainContext(); // Replace with actual user ID
 
-  // console.log(projectPayments)
+  // 
 
   const analytics = useMemo(() => {
     if (loading) return null;
@@ -402,20 +409,20 @@ export default function AnalyticsDashboard() {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis />
-                      <Tooltip />
+                      <Tooltip contentStyle={{color:"black"}} cursor={false} />
                       <Area
                         type="monotone"
                         dataKey="income"
                         stackId="1"
                         stroke="hsl(var(--chart-1))"
-                        fill="hsl(var(--chart-1))"
+                        fill={`${COLORS[0]}`}
                       />
                       <Area
                         type="monotone"
                         dataKey="expense"
                         stackId="1"
                         stroke="hsl(var(--chart-2))"
-                        fill="hsl(var(--chart-2))"
+                        fill={`${COLORS[3]}`}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -539,16 +546,19 @@ export default function AnalyticsDashboard() {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis />
-                      <Tooltip />
+                      <Tooltip
+                        cursor={false}
+                        contentStyle={{ color: "black" }}
+                      />
                       <Legend />
                       <Bar
                         dataKey="income"
-                        fill="hsl(var(--chart-1))"
+                        fill={`${COLORS[1]}`}
                         name="Income"
                       />
                       <Bar
                         dataKey="expense"
-                        fill="hsl(var(--chart-2))"
+                        fill={`${COLORS[3]}`}
                         name="Expenses"
                       />
                     </BarChart>
@@ -570,7 +580,7 @@ export default function AnalyticsDashboard() {
                       <Line
                         type="monotone"
                         dataKey="profit"
-                        stroke="hsl(var(--chart-3))"
+                        stroke={`hsl(${COLORS[0]})`}
                         strokeWidth={3}
                       />
                     </LineChart>
@@ -633,78 +643,80 @@ export default function AnalyticsDashboard() {
 
           <TabsContent value="projects" className="space-y-4">
             <div className="grid gap-4">
-              {projects.map((project) => {
-                const projectPaymentsForProject = projectPayments.filter(
-                  (pp) => pp.projectId === project.id
-                );
+              {projects
+                .filter((p) => p.type === "client")
+                .map((project) => {
+                  const projectPaymentsForProject = projectPayments.filter(
+                    (pp) => pp.projectId === project.id
+                  );
 
-                const paymentsSum = projectPaymentsForProject.reduce(
-                  (sum, pp) => sum + Number(pp.amount),
-                  0
-                );
+                  const paymentsSum = projectPaymentsForProject.reduce(
+                    (sum, pp) => sum + Number(pp.amount),
+                    0
+                  );
 
-                const totalPaid =
-                  paymentsSum + Number(project.advanceAmount || 0);
+                  const totalPaid =
+                    paymentsSum + Number(project.advanceAmount || 0);
 
-                const progress =
-                  project.totalAmount > 0
-                    ? Math.round(
-                        (totalPaid / Number(project.totalAmount)) * 100
-                      )
-                    : 0;
+                  const progress =
+                    project.totalAmount > 0
+                      ? Math.round(
+                          (totalPaid / Number(project.totalAmount)) * 100
+                        )
+                      : 0;
 
-                return (
-                  <Card key={project.id}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">
-                          {project.title}
-                        </CardTitle>
-                        <Badge
-                          variant={
-                            project.status === "active"
-                              ? "default"
-                              : project.status === "completed"
-                                ? "secondary"
-                                : "outline"
-                          }
-                        >
-                          {project.status}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Payment Progress</span>
-                          <span>{progress}%</span>
+                  return (
+                    <Card key={project.id}>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg">
+                            {project.title}
+                          </CardTitle>
+                          <Badge
+                            variant={
+                              project.status === "active"
+                                ? "default"
+                                : project.status === "completed"
+                                  ? "secondary"
+                                  : "outline"
+                            }
+                          >
+                            {project.status}
+                          </Badge>
                         </div>
-                        <Progress value={progress} className="h-2" />
-                        <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
-                          <div>
-                            <span>Total Amount</span>
-                            <div className="font-medium text-foreground">
-                              PKR {project.totalAmount?.toLocaleString() || 0}
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Payment Progress</span>
+                            <span>{progress}%</span>
+                          </div>
+                          <Progress value={progress} className="h-2" />
+                          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+                            <div>
+                              <span>Total Amount</span>
+                              <div className="font-medium text-foreground">
+                                PKR {project.totalAmount?.toLocaleString() || 0}
+                              </div>
+                            </div>
+                            <div>
+                              <span>Paid Amount</span>
+                              <div className="font-medium text-foreground">
+                                PKR {totalPaid.toLocaleString()}
+                              </div>
                             </div>
                           </div>
-                          <div>
-                            <span>Paid Amount</span>
-                            <div className="font-medium text-foreground">
-                              PKR {totalPaid.toLocaleString()}
-                            </div>
+                          <div className="text-sm text-muted-foreground">
+                            <span>Client: </span>
+                            <span className="font-medium text-foreground">
+                              {project.clientName}
+                            </span>
                           </div>
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          <span>Client: </span>
-                          <span className="font-medium text-foreground">
-                            {project.clientName}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
             </div>
           </TabsContent>
 

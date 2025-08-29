@@ -43,7 +43,7 @@ export default function ProjectManagementScreen() {
   const [project, setProject] = useState<Project | any>({});
   const [payments, setPayments] = useState<ProjectPayment[] | any>({});
 
-  // console.log(project);
+  // 
   const { modalState, toggleModal } = useModalState({
     isEditDialogOpen: false,
     isLoading: false,
@@ -51,7 +51,7 @@ export default function ProjectManagementScreen() {
   });
   // Filter tasks based on search and status
 
-  // console.log(params);
+  // 
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -67,7 +67,7 @@ export default function ProjectManagementScreen() {
         return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
     }
   };
-  console.log(projectPayments);
+  
 
   // const paymentProgress =
   //   projects.totalAmount && projects.paidAmount !== undefined

@@ -85,7 +85,7 @@ export class TaskService {
   }
 
   static async updateSubtask(subtaskId: string, updates: Partial<SubTask>) {
-    console.log(subtaskId, updates)
+    
     const ref = doc(db, "subtasks", subtaskId)
     await updateDoc(ref, { ...updates, updatedAt: serverTimestamp() })
   }

@@ -43,7 +43,7 @@ export default function LearningPage() {
   const [deletingItem, setDeletingItem] = useState("");
   const [activeTab, setActiveTab] = useState("roadmaps");
 
-  // console.log(learning);
+  // 
 
   const { modalState, toggleModal } = useModalState({
     isDeleteModalOpen: false,
@@ -139,7 +139,7 @@ export default function LearningPage() {
         : 0,
   };
 
-  // console.log(  learning.filtere((l: LearningItem) => l.id === "ZwdJJ0exbJdbDCipzjIa "))
+  //  => l.id === "ZwdJJ0exbJdbDCipzjIa "))
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -227,7 +227,7 @@ export default function LearningPage() {
         <TabsContent value="roadmaps" className="space-y-6">
           {/* Filters */}
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="">
               <div className="flex flex-col gap-4 md:flex-row md:items-center">
                 <div className="flex-1">
                   <div className="relative">

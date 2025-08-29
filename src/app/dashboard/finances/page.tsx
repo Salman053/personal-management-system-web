@@ -163,12 +163,12 @@ export default function FinancesPage() {
 
   const handleEditTransaction = async (transaction: FinanceRecord) => {
     setEditingRecord(transaction);
-    console.log(modalState.isFinanceDialogOpen, "THis is FInal Dialog");
+    
     openModal("isFinanceDialogOpen");
   };
 
   const handleDeleteTransaction = async () => {
-    console.log("Delete transaction:", deletingRecord);
+    
     try {
       await financeServices.deleteRecord(deletingRecord).then(() => {
         closeModal("isDeletingRecordModalOpen");

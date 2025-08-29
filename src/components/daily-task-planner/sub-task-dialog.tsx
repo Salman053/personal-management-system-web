@@ -99,7 +99,7 @@ export function SubTaskDialog({
     };
 
     if (editingSubtask) {
-      console.log(editingSubtask);
+      
       await TaskService.updateSubtask(
         editingSubtask.id as string,
         normalized as any
@@ -109,7 +109,7 @@ export function SubTaskDialog({
         })
         .catch((e) => {
           toast.error(e.message);
-          console.log(e);
+          
         });
     } else {
       await TaskService.createSubtask(normalized as any)

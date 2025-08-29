@@ -61,7 +61,7 @@ export const habitsService = {
 
   // Delete a habit
   async deleteHabit(habitId: string): Promise<void> {
-    console.log(habitId + "asdasd")
+    
     await deleteDoc(doc(db, "habits", habitId))
   },
 

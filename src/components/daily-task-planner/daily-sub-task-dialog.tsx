@@ -87,14 +87,14 @@ export function SubTaskDialog({ open, onOpenChange, editingSubtask, taskId, onSa
     }
 
     if (editingSubtask) {
-      console.log(editingSubtask)
+      
       await TaskService.updateSubtask(editingSubtask.id as string, normalized as any)
         .then(() => {
           toast.success("SubTask updated successfully")
         })
         .catch((e) => {
           toast.error(e.message)
-          console.log(e)
+          
         })
     } else {
       await TaskService.createSubtask(normalized as any)

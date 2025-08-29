@@ -121,7 +121,7 @@ export function ProjectDialog({
           : 0,
       };
 
-      // console.log(projectData);
+      // 
       if (project) {
         await projectsService
           .updateProject(project.docId as string, projectData)

@@ -11,7 +11,7 @@ export const sendReminderNotification = functions.firestore.onDocumentCreated(
     const snapshot = event.data;
     if (!snapshot) return null;
     const reminder = snapshot.data();
-    console.log(reminder)
+    
     // If reminder is scheduled for future, we'll handle it differently
     if (reminder.status !== 'scheduled') return null;
 
