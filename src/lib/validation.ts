@@ -45,19 +45,18 @@ export class TemplateValidator {
     static validatePlaceholders(text: string): TemplateValidationError[] {
         const errors: TemplateValidationError[] = []
         const placeholderRegex = /\{\{([^}]+)\}\}/g
-        const placeholders: string[] = []
         let match
 
         while ((match = placeholderRegex.exec(text)) !== null) {
             const placeholder = match[1].trim()
 
-            // Check for empty placeholders
+            // Empty placeholder
             if (placeholder.length === 0) {
                 errors.push({ field: "placeholders", message: "Empty placeholder found: {{}}" })
                 continue
             }
 
-            // Check for invalid characters
+            // Invalid characters
             if (!/^[a-zA-Z0-9_\s]+$/.test(placeholder)) {
                 errors.push({
                     field: "placeholders",
@@ -65,15 +64,7 @@ export class TemplateValidator {
                 })
             }
 
-            // Check for duplicate placeholders
-            if (placeholders.includes(placeholder)) {
-                errors.push({
-                    field: "placeholders",
-                    message: `Duplicate placeholder found: {{${placeholder}}}`,
-                })
-            } else {
-                placeholders.push(placeholder)
-            }
+            // ❌ Removed duplicate check
         }
 
         return errors
@@ -86,7 +77,9 @@ export class TemplateValidator {
             subject: data.subject.trim(),
             body: data.body.trim(),
             type: data.type,
-            tags: data.tags?.map((tag) => tag.trim().toLowerCase()).filter((tag) => tag.length > 0),
+            tags: data.tags
+                ?.map((tag) => tag.trim().toLowerCase())
+                .filter((tag) => tag.length > 0),
         }
     }
 }

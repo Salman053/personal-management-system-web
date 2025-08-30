@@ -73,6 +73,8 @@ export function LoginForm({ onToggleMode, onForgotPassword }: LoginFormProps) {
             <Input
               id="password"
               type="password"
+              autoComplete="additional-name"
+          
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

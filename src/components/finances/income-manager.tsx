@@ -30,7 +30,10 @@ export function IncomeManager({
 }: IncomeManagerProps) {
   const incomeTransactions = transactions.filter((t) => t.type === "Income");
 
-  const totalIncome = incomeTransactions.reduce((sum, t) => sum + t.amount, 0);
+  const totalIncome = incomeTransactions.reduce(
+    (sum, t) => sum + Number(t.amount),
+    0
+  );
   const monthlyIncome = incomeTransactions
     .filter((t) => {
       const transactionDate = new Date(t.date);
@@ -41,14 +44,17 @@ export function IncomeManager({
         transactionDate.getFullYear() === currentYear
       );
     })
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   // Group by category
-  const incomeByCategory = incomeTransactions.reduce((acc, transaction) => {
-    acc[transaction.category] =
-      (acc[transaction.category] || 0) + transaction.amount;
-    return acc;
-  }, {} as Record<string, number>);
+  const incomeByCategory = incomeTransactions.reduce(
+    (acc, transaction) => {
+      acc[transaction.category] =
+        (acc[transaction.category] || 0) + transaction.amount;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return (
     <div className="space-y-6">
@@ -103,7 +109,10 @@ export function IncomeManager({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Income by Category</CardTitle>
-            <Button onClick={() => onAdd("Income" as TransactionType)} size="sm">
+            <Button
+              onClick={() => onAdd("Income" as TransactionType)}
+              size="sm"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Income
             </Button>
@@ -154,7 +163,7 @@ export function IncomeManager({
                 <TableHead>Category</TableHead>
                 <TableHead>Medium</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
-                <TableHead >Actions</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

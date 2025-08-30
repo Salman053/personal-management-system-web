@@ -111,16 +111,16 @@ export function TemplateDashboard({
           </p>
         </div>
 
-        <Button onClick={onCreateNew} className="flex items-center gap-2">
+        {/* <Button onClick={onCreateNew} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           New Template
-        </Button>
+        </Button> */}
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -141,7 +141,7 @@ export function TemplateDashboard({
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -162,7 +162,7 @@ export function TemplateDashboard({
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -183,7 +183,7 @@ export function TemplateDashboard({
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">

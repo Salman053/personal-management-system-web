@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Edit, Share2, Copy, Trash2, Download, Box } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  Share2,
+  Copy,
+  Trash2,
+  Download,
+  Box,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -130,7 +138,7 @@ export default function TemplatePage() {
 
       toast("A copy of the template has been created.");
 
-      router.push(`/template/${duplicated}`);
+      router.push(`/dashboard/templates/template/${duplicated}`);
     } catch (error) {
       console.error("Error duplicating template:", error);
       toast.error("Failed to duplicate template. Please try again.");
@@ -225,10 +233,7 @@ export default function TemplatePage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => router.push("/")}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Templates
-            </Button>
+          
             <div>
               <h1 className="text-2xl font-semibold text-balance">
                 {template.title}
@@ -259,7 +264,9 @@ export default function TemplatePage() {
               variant="outline"
               size="sm"
               onClick={() =>
-                copyToClipboard(TemplateUtils.replacePlaceholders(template.body, {}))
+                copyToClipboard(
+                  TemplateUtils.replacePlaceholders(template.body, {})
+                )
               }
             >
               <Copy className="w-4 h-4 mr-2" />
@@ -312,13 +319,13 @@ export default function TemplatePage() {
                   <p className="text-sm mt-1 text-pretty">{template.subject}</p>
                 </div>
 
-                {template?.tags?.length > 0 && (
+                {Array.isArray(template?.tags) && template.tags.length > 0 && (
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
                       Tags
                     </label>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {template?.tags.map((tag, index) => (
+                      {template.tags.map((tag, index) => (
                         <Badge
                           key={index}
                           variant="outline"
@@ -342,10 +349,10 @@ export default function TemplatePage() {
                           key={index}
                           className="text-xs bg-muted rounded px-2 py-1"
                         >
-                          <code>{placeholder.key}</code>
-                          {placeholder.description && (
+                          {/* <code>{placeholder.key}</code> */}
+                          {placeholder && (
                             <span className="text-muted-foreground ml-2">
-                              - {placeholder.description}
+                              - {placeholder}
                             </span>
                           )}
                         </div>
@@ -357,7 +364,7 @@ export default function TemplatePage() {
                 <Separator />
 
                 <div className="text-xs text-muted-foreground space-y-1">
-                  <p>Used {template.usageCount} times</p>
+                  <p>Used {template.shareId} times</p>
                   <p>
                     Updated {new Date(template.updatedAt).toLocaleDateString()}
                   </p>
@@ -376,7 +383,7 @@ export default function TemplatePage() {
               <CardContent>
                 <TemplatePreview
                   template={template}
-                  showPlaceholders={true}
+                  showPlaceholderInputs={true}
                   className="border-0 shadow-none p-0"
                 />
               </CardContent>
@@ -386,13 +393,13 @@ export default function TemplatePage() {
       </div>
 
       {/* Sharing Modal */}
-      {showSharing && (
-        <TemplateSharing
-          template={template}
-          onClose={() => setShowSharing(false)}
-          onUpdate={(updated) => setTemplate(updated)}
-        />
-      )}
+
+      <TemplateSharing
+        template={template}
+        isOpen={showSharing}
+        onClose={() => setShowSharing(false)}
+        // onUpdate={(updated) => setTemplate(updated)}
+      />
     </div>
   );
 }

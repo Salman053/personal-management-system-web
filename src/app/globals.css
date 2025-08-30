@@ -819,3 +819,17 @@
     transform: translateY(-2px);
   }
 }
+
+
+/* globals.css */
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-bg {
+  background: linear-gradient(-45deg, var(--primary), var(--accent), var(--secondary), var(--background));
+  background-size: 300% 300%;
+  animation: gradient-flow 15s ease infinite;
+}

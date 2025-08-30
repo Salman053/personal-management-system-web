@@ -41,6 +41,9 @@ import { toast } from "sonner";
 import { TemplateService } from "@/services/templates";
 import { TemplateUtils } from "@/lib/template-utils";
 import { CATEGORY_METADATA } from "@/constants/email-const";
+import { ActionMenu } from "../ui/action-menu";
+import { CustomActionMenuDropdown } from "../system/custom-action-dropdown";
+import ConfirmDialog from "../system/confirm-dialog";
 
 type ViewMode = "grid" | "list";
 type SortField = "title" | "category" | "updatedAt" | "createdAt";
@@ -63,7 +66,8 @@ export function TemplateList({
 }: TemplateListProps) {
   const { user } = useAuth();
   const router = useRouter();
-
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<EmailTemplate | null>(null);
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,12 +75,12 @@ export function TemplateList({
     TemplateCategory | "all"
   >("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [sortField, setSortField] = useState<SortField>("updatedAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [selectedTemplates, setSelectedTemplates] = useState<Set<string>>(
     new Set()
   );
-  const [showFilters, setShowFilters] = useState(false);
 
   // Load templates
   useEffect(() => {
@@ -164,26 +168,27 @@ export function TemplateList({
     }
   };
 
-  const handleDeleteTemplate = async (template: EmailTemplate) => {
+  const handleDeleteTemplate = async () => {
     if (!user) return;
-
-    if (
-      !confirm(
-        `Are you sure you want to delete "${template.title}"? This action cannot be undone.`
-      )
-    ) {
+    if (!selectedTemplate) {
+      setSelectedTemplate(null);
+      setDeleteDialogOpen(false);
       return;
     }
 
     try {
-      await TemplateService.deleteTemplate(user.uid, template.id);
-      setTemplates((prev) => prev.filter((t) => t.id !== template.id));
+      await TemplateService.deleteTemplate(user.uid, selectedTemplate?.id);
+      setTemplates((prev) => prev.filter((t) => t.id !== selectedTemplate?.id));
       setSelectedTemplates((prev) => {
         const newSelected = new Set(prev);
-        newSelected.delete(template.id);
+        newSelected.delete(selectedTemplate?.id);
         return newSelected;
       });
-      toast(`"${template.title}" has been deleted successfully.`);
+      toast.success(
+        `"${selectedTemplate?.title}" has been deleted successfully.`
+      );
+      setSelectedTemplate(null);
+      setDeleteDialogOpen(false);
     } catch (error) {
       console.error("Error deleting template:", error);
       toast.error("Failed to delete template. Please try again.");
@@ -243,7 +248,7 @@ export function TemplateList({
   };
 
   const handleViewTemplate = (template: EmailTemplate) => {
-    router.push(`/template/${template.id}`);
+    router.push(`/dashboard/templates/template/${template.id}`);
   };
 
   if (loading) {
@@ -279,7 +284,7 @@ export function TemplateList({
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
@@ -300,7 +305,7 @@ export function TemplateList({
           const metadata = CATEGORY_METADATA[category as TemplateCategory];
           return (
             <Card key={category}>
-              <CardContent className="p-4">
+              <CardContent className="">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">
@@ -324,7 +329,7 @@ export function TemplateList({
 
       {/* Search and Filters */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -491,15 +496,18 @@ export function TemplateList({
                   onPreview={onPreviewTemplate}
                   onEdit={onEditTemplate}
                   onDuplicate={() => handleDuplicateTemplate(template)}
-                  onDelete={() => handleDeleteTemplate(template)}
+                  onDelete={(item) => {
+                    setSelectedTemplate(item);
+                    setDeleteDialogOpen(true);
+                  }}
                   className="ml-8"
                 />
               ) : (
                 <Card
-                  className="ml-8 hover:shadow-md transition-shadow cursor-pointer"
+                  className=" hover:shadow-md transition-shadow cursor-pointer"
                   onClick={() => handleViewTemplate(template)}
                 >
-                  <CardContent className="p-4">
+                  <CardContent className="  ">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4 min-w-0 flex-1">
                         <div
@@ -535,7 +543,7 @@ export function TemplateList({
                         >
                           <ExternalLink className="h-4 w-4" />
                         </Button>
-                        <Button
+                        {/* <Button
                           variant="ghost"
                           size="sm"
                           onClick={(e) => {
@@ -544,8 +552,9 @@ export function TemplateList({
                           }}
                         >
                           <Eye className="h-4 w-4" />
-                        </Button>
+                        </Button> */}
                         <Button
+                          title="Edit template"
                           variant="ghost"
                           size="sm"
                           onClick={(e) => {
@@ -555,38 +564,29 @@ export function TemplateList({
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleDuplicateTemplate(template)}
-                            >
-                              <Copy className="h-4 w-4 mr-2" />
-                              Duplicate
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => onShareTemplate?.(template)}
-                            >
-                              <Share className="h-4 w-4 mr-2" />
-                              Share
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleDeleteTemplate(template)}
-                              className="text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <CustomActionMenuDropdown
+                          item={template}
+                          actions={[
+                            {
+                              label: "Duplicate",
+                              onSelect: () => handleDuplicateTemplate(template),
+                              icon: <Copy className="h-4 w-4 mr-2" />,
+                            },
+                            {
+                              label: "Share",
+                              onSelect: () => onShareTemplate?.(template),
+                              icon: <Share className="h-4 w-4 mr-2" />,
+                            },
+                            {
+                              label: "Delete",
+                              onSelect: (item) => {
+                                setSelectedTemplate(item);
+                                setDeleteDialogOpen(true);
+                              },
+                              icon: <Trash2 className="h-4 w-4 mr-2" />,
+                            },
+                          ]}
+                        />
                       </div>
                     </div>
                   </CardContent>
@@ -596,6 +596,14 @@ export function TemplateList({
           ))}
         </div>
       )}
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        destructive
+        lockWhilePending
+        onCancel={() => setDeleteDialogOpen(false)}
+        onOpenChange={() => null}
+        onConfirm={handleDeleteTemplate}
+      />
     </div>
   );
 }

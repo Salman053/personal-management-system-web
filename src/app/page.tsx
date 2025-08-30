@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import AuthLoadingScreen from "./loading";
+import Particles from "@/components/animated/particles";
 
 type AuthMode = "login" | "register" | "forgot-password";
 
@@ -40,7 +41,11 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="absolute z-[-1] top-0 left-0 h-screen w-screen">
+        <Particles/>
+      </div>
       {/* Theme toggle */}
       <div className="absolute top-4 right-4">
         <Button

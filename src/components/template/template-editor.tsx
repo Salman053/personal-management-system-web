@@ -26,13 +26,22 @@ import {
   FileText,
   Sparkles,
 } from "lucide-react";
-import { EmailTemplate, TemplateCategory, TemplateFormData, TemplateType } from "@/types";
+import {
+  EmailTemplate,
+  TemplateCategory,
+  TemplateFormData,
+  TemplateType,
+} from "@/types";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 import { TemplateValidator } from "@/lib/validation";
 import { TemplateService } from "@/services/templates";
 import { TemplateUtils } from "@/lib/template-utils";
-import { CATEGORY_METADATA, COMMON_PLACEHOLDERS, TEMPLATE_TYPES } from "@/constants/email-const";
+import {
+  CATEGORY_METADATA,
+  COMMON_PLACEHOLDERS,
+  TEMPLATE_TYPES,
+} from "@/constants/email-const";
 
 interface TemplateEditorProps {
   template?: EmailTemplate;
@@ -116,6 +125,10 @@ export function TemplateEditor({
   );
 
   const handleSave = async (silent = false) => {
+    console.log("handleSave called, silent:", silent);
+    console.log("user:", user);
+    console.log("formData:", formData);
+
     if (!user) {
       toast("Please sign in to save templates.");
       return;
@@ -123,6 +136,7 @@ export function TemplateEditor({
 
     // Validate form data
     const validationErrors = TemplateValidator.validateTemplate(formData);
+     console.log("validationErrors:", validationErrors);
     if (validationErrors.length > 0) {
       const errorMap: Record<string, string> = {};
       validationErrors.forEach((error) => {
@@ -131,7 +145,7 @@ export function TemplateEditor({
       setErrors(errorMap);
 
       if (!silent) {
-        toast("Please fix the errors before saving.");
+        toast.success("Please fix the errors before saving.");
       }
       return;
     }
@@ -157,7 +171,7 @@ export function TemplateEditor({
         }
 
         if (!silent) {
-          toast.error("Your template has been successfully updated.");
+          toast.success("Your template has been successfully updated.");
         }
       } else {
         // Create new template
@@ -175,7 +189,7 @@ export function TemplateEditor({
         }
 
         if (!silent) {
-          toast.error("Your template has been successfully created.");
+          toast.success("Your template has been successfully created.");
         }
       }
 
@@ -205,7 +219,7 @@ export function TemplateEditor({
     setIsLoading(true);
     try {
       await TemplateService.deleteTemplate(user.uid, template.id);
-      toast("Your template has been successfully deleted.");
+      toast.success("Your template has been successfully deleted.");
       onCancel?.();
     } catch (error) {
       console.error("Error deleting template:", error);
@@ -233,7 +247,7 @@ export function TemplateEditor({
         onSave(duplicatedTemplate);
       }
 
-      toast("A copy of your template has been created.");
+      toast.success("A copy of your template has been created.");
     } catch (error) {
       console.error("Error duplicating template:", error);
       toast.error("Failed to duplicate template. Please try again.");
@@ -296,7 +310,7 @@ export function TemplateEditor({
   );
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className=" space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -364,7 +378,9 @@ export function TemplateEditor({
                     }
                   >
                     <SelectTrigger
-                      className={errors.category ? "border-destructive" : ""}
+                      className={
+                        errors.category ? "border-destructive w-full" : "w-full"
+                      }
                     >
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
@@ -372,7 +388,7 @@ export function TemplateEditor({
                       {Object.entries(CATEGORY_METADATA).map(
                         ([key, metadata]) => (
                           <SelectItem key={key} value={key}>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center text-left gap-2">
                               <span>{metadata.icon}</span>
                               <span>{metadata.category}</span>
                             </div>
@@ -404,7 +420,7 @@ export function TemplateEditor({
                     <SelectContent>
                       {Object.entries(TEMPLATE_TYPES).map(([key, typeInfo]) => (
                         <SelectItem key={key} value={key}>
-                          <div>
+                          <div className="text-left">
                             <div className="font-medium">{typeInfo.label}</div>
                             <div className="text-xs text-muted-foreground">
                               {typeInfo.description}

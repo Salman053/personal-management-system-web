@@ -32,7 +32,7 @@ export default function TemplatesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6">
+      <div className="">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-balance">Email Templates</h1>
           <p className="text-muted-foreground mt-2">
