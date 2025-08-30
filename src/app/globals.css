@@ -647,6 +647,84 @@
   --ring: #e91e63;
 }
 
+[data-theme="fantasy"] {
+  --background: #1e1b4b; /* deep indigo */
+  --foreground: #f8fafc;
+  --card: #312e81;
+  --card-foreground: #e0e7ff;
+  --popover: #3730a3;
+  --popover-foreground: #e0e7ff;
+  --primary: #a78bfa; /* lavender glow */
+  --primary-foreground: #1e1b4b;
+  --secondary: #7dd3fc; /* sky magic */
+  --secondary-foreground: #0f172a;
+  --accent: #c084fc; /* spell spark */
+  --accent-foreground: #1e1b4b;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #4338ca;
+  --input: #312e81;
+  --ring: #a78bfa;
+}
+[data-theme="anger"] {
+  --background: #1a0000;
+  --foreground: #fef2f2;
+  --card: #7f1d1d;
+  --card-foreground: #fee2e2;
+  --popover: #991b1b;
+  --popover-foreground: #fee2e2;
+  --primary: #ef4444;
+  --primary-foreground: #ffffff;
+  --secondary: #f87171;
+  --secondary-foreground: #450a0a;
+  --accent: #dc2626;
+  --accent-foreground: #ffffff;
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --border: #7f1d1d;
+  --input: #991b1b;
+  --ring: #ef4444;
+}
+[data-theme="passionate"] {
+  --background: #2b0000;
+  --foreground: #fff1f2;
+  --card: #7f1d1d;
+  --card-foreground: #ffe4e6;
+  --popover: #9f1239;
+  --popover-foreground: #ffe4e6;
+  --primary: #e11d48; /* burning rose */
+  --primary-foreground: #ffffff;
+  --secondary: #f43f5e;
+  --secondary-foreground: #450a0a;
+  --accent: #be123c; /* velvet red */
+  --accent-foreground: #ffffff;
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --border: #7f1d1d;
+  --input: #881337;
+  --ring: #e11d48;
+}
+[data-theme="sensual"] {
+  --background: #1a0f0f;
+  --foreground: #faf5f5;
+  --card: #3f1d2e;
+  --card-foreground: #fce7f3;
+  --popover: #4a1d2f;
+  --popover-foreground: #fce7f3;
+  --primary: #db2777; /* seductive pink */
+  --primary-foreground: #ffffff;
+  --secondary: #ec4899;
+  --secondary-foreground: #450a0a;
+  --accent: #f472b6;
+  --accent-foreground: #1a0f0f;
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --border: #701a3f;
+  --input: #831843;
+  --ring: #db2777;
+}
+
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

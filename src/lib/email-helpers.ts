@@ -27,17 +27,16 @@ export function derivePlaceholders(subject: string, body: string): string[] {
 /**
  * Render template by replacing placeholder keys with provided values.
  * If a value is missing, uses empty string.
- */
-export function renderTemplate(template: EmailTemplate, values: Record<string, string>) {
+ */export function renderTemplate(template: EmailTemplate, values: Record<string, string>) {
   let subject = template.subject;
   let body = template.body;
 
-  for (const key of template.placeholders) {
-    const token = new RegExp(`{{\\s*${escapeRegExp(key)}\\s*}}`, "g");
-    const val = values[key] ?? "";
-    subject = subject.replace(token, val);
-    body = body.replace(token, val);
-  }
+  template.placeholders.forEach((ph) => {
+    const val = values[ph] || "";
+    subject = subject.replaceAll(`{{${ph}}}`, val);
+    body = body.replaceAll(`{{${ph}}}`, val);
+  });
+
   return { subject, body };
 }
 

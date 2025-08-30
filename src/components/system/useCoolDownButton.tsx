@@ -27,7 +27,7 @@ export function CooldownButton({
   };
 
   return (
-    <Button onClick={handleClick} disabled={isDisabled}>
+    <Button variant={"ghost"} onClick={handleClick} disabled={isDisabled}>
       {isDisabled ? `Wait ${Math.ceil(remaining / 60)} min` : label}
     </Button>
   );

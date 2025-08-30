@@ -43,7 +43,7 @@ export default function ProjectManagementScreen() {
   const [project, setProject] = useState<Project | any>({});
   const [payments, setPayments] = useState<ProjectPayment[] | any>({});
 
-  // 
+  //
   const { modalState, toggleModal } = useModalState({
     isEditDialogOpen: false,
     isLoading: false,
@@ -51,7 +51,7 @@ export default function ProjectManagementScreen() {
   });
   // Filter tasks based on search and status
 
-  // 
+  //
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -67,7 +67,6 @@ export default function ProjectManagementScreen() {
         return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
     }
   };
-  
 
   // const paymentProgress =
   //   projects.totalAmount && projects.paidAmount !== undefined
@@ -141,16 +140,19 @@ export default function ProjectManagementScreen() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             {project.title}
           </h1>
-          <Button onClick={() => toggleModal("isEditDialogOpen")}>
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Project
-          </Button>
-          <CooldownButton
-            label="Send Email"
-            cooldownMs={3600000} // 1 hour
-            storageKey="emailCooldown"
-            onClick={sendEmail}
-          />
+          <div className="flex items-center gap-2.5 justify-center ">
+            <Button onClick={() => toggleModal("isEditDialogOpen")}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Project
+            </Button>
+            <CooldownButton
+          
+              label="Send Email"
+              cooldownMs={3600000} // 1 hour
+              storageKey="emailCooldown"
+              onClick={sendEmail}
+            />
+          </div>
         </div>
 
         {/* Project Overview */}
@@ -174,7 +176,9 @@ export default function ProjectManagementScreen() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Address:</span>
-                    <span className="font-medium text-right">{project.clientAddress}</span>
+                    <span className="font-medium text-right">
+                      {project.clientAddress}
+                    </span>
                   </div>
                 </div>
               </CardContent>

@@ -26,6 +26,7 @@ const THEMES = [
   "romance",
   "ocean",
   "sky",
+  "fantasy", "anger", "passionate", "sensual"
 ] as const;
 
 type Theme = (typeof THEMES)[number];
@@ -69,7 +70,7 @@ export function ThemeSwitcher() {
           <span className="capitalize">{theme}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent className="grid md:grid-cols-3 gap-2.5  md:p-4" align="end">
         {THEMES.map((t) => (
           <DropdownMenuItem className="hover:bg-green-300" key={t} onClick={() => applyTheme(t)}>
             <span

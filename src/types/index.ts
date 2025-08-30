@@ -497,20 +497,96 @@ export type DoubtCreate = Omit<
 > & { isResolved?: boolean };
 
 export type DoubtUpdate = Partial<Omit<DoubtBase, "userId" | "createdAt">>;
+export type TemplateCategory = "Job Application" | "Academic" | "Professional" | "Friendly" | "Custom"
 
-// /types/template.ts
-export type TemplateCategory = "Job Application" | "Friendly" | "Professional" | "Custom";
+export type TemplateType = "standard" | "formal" | "casual"
 
 export interface EmailTemplate {
-  id: string;
-  userId: string;
-  title: string;
-  category: TemplateCategory;
-  subject: string;     // supports placeholders like {{position}} but placeholders array is authoritative
-  body: string;        // plain HTML or plain text (we store as plain text/HTML)
-  placeholders: string[]; // e.g. ["name","company"]
-  type: string;        // flexible (personal/business/academic etc.)
-  createdAt: number;
-  updatedAt: number;
+  id: string
+  title: string
+  category: TemplateCategory
+  subject: string
+  body: string
+  placeholders: string[]
+  createdAt: Date
+  updatedAt: Date
+  type: TemplateType
+  userId: string
+  tags?: string[]
+  isShared?: boolean
+  shareId?: string
 }
 
+export interface TemplatePlaceholder {
+  key: string
+  label: string
+  defaultValue?: string
+  required?: boolean
+}
+
+export interface TemplateFormData {
+  title: string
+  category: TemplateCategory
+  subject: string
+  body: string
+  type: TemplateType
+  tags?: string[]
+}
+
+export interface PlaceholderValues {
+  [key: string]: string
+}
+
+export interface TemplateValidationError {
+  field: string
+  message: string
+}
+
+export interface TemplateStats {
+  totalTemplates: number
+  templatesByCategory: Record<TemplateCategory, number>
+  recentlyUsed: string[]
+  mostUsedPlaceholders: string[]
+}
+
+export interface TemplateExportData {
+  template: EmailTemplate
+  exportedAt: Date
+  format: "json" | "txt" | "html"
+}
+
+export interface TemplateShareData {
+  shareId: string
+  templateId: string
+  sharedBy: string
+  sharedAt: Date
+  expiresAt?: Date
+  accessCount: number
+}
+
+export interface CategoryMetadata {
+  category: TemplateCategory
+  icon: string
+  description: string
+  color: string
+  defaultPlaceholders: string[]
+}
+
+export interface UserTemplatePreferences {
+  userId: string
+  defaultCategory: TemplateCategory
+  defaultType: TemplateType
+  autoSave: boolean
+  defaultPlaceholders: Record<string, string>
+  recentCategories: TemplateCategory[]
+  favoriteTemplates: string[]
+}
+
+export interface TemplateUsage {
+  templateId: string
+  userId: string
+  usedAt: Date
+  placeholderValues: PlaceholderValues
+  generatedSubject: string
+  generatedBody: string
+}
