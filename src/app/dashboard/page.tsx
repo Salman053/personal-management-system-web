@@ -138,14 +138,14 @@ export default function AnalyticsDashboard() {
     // Pending
     const pendingPayments = totalProjectRevenue - totalPaidAmount;
     // Task Analytics (Daily Tasks + Project Tasks)
-    const completedDailyTasks = dailyTasks.filter(
+    const completedDailyTasks = dailyTasks?.filter(
       (t) => t.status === "completed"
     ).length;
-    const totalDailyTasks = dailyTasks.length;
+    const totalDailyTasks = dailyTasks?.length;
     const completedProjectTasks = projectTasks.filter(
       (t) => t.status === "completed"
     ).length;
-    const totalProjectTasks = projectTasks.length;
+    const totalProjectTasks = projectTasks?.length;
     const overallTaskCompletion =
       totalDailyTasks + totalProjectTasks > 0
         ? Math.round(
@@ -159,14 +159,14 @@ export default function AnalyticsDashboard() {
     const avgHabitStreak =
       habits.length > 0
         ? Math.round(
-            habits.reduce((sum, h) => sum + (h.streakTarget || 0), 0) /
+            habits.reduce((sum, h) => sum + (h?.streakTarget || 0), 0) /
               habits.length
           )
         : 0;
     const avgCompletionRate =
       habits.length > 0
         ? Math.round(
-            habits.reduce((sum, h) => sum + (h.streakTarget || 0), 0) /
+            habits.reduce((sum, h) => sum + (h?.streakTarget || 0), 0) /
               habits.length
           )
         : 0;
@@ -175,11 +175,11 @@ export default function AnalyticsDashboard() {
     const avgLearningProgress =
       learning.length > 0
         ? Math.round(
-            learning.reduce((sum, l) => sum + (l.progress || 0), 0) /
+            learning.reduce((sum, l) => sum + (l?.progress || 0), 0) /
               learning.length
           )
         : 0;
-    const completedLearning = learning.filter((l) => l.completed).length;
+    const completedLearning = learning?.filter((l) => l?.completed).length;
 
     // Monthly Finance Trends (last 6 months)
     const monthlyFinances = Array.from({ length: 6 }, (_, i) => {
@@ -409,7 +409,7 @@ export default function AnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={analytics.monthlyFinances}>
+                    <AreaChart data={analytics.monthlyFinances ?? []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis />
@@ -420,14 +420,14 @@ export default function AnalyticsDashboard() {
                       <Area
                         type="monotone"
                         dataKey="income"
-                        stackId="1"
+                        // stackId="1"
                         stroke="hsl(var(--chart-1))"
                         fill={`${COLORS[0]}`}
                       />
                       <Area
                         type="monotone"
                         dataKey="expense"
-                        stackId="1"
+                        // stackId="1"
                         stroke="hsl(var(--chart-2))"
                         fill={`${COLORS[3]}`}
                       />

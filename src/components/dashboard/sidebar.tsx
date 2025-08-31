@@ -31,7 +31,7 @@ const navigation = [
   { name: "Doubt Box", href: "/dashboard/doubt", icon: Box },
   { name: "Templates", href: "/dashboard/templates", icon: DotSquareIcon },
   { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  // { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 export function Sidebar() {

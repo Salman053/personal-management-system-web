@@ -500,7 +500,7 @@ export function TemplateList({
                     setSelectedTemplate(item);
                     setDeleteDialogOpen(true);
                   }}
-                  className="ml-8"
+                  className=""
                 />
               ) : (
                 <Card
@@ -508,7 +508,7 @@ export function TemplateList({
                   onClick={() => handleViewTemplate(template)}
                 >
                   <CardContent className="  ">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between">
                       <div className="flex items-center gap-4 min-w-0 flex-1">
                         <div
                           className={`w-3 h-3 rounded-full flex-shrink-0 ${CATEGORY_METADATA[template.category].color.split(" ")[0]}`}
@@ -531,7 +531,7 @@ export function TemplateList({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 ml-4">
+                      <div className="flex flex-wrap items-center gap-2 ml-4">
                         <Button
                           variant="ghost"
                           size="sm"

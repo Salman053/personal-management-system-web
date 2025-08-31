@@ -154,7 +154,7 @@ export function TemplateManager({ className = "" }: TemplateManagerProps) {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex items-center gap-2">
+            <div className="flex  items-end justify-end md:items-center flex-wrap gap-2">
               {activeTab !== "editor" && (
                 <>
                   <Button
