@@ -41,7 +41,7 @@ function prettyDate(date: Date): string {
 }
 
 export default function TaskCard({ task, onEdit, onDelete }: Props) {
-  const { label, classes, iconColor } = statusMeta[task.status];
+  // const { label, classes, iconColor } = statusMeta[task?.status];
 
   return (
     <article
