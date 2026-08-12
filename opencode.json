@@ -1,0 +1,9 @@
+{
+    "agents": {
+        "enable_sub_agents": false,
+        "allow_delegation": false
+    },
+    "routing": {
+        "fallback_to_free_subagents": false
+    }
+}

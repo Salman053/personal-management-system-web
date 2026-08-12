@@ -8,7 +8,7 @@ import { RegisterForm } from "@/components/auth/register-form";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useAppTheme } from "@/components/theme-provider";
 import AuthLoadingScreen from "./loading";
 import Particles from "@/components/animated/particles";
 
@@ -17,7 +17,7 @@ type AuthMode = "login" | "register" | "forgot-password";
 export default function AuthPage() {
   const [mode, setMode] = useState<AuthMode>("login");
   const { user, loading } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { toggleTheme } = useAppTheme();
   const router = useRouter();
 
   // Redirect if already logged in
@@ -51,7 +51,7 @@ export default function AuthPage() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          onClick={toggleTheme}
         >
           <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />

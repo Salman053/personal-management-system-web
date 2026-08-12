@@ -279,6 +279,17 @@ export interface Habit {
   streakTarget?: number
   difficulty: HabitDifficulty
   archived?: boolean
+
+  /* Derived / enriched fields. Some views compute and attach these before
+     rendering, while the persisted shape only stores the fields above. */
+  title?: string
+  streak?: number | { current?: number; longest?: number; longestStreak?: number }
+  xp?: number
+  stats?: Partial<HabitStats>
+  badges?: Badge[]
+  motivationQuote?: string
+  completedDates?: string[]
+  targetCount?: number
 }
 
 export interface HabitEntry {
@@ -350,6 +361,7 @@ export interface Badge {
   description: string
   icon: string
   color: string
+  category?: string
   unlockedAt: Date
   rarity: "common" | "rare" | "epic" | "legendary"
 }
@@ -359,6 +371,7 @@ export interface Achievement {
   name: string
   description: string
   icon: string
+  color?: string
   progress: number
   target: number
   xpReward: number
@@ -590,3 +603,6 @@ export interface TemplateUsage {
   generatedSubject: string
   generatedBody: string
 }
+
+export * from "./committee"
+

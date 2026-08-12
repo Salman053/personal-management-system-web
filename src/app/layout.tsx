@@ -20,21 +20,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
 
-  
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-     
       </head>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider>
           <AuthProvider>
             <MainContextProvider>
               <ConfirmProvider>
-              {children}
+                {children}
               </ConfirmProvider>
-              </MainContextProvider>
-            <Toaster expand visibleToasts={5}  duration={3000} swipeDirections={["left","right"]}/>
+            </MainContextProvider>
+            <Toaster expand visibleToasts={5} duration={3000} swipeDirections={["left", "right"]} />
           </AuthProvider>
         </ThemeProvider>
       </body>

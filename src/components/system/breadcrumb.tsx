@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ChevronRight } from "lucide-react";
+import { Home, ChevronRight, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function capitalize(str: string) {
@@ -12,18 +12,20 @@ function capitalize(str: string) {
 export function Breadcrumb({ className }: { className?: string }) {
   const pathname = usePathname(); // e.g. "/projects/123/payments"
   const segments = pathname.split("/").filter(Boolean); // ["projects","123","payments"]
+  const isDashboard = pathname.startsWith("/dashboard");
 
   return (
     <nav
       aria-label="breadcrumb"
-      className={cn("flex items-center  py-4    bg-background/10  space-x-1 text-sm", className)} 
+      className={cn("flex items-center gap-1 py-3 text-sm", className)}
     >
-      {/* Home */}
+      {/* Home/Dashboard root */}
       <Link
-        href="/"
-        className="flex items-center text-muted-foreground hover:text-primary transition-colors"
+        href={isDashboard ? "/dashboard" : "/"}
+        className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
       >
-        <Home className="h-4 w-4" />
+        {isDashboard ? <LayoutDashboard className="h-4 w-4" /> : <Home className="h-4 w-4" />}
+        <span className="sr-only">{isDashboard ? "Dashboard" : "Home"}</span>
       </Link>
 
       {segments.map((seg, idx) => {
@@ -31,12 +33,10 @@ export function Breadcrumb({ className }: { className?: string }) {
         const isLast = idx === segments.length - 1;
 
         return (
-          <div key={idx} className="flex items-center space-x-1">
+          <div key={idx} className="flex items-center gap-1">
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
             {isLast ? (
-              <span className="font-medium text-foreground">
-                {capitalize(seg)}
-              </span>
+              <span className="font-medium text-foreground">{capitalize(seg)}</span>
             ) : (
               <Link
                 href={href}

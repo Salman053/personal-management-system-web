@@ -86,7 +86,7 @@ export class NotificationService {
     const subject = `Task Update: ${subtask.title} Completed`
 
     const notifications = contacts.map(async (contact) => {
-      const promises = []
+      const promises: Promise<boolean>[] = []
 
       // Send WhatsApp if phone number exists
       if (contact.phone) {

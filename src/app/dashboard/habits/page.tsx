@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Plus,
   Search,
@@ -25,10 +31,26 @@ import { Habit, HabitAnalytics } from "@/types";
 import { habitService } from "@/services/habits";
 import { HabitAnalyticsView } from "@/components/habits/habit-analytics";
 import { useMainContext } from "@/contexts/app-context";
+import { PageHeader } from "@/components/shared/page-header";
+import { StatCard } from "@/components/shared/stat-card";
+import { EmptyState } from "@/components/shared/empty-state";
+
+const CATEGORY_OPTIONS = [
+  "health",
+  "fitness",
+  "productivity",
+  "learning",
+  "mindfulness",
+  "social",
+  "creativity",
+  "finance",
+  "other",
+] as const;
+
+const TYPE_OPTIONS = ["build", "quit", "maintain"] as const;
 
 export default function HabitsPage() {
   const { habits } = useMainContext();
-  // const [habits, setHabits] = useState<Habit[]>([]);
   const [analytics, setAnalytics] = useState<HabitAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,19 +66,17 @@ export default function HabitsPage() {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [profileData, analyticsData, quote] = await Promise.all([
-        // habitService.getHabits(),
-        habitService.getUserProfile(),
+      const [analyticsData, quote] = await Promise.all([
         habitService.getHabitAnalytics(),
         habitService.getMotivationalQuote(),
       ]);
 
-      // setHabits(Habits);
       setAnalytics(analyticsData);
       setMotivationalQuote(quote);
     } catch (error) {
@@ -73,27 +93,26 @@ export default function HabitsPage() {
     completed: boolean
   ) => {
     try {
-      const habit = habits.find((h:Habit) => h.id === habitId);
+      const habit = habits.find((h: Habit) => h.id === habitId);
       if (!habit) return;
-// console.log(habitId)
+
       const dateString = date.toISOString().split("T")[0];
       await habitService.markHabitComplete(habitId, dateString, 0, "");
 
       if (completed) {
-        // Award XP for completion
         const xpAmount =
           habit.difficulty === "easy"
             ? 10
             : habit.difficulty === "medium"
-              ? 20
-              : habit.difficulty === "hard"
-                ? 30
-                : 50;
+            ? 20
+            : habit.difficulty === "hard"
+            ? 30
+            : 50;
         const xpResult = await habitService.addXP(
           xpAmount,
           "",
           "habit_completion",
-          habitId,
+          habitId
         );
 
         toast.success(`+${xpAmount} XP! ${habit.name} completed!`, {
@@ -103,7 +122,6 @@ export default function HabitsPage() {
         });
       }
 
-      // Reload data to reflect changes
       await loadData();
     } catch (error) {
       console.error("Error updating habit:", error);
@@ -145,57 +163,36 @@ export default function HabitsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Habit Tracker
-          </h1>
-          <p className="text-muted-foreground">
-            Build lasting habits and achieve your goals with data-driven
-            insights
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* <div className="text-right">
-              <div className="text-sm text-muted-foreground">Level {userProfile.level}</div>
-              <div className="flex items-center gap-2">
-                <Progress value={(userProfile.currentXP / userProfile.xpToNextLevel) * 100} className="w-24 h-2" />
-                <span className="text-sm font-medium">
-                  {userProfile.currentXP}/{userProfile.xpToNextLevel} XP
-                </span>
-              </div>
-            </div> */}
-          <Button
-            onClick={() => setIsHabitDialogOpen(true)}
-            className="gradient-primary"
-          >
+    <div className="space-y-8">
+      <PageHeader
+        title="Habit Tracker"
+        description="Build lasting habits and achieve your goals with data-driven insights."
+        actions={
+          <Button onClick={() => setIsHabitDialogOpen(true)} className="gradient-primary">
             <Plus className="mr-2 h-4 w-4" />
             New Habit
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {motivationalQuote && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-6"
         >
-          <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
+          <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
             <CardContent className="pt-6">
               <blockquote className="text-lg italic text-foreground">
                 "{motivationalQuote.text}"
               </blockquote>
-              <cite className="text-sm text-muted-foreground mt-2 block">
+              <cite className="mt-2 block text-sm text-muted-foreground">
                 — {motivationalQuote.author}
               </cite>
             </CardContent>
@@ -204,130 +201,47 @@ export default function HabitsPage() {
       )}
 
       {analytics && (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Target className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">
-                      {analytics.totalHabits}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Total Habits
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-success/10">
-                    <TrendingUp className="w-5 h-5 text-success" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">
-                      {analytics.completedToday}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Completed Today
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-warning/10">
-                    <BarChart3 className="w-5 h-5 text-warning" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">
-                      {Math.round(analytics.averageCompletionRate * 100)}%
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Completion Rate
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-habit-streak/10">
-                    <Flame className="w-5 h-5 text-habit-streak" />
-                  </div>
-                  <div>
-                    {/* <div className="text-2xl font-bold">{userProfile?.streakCount || 0}</div> */}
-                    <div className="text-sm text-muted-foreground">
-                      Current Streak
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-info/10">
-                    <Star className="w-5 h-5 text-info" />
-                  </div>
-                  <div>
-                    {/* <div className="text-2xl font-bold">{userProfile?.totalXP || 0}</div> */}
-                    <div className="text-sm text-muted-foreground">
-                      Total XP
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+          <StatCard
+            label="Total Habits"
+            value={analytics.totalHabits}
+            icon={<Target className="h-5 w-5" />}
+            tone="bg-primary/10 text-primary"
+          />
+          <StatCard
+            label="Completed Today"
+            value={analytics.completedToday}
+            icon={<TrendingUp className="h-5 w-5" />}
+            tone="bg-success/10 text-success"
+          />
+          <StatCard
+            label="Completion Rate"
+            value={`${Math.round(analytics.averageCompletionRate * 100)}%`}
+            icon={<BarChart3 className="h-5 w-5" />}
+            tone="bg-warning/10 text-warning"
+          />
+          <StatCard
+            label="Current Streak"
+            value={
+              analytics.streakLeaderboard[0]?.streak ?? 0
+            }
+            icon={<Flame className="h-5 w-5" />}
+            tone="bg-habit-streak/10 text-habit-streak"
+          />
+          <StatCard
+            label="Top Habit"
+            value={
+              analytics.topPerformingHabits[0]?.name?.charAt(0)?.toUpperCase() ??
+              "—"
+            }
+            hint={analytics.topPerformingHabits[0]?.name}
+            icon={<Star className="h-5 w-5" />}
+            tone="bg-info/10 text-info"
+          />
         </div>
       )}
 
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-6"
-      >
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-3 h-12">
           <TabsTrigger value="overview" className="text-sm font-medium">
             <Target className="w-4 h-4 mr-2" />
@@ -345,43 +259,49 @@ export default function HabitsPage() {
 
         <TabsContent value="overview" className="space-y-6">
           <Card>
-            <CardContent className="">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search habits..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
+            <CardContent className="flex flex-col gap-4 py-4 md:flex-row md:items-center">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search habits..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
-                <div className="flex gap-2">
-                  <select
-                    value={filterCategory}
-                    onChange={(e) => setFilterCategory(e.target.value)}
-                    className="px-3 py-2 border rounded-md text-sm"
-                  >
-                    <option value="all">All Categories</option>
-                    <option value="health">Health</option>
-                    <option value="fitness">Fitness</option>
-                    <option value="productivity">Productivity</option>
-                    <option value="learning">Learning</option>
-                    <option value="mindfulness">Mindfulness</option>
-                  </select>
-                  <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    className="px-3 py-2 border rounded-md text-sm"
-                  >
-                    <option value="all">All Types</option>
-                    <option value="build">Build</option>
-                    <option value="quit">Quit</option>
-                    <option value="maintain">Maintain</option>
-                  </select>
-                </div>
+              </div>
+              <div className="flex gap-2">
+                <Select
+                  value={filterCategory}
+                  onValueChange={setFilterCategory}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {CATEGORY_OPTIONS.map((c) => (
+                      <SelectItem key={c} value={c} className="capitalize">
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterType} onValueChange={setFilterType}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    {TYPE_OPTIONS.map((t) => (
+                      <SelectItem key={t} value={t} className="capitalize">
+                        {t}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -392,10 +312,9 @@ export default function HabitsPage() {
                 key={habit.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: Math.min(index * 0.05, 0.3) }}
               >
                 <HabitCard
-                  // completedToday
                   habit={habit}
                   onEdit={handleEditHabit}
                   onDelete={handleDeleteHabit}
@@ -406,48 +325,39 @@ export default function HabitsPage() {
           </div>
 
           {filteredHabits.length === 0 && (
-            <Card>
-              <CardContent className="p-12">
-                <div className="text-center space-y-4">
-                  <Target className="w-12 h-12 text-muted-foreground mx-auto" />
-                  <div>
-                    <h3 className="text-lg font-medium">No habits found</h3>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {searchTerm ||
-                      filterCategory !== "all" ||
-                      filterType !== "all"
-                        ? "Try adjusting your filters or search terms."
-                        : "Create your first habit to get started on your journey."}
-                    </p>
-                  </div>
-                  {!searchTerm &&
-                    filterCategory === "all" &&
-                    filterType === "all" && (
-                      <Button
-                        onClick={() => setIsHabitDialogOpen(true)}
-                        className="gradient-primary"
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create Your First Habit
-                      </Button>
-                    )}
-                </div>
-              </CardContent>
-            </Card>
+            <EmptyState
+              icon={<Target className="h-7 w-7" />}
+              title="No habits found"
+              description={
+                searchTerm ||
+                filterCategory !== "all" ||
+                filterType !== "all"
+                  ? "Try adjusting your filters or search terms."
+                  : "Create your first habit to get started on your journey."
+              }
+              action={
+                (!searchTerm &&
+                  filterCategory === "all" &&
+                  filterType === "all" && (
+                    <Button
+                      onClick={() => setIsHabitDialogOpen(true)}
+                      className="gradient-primary"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Your First Habit
+                    </Button>
+                  )) || undefined
+              }
+            />
           )}
         </TabsContent>
 
         <TabsContent value="calendar" className="space-y-6">
-          <HabitCalendar
-            habits={habits}
-            onToggleCompletion={handleToggleCompletion}
-          />
+          <HabitCalendar habits={habits} onToggleCompletion={handleToggleCompletion} />
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          {analytics && (
-            <HabitAnalyticsView analytics={analytics} habits={habits} />
-          )}
+          {analytics && <HabitAnalyticsView analytics={analytics} habits={habits} />}
         </TabsContent>
       </Tabs>
 

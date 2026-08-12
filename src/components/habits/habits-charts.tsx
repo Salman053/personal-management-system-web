@@ -30,12 +30,22 @@ interface HabitsChartsProps {
   habits: Habit[]
 }
 
+const habitName = (h: Habit) => h.title || h.name
+
+const currentStreakOf = (h: Habit) => {
+  if (typeof h.streak === "number") return h.streak
+  if (h.streak && typeof h.streak === "object") return h.streak.current ?? 0
+  return h.stats?.streakData?.currentStreak ?? 0
+}
+
+const completedDatesOf = (h: Habit) => h.completedDates ?? []
+
 export function HabitsCharts({ habits }: HabitsChartsProps) {
   // Prepare streak data
   const streakData = habits
     .map((habit) => ({
-      name: habit.title.length > 15 ? habit.title.substring(0, 15) + "..." : habit.title,
-      streak: habit.streak.current,
+      name: habitName(habit).length > 15 ? habitName(habit).substring(0, 15) + "..." : habitName(habit),
+      streak: currentStreakOf(habit),
       type: habit.type,
     }))
     .sort((a, b) => b.streak - a.streak)
@@ -52,7 +62,7 @@ export function HabitsCharts({ habits }: HabitsChartsProps) {
       })
 
       const completedInLast30 = last30Days.filter((date) =>
-        habit.completedDates.some((completedDate) => {
+        completedDatesOf(habit).some((completedDate) => {
           const cd = new Date(completedDate)
           cd.setHours(0, 0, 0, 0)
           return cd.getTime() === date.getTime()
@@ -60,7 +70,7 @@ export function HabitsCharts({ habits }: HabitsChartsProps) {
       ).length
 
       return {
-        name: habit.title.length > 15 ? habit.title.substring(0, 15) + "..." : habit.title,
+        name: habitName(habit).length > 15 ? habitName(habit).substring(0, 15) + "..." : habitName(habit),
         rate: Math.round((completedInLast30 / 30) * 100),
         type: habit.type,
       }
@@ -71,13 +81,18 @@ export function HabitsCharts({ habits }: HabitsChartsProps) {
   const typeDistribution = [
     {
       name: "Maintain Habits",
-      value: habits.filter((h) => h.type === "Maintain").length,
+      value: habits.filter((h) => h.type === "maintain").length,
       color: "#00C49F",
     },
     {
       name: "Quit Habits",
-      value: habits.filter((h) => h.type === "Quit").length,
+      value: habits.filter((h) => h.type === "quit").length,
       color: "#FF8042",
+    },
+    {
+      name: "Build Habits",
+      value: habits.filter((h) => h.type === "build").length,
+      color: "#8884D8",
     },
   ].filter((item) => item.value > 0)
 
@@ -89,7 +104,7 @@ export function HabitsCharts({ habits }: HabitsChartsProps) {
 
     const totalHabits = habits.length
     const completedHabits = habits.filter((habit) =>
-      habit.completedDates.some((completedDate) => {
+      completedDatesOf(habit).some((completedDate) => {
         const cd = new Date(completedDate)
         cd.setHours(0, 0, 0, 0)
         date.setHours(0, 0, 0, 0)

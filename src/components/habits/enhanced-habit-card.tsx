@@ -35,11 +35,25 @@ export function EnhancedHabitCard({
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
+  const name = habit.title || habit.name
+  const streakValue =
+    typeof habit.streak === "number"
+      ? habit.streak
+      : habit.streak?.current ?? habit.stats?.streakData?.currentStreak ?? 0
+  const longestStreak =
+    typeof habit.streak === "number"
+      ? habit.streak
+      : habit.streak?.longest ??
+        habit.streak?.longestStreak ??
+        habit.stats?.streakData?.longestStreak ??
+        0
+  const xp = habit.xp ?? 0
+
   const handleToggle = () => {
     const newCompleted = !completedToday
     onToggle(habit.id, today, newCompleted)
 
-    if (newCompleted && habit.streak.current >= 6) {
+    if (newCompleted && streakValue >= 6) {
       setShowCelebration(true)
     }
 
@@ -49,8 +63,8 @@ export function EnhancedHabitCard({
     }
   }
 
-  const xpGain = completedToday ? 0 : Math.min((habit.streak.current + 1) * 5, 50)
-  const level = Math.floor((habit.xp || 0) / 100) + 1
+  const xpGain = completedToday ? 0 : Math.min((streakValue + 1) * 5, 50)
+  const level = Math.floor(xp / 100) + 1
 
   return (
     <>
@@ -66,9 +80,9 @@ export function EnhancedHabitCard({
             <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">
               Lv.{level}
             </Badge>
-            {(habit.xp || 0) > 0 && (
+            {xp > 0 && (
               <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700">
-                {habit.xp} XP
+                {xp} XP
               </Badge>
             )}
           </div>
@@ -77,14 +91,14 @@ export function EnhancedHabitCard({
           <CardHeader className="pb-3">
             <div className="space-y-1 flex-1 pr-16">
               <CardTitle className="text-lg leading-tight flex flex-col gap-2">
-                <span>{habit.title}</span>
+                <span>{name}</span>
                 <div className="flex items-center justify-between">
                   <Badge
                     variant="secondary"
                     className={
-                      habit.priority === "High"
+                      habit.priority === "high"
                         ? "bg-red-100 text-red-700"
-                        : habit.priority === "Medium"
+                        : habit.priority === "medium"
                           ? "bg-yellow-100 text-yellow-700"
                           : "bg-green-100 text-green-700"
                     }
@@ -92,15 +106,15 @@ export function EnhancedHabitCard({
                     {habit.priority}
                   </Badge>
                   <Badge
-                    className={habit.type === "Maintain" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
+                    className={habit.type === "maintain" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
                   >
-                    {habit.type === "Maintain" ? (
+                    {habit.type === "maintain" ? (
                       <>
                         <TrendingUp className="h-3 w-3 mr-1" /> Maintain
                       </>
                     ) : (
                       <>
-                        <Target className="h-3 w-3 mr-1" /> Quit
+                        <Target className="h-3 w-3 mr-1" /> {habit.type === "quit" ? "Quit" : "Build"}
                       </>
                     )}
                   </Badge>
@@ -134,7 +148,7 @@ export function EnhancedHabitCard({
                 }
                 transition={{ duration: 1 }}
               >
-                💡 "{habit.motivationQuote}"
+                💡 &quot;{habit.motivationQuote}&quot;
               </motion.p>
             )}
 
@@ -151,7 +165,7 @@ export function EnhancedHabitCard({
             )}
 
             {/* Streak */}
-            <HabitStreak streak={habit.streak} />
+            <HabitStreak streak={{ current: streakValue, longest: longestStreak }} />
 
             {/* Today Toggle with XP Preview */}
             <div className="flex items-center justify-between pt-2 border-t">
@@ -182,7 +196,7 @@ export function EnhancedHabitCard({
                         className="flex items-center"
                       >
                         <Check className="h-4 w-4 mr-1" />
-                        {habit.type === "Maintain" ? "Done" : "Avoided"}
+                        {habit.type === "maintain" ? "Done" : "Avoided"}
                       </motion.div>
                     ) : (
                       <motion.div
@@ -193,7 +207,7 @@ export function EnhancedHabitCard({
                         className="flex items-center"
                       >
                         <X className="h-4 w-4 mr-1" />
-                        {habit.type === "Maintain" ? "Mark Done" : "Mark Avoided"}
+                        {habit.type === "maintain" ? "Mark Done" : "Mark Avoided"}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -202,7 +216,7 @@ export function EnhancedHabitCard({
             </div>
 
             {/* Weekly Progress */}
-            <HabitProgress completedDates={habit.completedDates} type={habit.type} />
+            <HabitProgress completedDates={habit.completedDates ?? []} type={habit.type} />
           </CardContent>
         </Card>
       </motion.div>
@@ -210,8 +224,8 @@ export function EnhancedHabitCard({
       {/* Streak Celebration */}
       {showCelebration && (
         <StreakCelebration
-          streak={habit.streak.current + 1}
-          isNewRecord={habit.streak.current + 1 > habit.streak.longest}
+          streak={streakValue + 1}
+          isNewRecord={streakValue + 1 > longestStreak}
           onClose={() => setShowCelebration(false)}
         />
       )}

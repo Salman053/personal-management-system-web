@@ -103,7 +103,7 @@ export async function generateReport(
     const dateStr = date.toISOString().split("T")[0];
 
     const completedCount = habits.filter((h) =>
-      h.completedDates.includes(dateStr)
+      (h.completedDates ?? []).includes(dateStr)
     ).length;
 
     completionTrend.push({
@@ -113,12 +113,20 @@ export async function generateReport(
     });
   }
 
+  const longestStreakOf = (h: Habit): number => {
+    if (typeof h.streak === "number") return h.streak;
+    if (h.streak && typeof h.streak === "object") {
+      return h.streak.longest ?? h.streak.longestStreak ?? h.streak.current ?? 0;
+    }
+    return h.stats?.streakData?.longestStreak ?? 0;
+  };
+
   const habitsData = {
     totalHabits: habits.length,
     averageCompletion:
       completionTrend.reduce((sum, d) => sum + d.completion, 0) /
       (completionTrend.length || 1),
-    longestStreak: Math.max(...habits.map((h) => h.streak.longest || 0), 0),
+    longestStreak: habits.length ? Math.max(...habits.map(longestStreakOf), 0) : 0,
     completionTrend,
   };
 

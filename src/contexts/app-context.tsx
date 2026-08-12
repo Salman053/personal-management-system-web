@@ -95,6 +95,10 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     habits,
     doubts,
     projectTasks,
+    committees,
+    committeeMembers,
+    committeePayments,
+    committeePayouts,
   } = useFirestoreData(user?.uid || "");
   // Define the values to provide through context
   const contextValue = {
@@ -123,6 +127,10 @@ const MainContextProvider = ({ children }: { children: React.ReactNode }) => {
     users,
     loading,
     error,
+    committees,
+    committeeMembers,
+    committeePayments,
+    committeePayouts,
     // Add other global state or actions here
   };
 

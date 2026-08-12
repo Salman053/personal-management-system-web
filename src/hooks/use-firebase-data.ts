@@ -3,6 +3,7 @@
 import { ProjectTask } from "@/components/task/task-board"
 import { db } from "@/lib/firebase"
 import type { Doubt, EmailTemplate, FinanceRecord, Habit, LearningItem, Project, ProjectPayment, Reminder, SubTask, Task } from "@/types"
+import type { Committee, CommitteeMember, CommitteePayment, CommitteePayout } from "@/types/committee"
 import { collection, onSnapshot, query, where } from "firebase/firestore"
 import { useState, useEffect } from "react"
 
@@ -23,6 +24,10 @@ export const useFirestoreData = (userId: string) => {
   const [projectTasks, setProjectTasks] = useState<ProjectTask[]>([])
   const [doubts, setDoubts] = useState<Doubt[]>([])
   const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>([])
+  const [committees, setCommittees] = useState<Committee[]>([])
+  const [committeeMembers, setCommitteeMembers] = useState<CommitteeMember[]>([])
+  const [committeePayments, setCommitteePayments] = useState<CommitteePayment[]>([])
+  const [committeePayouts, setCommitteePayouts] = useState<CommitteePayout[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -72,6 +77,10 @@ export const useFirestoreData = (userId: string) => {
       const unsubscribeProjectTasks = handleSnapshot("tasks", setProjectTasks)
       const unsubscribeDoubts = handleSnapshot("doubts", setDoubts)
       const unsubscribeEmailTemplates = handleSnapshot("emailTemplates", setEmailTemplates)
+      const unsubscribeCommittees = handleSnapshot("committees", setCommittees)
+      const unsubscribeCommitteeMembers = handleSnapshot("committeeMembers", setCommitteeMembers)
+      const unsubscribeCommitteePayments = handleSnapshot("committeePayments", setCommitteePayments)
+      const unsubscribeCommitteePayouts = handleSnapshot("committeePayouts", setCommitteePayouts)
 
       setLoading(false)
 
@@ -90,6 +99,10 @@ export const useFirestoreData = (userId: string) => {
         unsubscribeProjectTasks?.()
         unsubscribeDoubts?.()
         unsubscribeEmailTemplates?.()
+        unsubscribeCommittees?.()
+        unsubscribeCommitteeMembers?.()
+        unsubscribeCommitteePayments?.()
+        unsubscribeCommitteePayouts?.()
       }
     }
 
@@ -120,6 +133,10 @@ export const useFirestoreData = (userId: string) => {
     doubts,
     finances,
     learning,
-    emailTemplates
+    emailTemplates,
+    committees,
+    committeeMembers,
+    committeePayments,
+    committeePayouts,
   }
 }

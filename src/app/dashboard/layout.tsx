@@ -19,15 +19,15 @@ export default function DashboardLayout({
 }) {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen app-backdrop">
         <div className="flex">
           <Sidebar />
           <div className="flex-1 flex flex-col min-h-screen">
             <Header />
-            <ScrollArea className="flex-1  z-10 px-8 py-1 max-h-[91vh] overflow-auto">
+            <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
               <Breadcrumb />
               {children}
-            </ScrollArea>
+            </main>
           </div>
         </div>
       </div>

@@ -98,11 +98,23 @@ export function useDashboard(data: DashboardInput) {
     }
 
     // ---- Habits ----
+    const currentStreakOf = (h: Habit) => {
+      if (typeof h.streak === "number") return h.streak
+      if (h.streak && typeof h.streak === "object") return h.streak.current ?? h.streak.longest ?? 0
+      return h.stats?.streakData?.currentStreak ?? 0
+    }
+
+    const completionRateOf = (h: Habit) => h.stats?.completionRate ?? 0
+
     const habitStats = {
       total: habits.length,
       active: habits.filter((h) => !h.archived).length,
-      currentStreaks: habits.sort((a, b) => b.streak.current - a.streak.current).slice(0, 3),
-      avgCompletionRate: habits.length ? Math.round(habits.reduce((s, h) => s + (h.stats.completionRate || 0), 0) / habits.length) : 0,
+      currentStreaks: [...habits]
+        .sort((a, b) => currentStreakOf(b) - currentStreakOf(a))
+        .slice(0, 3),
+      avgCompletionRate: habits.length
+        ? Math.round(habits.reduce((s, h) => s + completionRateOf(h), 0) / habits.length)
+        : 0,
     }
 
     // ---- Learning ----

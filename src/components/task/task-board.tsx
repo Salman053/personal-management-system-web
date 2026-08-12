@@ -37,9 +37,9 @@ export default function TaskBoard({
   projectId: string;
   userId: string;
 }) {
-  const { projectTasks }: { projectTasks: Task[] } = useMainContext();
+  const { projectTasks }: { projectTasks: ProjectTask[] } = useMainContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTask] = useState<ProjectTask | null>(null);
   // 🔹 Fetch tasks from Firestore
 
   // 🔹 Handle Drag End
@@ -61,7 +61,7 @@ export default function TaskBoard({
     await deleteDoc(doc(db, "tasks", id));
   };
 
-  const STATUS_THEME: Record<Task["status"], string> = {
+  const STATUS_THEME: Record<ProjectTask["status"], string> = {
     active:
       "border-blue-200 bg-blue-200 dark:border-blue-700 dark:bg-blue-900/20",
     review:

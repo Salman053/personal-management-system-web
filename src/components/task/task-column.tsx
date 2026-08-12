@@ -1,5 +1,5 @@
 import { Draggable } from "@hello-pangea/dnd"
-import { Task } from "./task-board"
+import { ProjectTask as Task } from "./task-board"
 import TaskCard from "./task-card"
 
 type Props = {

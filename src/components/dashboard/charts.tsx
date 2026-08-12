@@ -69,10 +69,16 @@ export function Charts() {
   const monthlyChartData = Object.values(monthlyData).slice(-6) // Last 6 months
 
   // Prepare habit completion data
-  const habitData = habits.map((habit:Habit) => ({
-    name: habit.title,
-    streak: habit.streak.current,
-    completion: Math.min((habit.completedDates.length / 30) * 100, 100), // Last 30 days
+  const currentStreakOf = (habit: Habit) => {
+    if (typeof habit.streak === "number") return habit.streak
+    if (habit.streak && typeof habit.streak === "object") return habit.streak.current ?? 0
+    return habit.stats?.streakData?.currentStreak ?? 0
+  }
+
+  const habitData = habits.map((habit: Habit) => ({
+    name: habit.title || habit.name,
+    streak: currentStreakOf(habit),
+    completion: Math.min(((habit.completedDates ?? []).length / 30) * 100, 100), // Last 30 days
   }))
 
   return (
