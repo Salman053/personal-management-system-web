@@ -192,16 +192,16 @@ export default function FinancesPage() {
       <div className="min-h-screen bg-background">
         <div className="  space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
                 Financial Manager
               </h1>
-              <p className="text-muted-foreground text-lg">
+              <p className="text-muted-foreground text-sm sm:text-lg">
                 Professional financial tracking and management system
               </p>
             </div>
-            <Button onClick={() => handleAddTransaction("Income")}>
+            <Button onClick={() => handleAddTransaction("Income")} className="w-full sm:w-auto">
               <Plus className="mr-2 h-5 w-5" />
               Add Transaction
             </Button>
@@ -297,13 +297,13 @@ export default function FinancesPage() {
             onValueChange={setActiveTab}
             className="space-y-6"
           >
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="income">Income</TabsTrigger>
-              <TabsTrigger value="expenses">Expenses</TabsTrigger>
-              <TabsTrigger value="lending">Lending</TabsTrigger>
-              <TabsTrigger value="transactions">All Transactions</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 h-auto gap-1">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+              <TabsTrigger value="income" className="text-xs sm:text-sm">Income</TabsTrigger>
+              <TabsTrigger value="expenses" className="text-xs sm:text-sm">Expenses</TabsTrigger>
+              <TabsTrigger value="lending" className="text-xs sm:text-sm">Lending</TabsTrigger>
+              <TabsTrigger value="transactions" className="text-xs sm:text-sm">All Trans.</TabsTrigger>
+              <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analytics</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">

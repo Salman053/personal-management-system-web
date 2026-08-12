@@ -34,7 +34,7 @@ export default function TemplatesPage() {
     <div className="min-h-screen bg-background">
       <div className="">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-balance">Email Templates</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-balance">Email Templates</h1>
           <p className="text-muted-foreground mt-2">
             Manage your email templates for job applications, academic correspondence, and professional communication.
           </p>

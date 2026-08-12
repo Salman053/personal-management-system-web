@@ -55,7 +55,7 @@ export default function HabitDashboard({ className }: HabitDashboardProps) {
     return streak;
   };
 
-  // Calculate today's completions
+  // Calculate today&apos;s completions
   const todayEntries = habitEntries.filter((entry) => {
     const entryDate = entry.date?.toDate?.() || new Date(entry.date);
     return isToday(entryDate) && entry.completed;
@@ -83,7 +83,7 @@ export default function HabitDashboard({ className }: HabitDashboardProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Today's Progress
+              Today&apos;s Progress
             </CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -139,7 +139,7 @@ export default function HabitDashboard({ className }: HabitDashboardProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            This Week's Progress
+            This Week&apos;s Progress
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -150,15 +150,15 @@ export default function HabitDashboard({ className }: HabitDashboardProps) {
                   entry.date?.toDate?.() || new Date(entry.date);
                 return (
                   format(entryDate, "yyyy-MM-dd") ===
-                    format(day, "yyyy-MM-dd") && entry.completed
+                  format(day, "yyyy-MM-dd") && entry.completed
                 );
               });
 
               const completionRate =
                 habits.length > 0
                   ? (dayEntries.length /
-                      habits.filter((h) => h.frequency === "daily").length) *
-                    100
+                    habits.filter((h) => h.frequency === "daily").length) *
+                  100
                   : 0;
 
               return (

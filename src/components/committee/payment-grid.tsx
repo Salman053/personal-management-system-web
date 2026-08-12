@@ -121,7 +121,7 @@ export function PaymentGrid({
             {members.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={monthsCount + 1} className="text-center py-8 text-muted-foreground">
-                  No members added yet. Click "Add Member" to build your committee payment matrix.
+                  No members added yet. Click &qout;Add Member&qout; to build your committee payment matrix.
                 </TableCell>
               </TableRow>
             ) : (

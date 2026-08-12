@@ -89,8 +89,8 @@ export function ProjectsTable({
   return (
     <>
       <Card>
-        <CardContent className="p-4">
-          <Table className="">
+        <CardContent className="p-0 sm:p-4 overflow-x-auto">
+          <Table className="min-w-[600px]">
             <TableHeader className="">
               <TableRow>
                 <TableHead>Project</TableHead>

@@ -51,6 +51,7 @@ import { ProjectTask } from "@/components/task/task-board";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatCard } from "@/components/shared/stat-card";
+import { isToday } from "date-fns";
 
 const COLORS = ["#4F46E5", "#10B981", "#F59E0B", "#EF4444", "#3B82F6", "#8B5CF6"];
 
@@ -135,11 +136,15 @@ export default function AnalyticsDashboard() {
 
     // Habit Analytics (derived from the habit log so it works with real data)
     const entryDate = (e: any) => e?.date?.toDate?.() || new Date(e.date);
-    const isToday = require("date-fns").isToday as (d: Date) => boolean;
-    const completedToday = habitEntries.filter((e) => e.completed && isToday(entryDate(e))).length;
-    const totalCompleted = habitEntries.filter((e) => e.completed).length;
-    const avgCompletionRate = habits.length > 0 ? Math.min(100, Math.round((totalCompleted / Math.max(1, habits.length * 14)) * 100)) : 0;
 
+    // Use the imported date-fns function directly (no type assertion required)
+    const completedToday = habitEntries.filter((e) => e.completed && isToday(entryDate(e))).length;
+
+    const totalCompleted = habitEntries.filter((e) => e.completed).length;
+
+    const avgCompletionRate = habits.length > 0
+      ? Math.min(100, Math.round((totalCompleted / Math.max(1, habits.length * 14)) * 100))
+      : 0;
     // Learning Analytics
     const avgLearningProgress =
       learning.length > 0 ? Math.round(learning.reduce((sum, l) => sum + (l?.progress || 0), 0) / learning.length) : 0;

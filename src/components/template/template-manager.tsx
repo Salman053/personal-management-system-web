@@ -135,8 +135,8 @@ export function TemplateManager({ className = "" }: TemplateManagerProps) {
           className="space-y-6"
         >
           {/* Navigation */}
-          <div className="flex items-center justify-between">
-            <TabsList className="grid w-auto grid-cols-3">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <TabsList className="grid w-full sm:w-auto grid-cols-3">
               <TabsTrigger
                 value="dashboard"
                 className="flex items-center gap-2"
@@ -154,18 +154,19 @@ export function TemplateManager({ className = "" }: TemplateManagerProps) {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex  items-end justify-end md:items-center flex-wrap gap-2">
+            <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
               {activeTab !== "editor" && (
                 <>
                   <Button
                     variant="outline"
                     onClick={() => setShowImportModal(true)}
                     size="sm"
+                    className="flex-1 sm:flex-none"
                   >
                     <Upload className="h-4 w-4 mr-2" />
                     Import
                   </Button>
-                  <Button onClick={handleCreateNew} size="sm">
+                  <Button onClick={handleCreateNew} size="sm" className="flex-1 sm:flex-none">
                     <Plus className="h-4 w-4 mr-2" />
                     New Template
                   </Button>

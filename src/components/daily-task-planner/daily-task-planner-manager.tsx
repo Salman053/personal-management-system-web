@@ -88,14 +88,14 @@ export default function DailyTaskPlannerManager() {
     <div className="min-h-screen bg-background ">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Task Manager</h1>
-            <p className="text-muted-foreground text-lg">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Task Manager</h1>
+            <p className="text-muted-foreground text-sm sm:text-lg">
               Manage your daily tasks and subtasks
             </p>
           </div>
-          <Button onClick={() => openTaskEditor()}>
+          <Button onClick={() => openTaskEditor()} className="w-full sm:w-auto">
             <Plus className="mr-2 h-5 w-5" />
             Add Task
           </Button>
@@ -136,7 +136,7 @@ export default function DailyTaskPlannerManager() {
                     ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground flex items-center justify-center flex-col gap-4 bg-secondary p-36 text-center rounded-xl">
+                <p className="text-muted-foreground flex items-center justify-center flex-col gap-4 bg-secondary p-8 sm:p-16 md:p-36 text-center rounded-xl">
                   No active tasks yet.
                   <Button
                     size={"sm"}
@@ -176,7 +176,7 @@ export default function DailyTaskPlannerManager() {
                     ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground flex items-center justify-center flex-col gap-4 bg-secondary p-36 text-center rounded-xl">
+                <p className="text-muted-foreground flex items-center justify-center flex-col gap-4 bg-secondary p-8 sm:p-16 md:p-36 text-center rounded-xl">
                   No pending tasks yet.
                   <Button
                     size={"sm"}
@@ -215,7 +215,7 @@ export default function DailyTaskPlannerManager() {
                     ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground flex items-center justify-center flex-col gap-4 bg-secondary p-36 text-center rounded-xl">
+                <p className="text-muted-foreground flex items-center justify-center flex-col gap-4 bg-secondary p-8 sm:p-16 md:p-36 text-center rounded-xl">
                   No completed tasks yet.
                   <Button
                     size={"sm"}

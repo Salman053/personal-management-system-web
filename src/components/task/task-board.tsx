@@ -80,7 +80,7 @@ export default function TaskBoard({
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="flex overflow-x-auto gap-4 pb-4 snap-x md:grid md:grid-cols-4 md:overflow-visible md:pb-0 md:snap-none">
           {STATUSES.map((status) => (
             <Droppable droppableId={status} key={status}>
               {(provided) => (
@@ -88,7 +88,7 @@ export default function TaskBoard({
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   className={cn(
-                    "rounded-xl border p-3 min-h-[300px] transition",
+                    "rounded-xl border p-3 min-h-[300px] min-w-[280px] w-full shrink-0 snap-start md:min-w-0 transition",
                     STATUS_THEME[status as "active"]
                   )}
                 >

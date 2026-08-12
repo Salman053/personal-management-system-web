@@ -84,21 +84,21 @@ export default function ProjectsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Projects</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage your client and personal projects
           </p>
         </div>
-        <Button onClick={handleCreateProject}>
+        <Button onClick={handleCreateProject} className="w-full md:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           New Project
         </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -170,13 +170,13 @@ export default function ProjectsPage() {
                 />
               </div>
             </div>
-            <div className="flex gap-2">
-              <CustomSelect value={filterStatus} options={statusOptions} onChange={(value) => setFilterStatus(value as any)} />
-
-
-              <CustomSelect value={filterType} options={statusTypes} onChange={(value) => setFilterType(value as any)} />
-            
-           
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="w-full">
+                <CustomSelect value={filterStatus} options={statusOptions} onChange={(value) => setFilterStatus(value as any)} />
+              </div>
+              <div className="w-full">
+                <CustomSelect value={filterType} options={statusTypes} onChange={(value) => setFilterType(value as any)} />
+              </div>
             </div>
           </div>
         </CardContent>

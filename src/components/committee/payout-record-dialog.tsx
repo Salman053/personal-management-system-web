@@ -107,7 +107,7 @@ export function PayoutRecordDialog({
         <DialogHeader>
           <DialogTitle>Record Payout — Month {monthNumber}</DialogTitle>
           <DialogDescription>
-            Declare the member receiving this month's committee pool amount.
+            Declare the member receiving this month&apos;s committee pool amount.
           </DialogDescription>
         </DialogHeader>
 

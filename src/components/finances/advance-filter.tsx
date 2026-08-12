@@ -198,7 +198,7 @@ export function AdvancedFilters({
             {/* Date Range */}
             <div className="space-y-2 md:col-span-2">
               <Label>Date Range</Label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button

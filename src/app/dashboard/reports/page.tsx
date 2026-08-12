@@ -267,11 +267,11 @@ export default function ReportsPage() {
 
       {/* Charts */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="finances">Finances</TabsTrigger>
-          <TabsTrigger value="habits">Habits</TabsTrigger>
-          <TabsTrigger value="projects">Projects</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-1">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+          <TabsTrigger value="finances" className="text-xs sm:text-sm">Finances</TabsTrigger>
+          <TabsTrigger value="habits" className="text-xs sm:text-sm">Habits</TabsTrigger>
+          <TabsTrigger value="projects" className="text-xs sm:text-sm">Projects</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">

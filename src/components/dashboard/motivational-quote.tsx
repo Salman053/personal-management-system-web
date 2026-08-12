@@ -56,7 +56,7 @@ export function MotivationalQuote() {
         <div className="flex items-start gap-4">
           <Quote className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
           <div className="space-y-2">
-            <blockquote className="text-lg font-medium leading-relaxed">"{quote.text}"</blockquote>
+            <blockquote className="text-lg font-medium leading-relaxed">&quot;{quote.text}&quot;</blockquote>
             <cite className="text-sm text-muted-foreground">— {quote.author}</cite>
           </div>
         </div>

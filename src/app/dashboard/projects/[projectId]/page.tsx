@@ -136,11 +136,11 @@ export default function ProjectManagementScreen() {
     <div className="min-h-screen bg-background ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             {project.title}
           </h1>
-          <div className="flex items-center gap-2.5 justify-center ">
+          <div className="flex flex-wrap items-center gap-2.5">
             <Button onClick={() => toggleModal("isEditDialogOpen")}>
               <Edit className="h-4 w-4 mr-2" />
               Edit Project

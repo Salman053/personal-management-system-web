@@ -81,8 +81,8 @@ export default function CommitteesPage() {
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
-            <PiggyBank className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
+            <PiggyBank className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
             Committee & Savings Systems
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
@@ -90,7 +90,7 @@ export default function CommitteesPage() {
           </p>
         </div>
 
-        <Button onClick={handleOpenCreate} className="gap-2 bg-primary hover:bg-primary/90 h-11 px-5 shadow-md">
+        <Button onClick={handleOpenCreate} className="gap-2 bg-primary hover:bg-primary/90 h-11 px-5 shadow-md w-full md:w-auto">
           <Plus className="h-5 w-5" />
           Create New Committee / Savings
         </Button>
@@ -139,8 +139,8 @@ export default function CommitteesPage() {
 
       {/* Search & Tabs Filter */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="relative  w-full sm:w-80">
-          <Search className="absolute left-3 top-[26px] -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full sm:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search committees..."
             value={searchQuery}

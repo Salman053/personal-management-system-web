@@ -109,7 +109,7 @@ export function StreakCelebration({ streak, isNewRecord, onClose }: StreakCelebr
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">You're building incredible momentum!</p>
+                <p className="text-sm text-muted-foreground">You&apos;re building incredible momentum!</p>
                 <div className="flex items-center justify-center gap-2 text-sm">
                   <Zap className="h-4 w-4 text-yellow-500" />
                   <span className="font-medium">+{Math.min(streak * 2, 100)} XP Bonus!</span>

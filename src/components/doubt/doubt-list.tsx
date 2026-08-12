@@ -99,7 +99,7 @@ export default function DoubtList() {
   return (
     <div className="space-y-4">
       {/* Dashboard Cards */}
-      <section className="grid gap-4 md:grid-cols-4">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Total Doubts</CardTitle>
@@ -155,7 +155,7 @@ export default function DoubtList() {
       </section> */}
       {/* Toolbar */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex w-full gap-2">
+        <div className="flex flex-col sm:flex-row w-full gap-2">
           <Input
             placeholder="Search doubts..."
             value={search}
@@ -164,7 +164,7 @@ export default function DoubtList() {
           />
 
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="w-full sm:w-[120px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -176,7 +176,7 @@ export default function DoubtList() {
           </Select>
 
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="w-full sm:w-[120px]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>

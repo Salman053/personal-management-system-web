@@ -104,10 +104,10 @@ export default function HabitsPage() {
           habit.difficulty === "easy"
             ? 10
             : habit.difficulty === "medium"
-            ? 20
-            : habit.difficulty === "hard"
-            ? 30
-            : 50;
+              ? 20
+              : habit.difficulty === "hard"
+                ? 30
+                : 50;
         const xpResult = await habitService.addXP(
           xpAmount,
           "",
@@ -190,7 +190,7 @@ export default function HabitsPage() {
           <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
             <CardContent className="pt-6">
               <blockquote className="text-lg italic text-foreground">
-                "{motivationalQuote.text}"
+                &quot;{motivationalQuote.text} &quot;
               </blockquote>
               <cite className="mt-2 block text-sm text-muted-foreground">
                 — {motivationalQuote.author}
@@ -271,12 +271,12 @@ export default function HabitsPage() {
                   />
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Select
                   value={filterCategory}
                   onValueChange={setFilterCategory}
                 >
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full sm:w-40">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
@@ -290,7 +290,7 @@ export default function HabitsPage() {
                 </Select>
 
                 <Select value={filterType} onValueChange={setFilterType}>
-                  <SelectTrigger className="w-32">
+                  <SelectTrigger className="w-full sm:w-32">
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
@@ -330,8 +330,8 @@ export default function HabitsPage() {
               title="No habits found"
               description={
                 searchTerm ||
-                filterCategory !== "all" ||
-                filterType !== "all"
+                  filterCategory !== "all" ||
+                  filterType !== "all"
                   ? "Try adjusting your filters or search terms."
                   : "Create your first habit to get started on your journey."
               }

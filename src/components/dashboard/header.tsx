@@ -26,9 +26,9 @@ export function Header() {
   }
 
   return (
-    <header className="min-h-16 z-[100] sticky top-0 max-h-20 border-b bg-card px-6 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <h1 className="md:text-xl font-semibold">Personal Management System</h1>
+    <header className="min-h-16 z-[100] sticky top-0 max-h-20 border-b bg-card px-4 md:px-6 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
+        <h1 className="text-sm sm:text-base md:text-xl font-semibold truncate">Personal Management System</h1>
       </div>
 
       <div className="flex items-center gap-4">

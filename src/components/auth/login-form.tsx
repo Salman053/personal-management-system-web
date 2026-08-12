@@ -74,7 +74,7 @@ export function LoginForm({ onToggleMode, onForgotPassword }: LoginFormProps) {
               id="password"
               type="password"
               autoComplete="additional-name"
-          
+
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -94,7 +94,7 @@ export function LoginForm({ onToggleMode, onForgotPassword }: LoginFormProps) {
             </Button>
 
             <div className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Button type="button" variant="link" onClick={onToggleMode} className="p-0 h-auto font-medium">
                 Sign up
               </Button>

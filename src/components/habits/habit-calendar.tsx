@@ -179,10 +179,11 @@ export function HabitCalendar({ habits, onToggleCompletion }: HabitCalendarProps
           </div>
 
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-2">
+          <div className="w-full overflow-x-auto">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2 min-w-[300px] sm:min-w-0">
             {/* Day headers */}
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div key={day} className="text-center text-sm font-medium text-muted-foreground p-3">
+              <div key={day} className="text-center text-xs sm:text-sm font-medium text-muted-foreground p-1 sm:p-3 truncate">
                 {day}
               </div>
             ))}
@@ -229,6 +230,7 @@ export function HabitCalendar({ habits, onToggleCompletion }: HabitCalendarProps
                 </motion.div>
               )
             })}
+            </div>
           </div>
 
           {/* Legend */}

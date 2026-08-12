@@ -43,7 +43,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
-          <CardDescription>We've sent a password reset link to {email}</CardDescription>
+          <CardDescription>We&apos;ve sent a password reset link to {email}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button onClick={onBack} variant="outline" className="w-full bg-transparent">
@@ -59,7 +59,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold">Reset password</CardTitle>
-        <CardDescription>Enter your email address and we'll send you a reset link</CardDescription>
+        <CardDescription>Enter your email address and we&apos;ll send you a reset link</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

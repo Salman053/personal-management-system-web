@@ -516,7 +516,7 @@ export function LearningDialog({
 
             {formData.resources.length === 0 && (
               <p className="text-sm text-muted-foreground text-center py-4 border-2 border-dashed rounded-lg">
-                No resources added yet. Click "Add Resource" to get started.
+                No resources added yet. Click &quot;Add Resource&quot; to get started.
               </p>
             )}
           </div>
