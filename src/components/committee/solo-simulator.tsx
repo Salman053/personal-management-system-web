@@ -8,18 +8,22 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { CheckCircle, Circle, Target, Sparkles, TrendingUp, Calendar, ShieldCheck } from "lucide-react"
+import { CheckCircle, Circle, Target, Sparkles, TrendingUp, Calendar, ShieldCheck, Trash2, XCircle } from "lucide-react"
 
 interface SoloSimulatorProps {
   committee: Committee
   payments: CommitteePayment[]
   onRecordMonthlyDeposit?: (monthNumber: number) => void
+  onRemoveDeposit?: (payment_id: string, monthNumber: number) => void
+  onRemoveAllDeposits?: () => void
 }
 
 export function SoloSimulator({
   committee,
   payments,
   onRecordMonthlyDeposit,
+  onRemoveDeposit,
+  onRemoveAllDeposits,
 }: SoloSimulatorProps) {
   const [customMonthly, setCustomMonthly] = useState(String(committee.monthlyContribution))
   const [customMonths, setCustomMonths] = useState(String(committee.totalDurationMonths))
@@ -143,8 +147,23 @@ export function SoloSimulator({
       {/* Month-by-month Milestone Timeline */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-bold">Monthly Deposit Milestones</CardTitle>
-          <CardDescription>Track each virtual deposit toward your final payout.</CardDescription>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <div>
+              <CardTitle className="text-lg font-bold">Monthly Deposit Milestones</CardTitle>
+              <CardDescription>Track each virtual deposit toward your final payout.</CardDescription>
+            </div>
+            {onRemoveAllDeposits && paidMonthsCount > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10 w-full sm:w-auto"
+                onClick={onRemoveAllDeposits}
+              >
+                <XCircle className="h-3.5 w-3.5" />
+                Clear All Deposits ({paidMonthsCount})
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -156,11 +175,10 @@ export function SoloSimulator({
               return (
                 <div
                   key={mNum}
-                  className={`p-3 rounded-lg border flex items-center justify-between transition-all ${
-                    isPaid
-                      ? "border-emerald-500/50 bg-emerald-500/10"
-                      : "border-border bg-card"
-                  }`}
+                  className={`p-3 rounded-lg border flex items-center justify-between transition-all ${isPaid
+                    ? "border-emerald-500/50 bg-emerald-500/10"
+                    : "border-border bg-card"
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     {isPaid ? (
@@ -176,16 +194,29 @@ export function SoloSimulator({
                     </div>
                   </div>
 
-                  {onRecordMonthlyDeposit && (
-                    <Button
-                      size="sm"
-                      variant={isPaid ? "ghost" : "outline"}
-                      className="text-xs h-7 px-2"
-                      onClick={() => onRecordMonthlyDeposit(mNum)}
-                    >
-                      {isPaid ? "Paid" : "Record"}
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-1">
+                    {isPaid && onRemoveDeposit && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-xs h-7 w-7 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        title="Remove this deposit"
+                        onClick={() => onRemoveDeposit(payment.id, mNum)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                    {onRecordMonthlyDeposit && (
+                      <Button
+                        size="sm"
+                        variant={isPaid ? "ghost" : "outline"}
+                        className="text-xs h-7 px-2"
+                        onClick={() => onRecordMonthlyDeposit(mNum)}
+                      >
+                        {isPaid ? "Paid" : "Record"}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )
             })}

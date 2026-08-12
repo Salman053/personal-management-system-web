@@ -58,7 +58,7 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 md:p-10">
-      <div className="max-w-5xl mx-auto space-y-8">
+      <div className="mx-auto space-y-8">
         {/* Public Header Banner */}
         <div className="text-center space-y-3">
           <Badge className="bg-indigo-600 text-white hover:bg-indigo-700 px-3 py-1">
@@ -73,12 +73,12 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
           </p>
 
           {/* Search Box */}
-          <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto flex gap-2 pt-2">
+          <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto flex items-center gap-2 pt-2">
             <Input
               placeholder="Enter Committee ID..."
               value={searchId}
               onChange={(e) => setSearchId(e.target.value)}
-              className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 h-11"
+              className="bg-slate-900 mt-0 border-slate-700 text-white placeholder:text-slate-500 h-11"
             />
             <Button type="submit" disabled={loading} className="h-11 bg-indigo-600 hover:bg-indigo-700 font-bold px-5">
               {loading ? "Loading..." : <><Search className="h-4 w-4 mr-1.5" /> Search</>}
@@ -164,11 +164,10 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
                     return (
                       <div
                         key={mNum}
-                        className={`p-3 rounded-xl border transition-all ${
-                          payout
-                            ? "bg-gradient-to-br from-amber-950/30 to-slate-900 border-amber-500/40 shadow-lg shadow-amber-500/5"
-                            : "bg-slate-950/40 border-slate-800"
-                        }`}
+                        className={`p-3 rounded-xl border transition-all ${payout
+                          ? "bg-gradient-to-br from-amber-950/30 to-slate-900 border-amber-500/40 shadow-lg shadow-amber-500/5"
+                          : "bg-slate-950/40 border-slate-800"
+                          }`}
                       >
                         <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
                           <span>Month {mNum} Payout</span>

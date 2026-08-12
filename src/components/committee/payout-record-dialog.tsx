@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import DateInput from "../ui/date-input"
 
 interface PayoutRecordDialogProps {
   open: boolean
@@ -116,7 +117,7 @@ export function PayoutRecordDialog({
             <Label htmlFor="recipient">Payout Recipient Member</Label>
             <select
               id="recipient"
-              className="w-full h-10 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full mt-2 h-10 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
               value={recipientId}
               onChange={(e) => setRecipientId(e.target.value)}
               required
@@ -144,7 +145,7 @@ export function PayoutRecordDialog({
 
             <div>
               <Label htmlFor="payoutDate">Payout Date</Label>
-              <Input
+              <DateInput
                 id="payoutDate"
                 type="date"
                 value={payoutDate}

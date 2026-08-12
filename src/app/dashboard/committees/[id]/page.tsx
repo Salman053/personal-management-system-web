@@ -12,6 +12,9 @@ import {
   recordMemberPayment,
   recordCommitteePayout,
   deleteCommitteePayout,
+  deletePaymentByCell,
+  bulkDeleteMemberPayments,
+  deletePaymentRecord,
 } from "@/services/committee"
 
 import { PaymentGrid } from "@/components/committee/payment-grid"
@@ -43,6 +46,7 @@ import {
   DollarSign,
   Award,
   Sparkles,
+  XCircle,
 } from "lucide-react"
 
 export default function CommitteeDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -170,6 +174,26 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
     })
   }
 
+  // Delete single payment (from PaymentDialog)
+  const handleDeletePayment = async () => {
+    if (!selectedCell) return
+    await deletePaymentByCell(committee.id, selectedCell.member.id, selectedCell.monthNumber)
+  }
+
+  // Bulk delete all payments for a member
+  const handleBulkDeleteMemberPayments = async (member: CommitteeMember) => {
+    const memberPaymentCount = payments.filter((p) => p.memberId === member.id).length
+    if (memberPaymentCount === 0) {
+      return
+    }
+    if (!window.confirm(`Remove all ${memberPaymentCount} payment record(s) for ${member.name}? This cannot be undone.`)) return
+    try {
+      await bulkDeleteMemberPayments(committee.id, member.id)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   // Payout & Lucky Draw Handlers
   const handleOpenLuckyDraw = (monthNumber: number) => {
     setDrawMonthNumber(monthNumber)
@@ -269,7 +293,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
     : null
 
   return (
-    <div className=" space-y-6 mx-auto">
+    <div className=" container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 ">
       {/* Top Navigation */}
       <div className="flex items-center justify-between">
         <Link href="/dashboard/committees">
@@ -333,7 +357,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
 
         {/* TAB 1: PAYMENT MATRIX */}
         {!isSolo && (
-          <TabsContent value="matrix" className="space-y-4">
+          <TabsContent value="matrix" className="space-y-4 ">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div>
                 <h3 className="text-lg font-bold text-foreground">Monthly Payment Tracker Matrix</h3>
@@ -407,6 +431,15 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
                           <TableCell className="text-right space-x-1">
                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleOpenEditMember(member)}>
                               <Edit3 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-orange-500 hover:text-orange-600"
+                              title="Remove all payment records"
+                              onClick={() => handleBulkDeleteMemberPayments(member)}
+                            >
+                              <XCircle className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -516,6 +549,9 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
                 notes: "Solo deposit milestone",
               })
             }}
+            onRemoveDeposit={async (pid, mNum) => {
+              deletePaymentRecord(pid)
+            }}
           />
         </TabsContent>
       </Tabs>
@@ -539,6 +575,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
           currency={committee.currency}
           existingPayment={selectedPayment}
           onSave={handleSavePayment}
+          onDelete={handleDeletePayment}
         />
       )}
 

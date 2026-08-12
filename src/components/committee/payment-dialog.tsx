@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { CommitteePayment, PaymentStatus, PaymentMethod } from "@/types/committee"
+import { Trash2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import DateInput from "../ui/date-input"
 
 interface PaymentDialogProps {
   open: boolean
@@ -31,6 +33,7 @@ interface PaymentDialogProps {
     notes?: string
     penaltyApplied?: number
   }) => Promise<void>
+  onDelete?: () => Promise<void>
 }
 
 export function PaymentDialog({
@@ -42,8 +45,10 @@ export function PaymentDialog({
   currency,
   existingPayment,
   onSave,
+  onDelete,
 }: PaymentDialogProps) {
   const [loading, setLoading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [status, setStatus] = useState<PaymentStatus>("paid")
   const [amountPaid, setAmountPaid] = useState<string>(String(expectedAmount))
   const [paymentDate, setPaymentDate] = useState<string>(
@@ -107,7 +112,7 @@ export function PaymentDialog({
               <Label htmlFor="status">Payment Status</Label>
               <select
                 id="status"
-                className="w-full h-10 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full mt-2 h-10 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as PaymentStatus)}
               >
@@ -132,7 +137,7 @@ export function PaymentDialog({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="paymentDate">Date</Label>
-              <Input
+              <DateInput
                 id="paymentDate"
                 type="date"
                 value={paymentDate}
@@ -145,7 +150,7 @@ export function PaymentDialog({
               <Label htmlFor="paymentMethod">Payment Method</Label>
               <select
                 id="paymentMethod"
-                className="w-full h-10 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full h-10 mt-2 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
               >
@@ -184,11 +189,33 @@ export function PaymentDialog({
             />
           </div>
 
-          <DialogFooter className="pt-2">
+          <DialogFooter className="pt-2 flex flex-col-reverse sm:flex-row gap-2">
+            {existingPayment && onDelete && (
+              <Button
+                type="button"
+                variant="destructive"
+                className="sm:mr-auto gap-1.5"
+                disabled={deleting || loading}
+                onClick={async () => {
+                  setDeleting(true)
+                  try {
+                    await onDelete()
+                    onOpenChange(false)
+                  } catch (err) {
+                    console.error(err)
+                  } finally {
+                    setDeleting(false)
+                  }
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+                {deleting ? "Removing..." : "Remove Payment"}
+              </Button>
+            )}
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || deleting}>
               {loading ? "Saving..." : "Save Payment"}
             </Button>
           </DialogFooter>

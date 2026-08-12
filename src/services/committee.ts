@@ -110,8 +110,12 @@ export async function addCommitteeMember(data: Partial<CommitteeMember>): Promis
 
 export async function updateCommitteeMember(memberId: string, updates: Partial<CommitteeMember>): Promise<void> {
   const ref = doc(db, COLLECTIONS.members, memberId)
+
+
+
   await updateDoc(ref, {
     ...updates,
+    payoutMonthAssigned: '',
     updatedAt: serverTimestamp(),
   })
   toast.success("Member updated!")
@@ -162,6 +166,52 @@ export async function recordMemberPayment(data: {
     toast.success("Payment recorded!")
     return docRef.id
   }
+}
+// ─── Delete Single Payment Record ─────────────────────────────────────────────
+
+export async function deletePaymentRecord(paymentId: string): Promise<void> {
+  await deleteDoc(doc(db, COLLECTIONS.payments, paymentId))
+  toast.success("Payment record removed!")
+}
+
+// ─── Delete Payment by Committee + Member + Month ────────────────────────────
+
+export async function deletePaymentByCell(committeeId: string, memberId: string, monthNumber: number): Promise<void> {
+  const q = query(
+    collection(db, COLLECTIONS.payments),
+    where("committeeId", "==", committeeId),
+    where("memberId", "==", memberId),
+    where("monthNumber", "==", monthNumber)
+  )
+  const snap = await getDocs(q)
+  if (snap.empty) {
+    toast.error("No payment record found for this cell.")
+    return
+  }
+  const batch = writeBatch(db)
+  snap.forEach((d) => batch.delete(d.ref))
+  await batch.commit()
+  toast.success("Payment record removed!")
+}
+
+// ─── Bulk Delete All Payments for a Member in a Committee ─────────────────────
+
+export async function bulkDeleteMemberPayments(committeeId: string, memberId: string): Promise<number> {
+  const q = query(
+    collection(db, COLLECTIONS.payments),
+    where("committeeId", "==", committeeId),
+    where("memberId", "==", memberId)
+  )
+  const snap = await getDocs(q)
+  if (snap.empty) {
+    toast.info("No payment records found for this member.")
+    return 0
+  }
+  const batch = writeBatch(db)
+  snap.forEach((d) => batch.delete(d.ref))
+  await batch.commit()
+  toast.success(`${snap.size} payment record(s) removed for this member!`)
+  return snap.size
 }
 
 // ─── Payout Functions ─────────────────────────────────────────────────────────

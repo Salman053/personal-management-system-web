@@ -32,7 +32,7 @@ export interface DateInputProps extends React.ComponentPropsWithoutRef<"input"> 
 const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
   ({ value, onChange, className, id, name, type = "date", ...props }, ref) => {
     return (
-      <div className="relative w-full flex items-center" data-slot="date-input-wrapper">
+      <div className="relative w-full flex mt-2 items-center" data-slot="date-input-wrapper">
         {/* 2. Hidden native browser webkit picker targets cleanly */}
         <style dangerouslySetInnerHTML={{
           __html: `

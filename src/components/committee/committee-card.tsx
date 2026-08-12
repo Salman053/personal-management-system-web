@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Users, User, Calendar, DollarSign, Award, Copy, Check, ExternalLink, Trash2, Edit3 } from "lucide-react"
+import ProgressBar from "../shared/progress-bar"
 
 interface CommitteeCardProps {
   committee: Committee
@@ -41,7 +42,7 @@ export function CommitteeCard({
   return (
     <Card className="hover:shadow-lg transition-all duration-300 border border-border/60 bg-card/80 backdrop-blur-sm relative overflow-hidden group">
       {/* Top indicator bar */}
-      <div className={`h-1.5 w-full ${isSolo ? "bg-gradient-to-r from-emerald-500 to-teal-400" : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"}`} />
+      <ProgressBar />
 
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">

@@ -106,13 +106,12 @@ export function LuckyDrawModal({
         <div className="py-6 flex flex-col items-center justify-center space-y-6">
           {/* Animated Winner / Carousel Container */}
           <div className="w-full relative px-4">
-            <div className={`p-8 rounded-2xl border-2 text-center transition-all duration-300 relative overflow-hidden ${
-              winner
-                ? "border-amber-400 bg-amber-500/10 shadow-[0_0_30px_rgba(245,158,11,0.3)] animate-pulse"
-                : isSpinning
+            <div className={`p-8 rounded-2xl border-2 text-center transition-all duration-300 relative overflow-hidden ${winner
+              ? "border-amber-400 bg-amber-500/10 shadow-[0_0_30px_rgba(245,158,11,0.3)] animate-pulse"
+              : isSpinning
                 ? "border-indigo-400 bg-indigo-900/50 shadow-[0_0_20px_rgba(99,102,241,0.4)]"
                 : "border-indigo-500/30 bg-indigo-950/40"
-            }`}>
+              }`}>
               {/* Background ambient particle styling */}
               <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/5 via-indigo-500/10 to-purple-500/5 pointer-events-none" />
 
@@ -124,9 +123,8 @@ export function LuckyDrawModal({
                 <p className="text-amber-300 font-medium py-4">All members have received payouts!</p>
               ) : (
                 <div className="min-h-[70px] flex flex-col items-center justify-center">
-                  <h3 className={`text-3xl font-black transition-all ${
-                    winner ? "text-amber-300 scale-110" : "text-white"
-                  }`}>
+                  <h3 className={`text-3xl font-black transition-all ${winner ? "text-amber-300 scale-110" : "text-white"
+                    }`}>
                     {currentDisplayMember?.name || "???"}
                   </h3>
                   {currentDisplayMember?.phone && (
@@ -150,7 +148,7 @@ export function LuckyDrawModal({
               <Button
                 onClick={handleStartDraw}
                 disabled={isSpinning || eligibleMembers.length === 0}
-                className="w-full h-12 text-base font-bold bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-slate-950 shadow-lg shadow-amber-500/25 transition-all gap-2"
+                className="w-full h-11   text-base font-bold bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-slate-950 shadow-lg shadow-amber-500/25 transition-all gap-2"
               >
                 {isSpinning ? (
                   <>
@@ -167,10 +165,10 @@ export function LuckyDrawModal({
             ) : (
               <div className="flex gap-2 w-full">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   onClick={handleStartDraw}
                   disabled={isSavingWinner}
-                  className="flex-1 border-indigo-400/40 text-indigo-200 hover:bg-indigo-900/40"
+                  className="flex-1 h-11  text-indigo-200 hover:bg-indigo-900/40"
                 >
                   <RotateCw className="h-4 w-4 mr-1" />
                   Spin Again
