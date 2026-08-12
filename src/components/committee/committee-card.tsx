@@ -42,7 +42,7 @@ export function CommitteeCard({
   return (
     <Card className="hover:shadow-lg transition-all duration-300 border border-border/60 bg-card/80 backdrop-blur-sm relative overflow-hidden group">
       {/* Top indicator bar */}
-      <ProgressBar />
+      <ProgressBar isSolo={isSolo || false} />
 
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
