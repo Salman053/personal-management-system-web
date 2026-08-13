@@ -23,6 +23,7 @@ import { MemberDialog } from "@/components/committee/member-dialog"
 import { PaymentDialog } from "@/components/committee/payment-dialog"
 import { PayoutRecordDialog } from "@/components/committee/payout-record-dialog"
 import { LuckyDrawModal } from "@/components/committee/lucky-draw-modal"
+import { CommitteeDrawDialog } from "@/components/committee/committee-draw-dialog"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -79,6 +80,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
   const [editingPayout, setEditingPayout] = useState<CommitteePayout | null>(null)
 
   const [isLuckyDrawOpen, setIsLuckyDrawOpen] = useState(false)
+  const [isCommitteeDrawOpen, setIsCommitteeDrawOpen] = useState(false)
   const [drawMonthNumber, setDrawMonthNumber] = useState<number>(1)
 
   const [copiedLink, setCopiedLink] = useState(false)
@@ -86,7 +88,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
 
   if (!committee) {
     return (
-      <div className=" mx-auto text-center space-y-4">
+      <div className="mx-auto text-center space-y-4 px-4 py-12">
         <h2 className="text-2xl font-bold">Committee Not Found</h2>
         <p className="text-muted-foreground">The requested committee does not exist or was deleted.</p>
         <Link href="/dashboard/committees">
@@ -201,7 +203,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
   }
 
   const handleSelectDrawWinner = async (winnerMember: CommitteeMember) => {
-    // Record payout automatically for this winner
+    console.log(winnerMember)
     const grossAmount = committee.monthlyContribution * (members.length || 1)
     await recordCommitteePayout({
       committeeId: committee.id,
@@ -216,7 +218,6 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
       notes: `Winner of Month ${drawMonthNumber} Lucky Draw`,
     })
 
-    // Assign payout month to member if not set
     if (!winnerMember.payoutMonthAssigned) {
       await updateCommitteeMember(winnerMember.id, { payoutMonthAssigned: drawMonthNumber })
     }
@@ -293,51 +294,60 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
     : null
 
   return (
-    <div className=" container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 ">
-      {/* Top Navigation */}
-      <div className="flex items-center justify-between">
-        <Link href="/dashboard/committees">
-          <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" /> Back to All Committees
+    <div className="container max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-6 lg:py-8 space-y-3 sm:space-y-4 md:space-y-6">
+      {/* Top Navigation - Mobile friendly */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+        <Link href="/dashboard/committees" className="w-full sm:w-auto">
+          <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground w-full sm:w-auto justify-center sm:justify-start">
+            <ArrowLeft className="h-4 w-4" /> Back to Committees
           </Button>
         </Link>
 
-        <Button variant="outline" size="sm" onClick={copyShareLink} className="gap-1.5 text-xs">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={copyShareLink}
+          className="gap-1.5 text-xs w-full sm:w-auto justify-center"
+        >
           {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Share2 className="h-3.5 w-3.5" />}
-          {copiedLink ? "Link Copied!" : "Public Verification Link"}
+          {copiedLink ? "Copied!" : "Share Public Link"}
         </Button>
       </div>
 
-      {/* Header Banner */}
+      {/* Header Banner - Mobile optimized */}
       <Card className="bg-gradient-to-r from-indigo-900/40 via-background to-purple-900/30 border-indigo-500/30 shadow-lg">
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge className={isSolo ? "bg-emerald-600" : "bg-indigo-600"}>
                   {isSolo ? <User className="h-3 w-3 mr-1" /> : <Users className="h-3 w-3 mr-1" />}
-                  {isSolo ? "Solo Savings" : "Group Committee"}
+                  {isSolo ? "Solo" : "Group"}
                 </Badge>
-                <Badge variant="outline">{committee.status.toUpperCase()}</Badge>
+                <Badge variant="outline" className="capitalize">{committee.status}</Badge>
               </div>
 
-              <h1 className="text-3xl font-extrabold text-foreground">{committee.name}</h1>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground break-words">
+                {committee.name}
+              </h1>
               {committee.description && (
-                <p className="text-muted-foreground text-sm max-w-2xl">{committee.description}</p>
+                <p className="text-muted-foreground text-xs sm:text-sm max-w-2xl break-words">
+                  {committee.description}
+                </p>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="p-3 rounded-xl bg-card border border-border text-right min-w-[130px]">
-                <span className="text-xs text-muted-foreground block font-medium">Monthly Contribution</span>
-                <span className="text-xl font-bold text-foreground">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
+              <div className="flex-1 sm:flex-none p-3 rounded-xl bg-card border border-border text-center sm:text-right min-w-[100px] sm:min-w-[130px]">
+                <span className="text-[10px] sm:text-xs text-muted-foreground block font-medium">Monthly</span>
+                <span className="text-base sm:text-xl font-bold text-foreground">
                   {committee.currency} {committee.monthlyContribution.toLocaleString()}
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 text-right min-w-[150px]">
-                <span className="text-xs text-primary font-semibold block">Total Lump Sum Pool</span>
-                <span className="text-2xl font-black text-primary">
+              <div className="flex-1 sm:flex-none p-3 rounded-xl bg-primary/10 border border-primary/20 text-center sm:text-right min-w-[110px] sm:min-w-[150px]">
+                <span className="text-[10px] sm:text-xs text-primary font-semibold block">Total Pool</span>
+                <span className="text-lg sm:text-2xl font-black text-primary">
                   {committee.currency} {totalLumpSum.toLocaleString()}
                 </span>
               </div>
@@ -346,50 +356,54 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
         </CardContent>
       </Card>
 
-      {/* Main Feature Tabs */}
-      <Tabs defaultValue={isSolo ? "simulator" : "matrix"} className="space-y-6">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full md:w-auto">
-          {!isSolo && <TabsTrigger value="matrix">Payment Matrix</TabsTrigger>}
-          {!isSolo && <TabsTrigger value="members">Members ({members.length})</TabsTrigger>}
-          {!isSolo && <TabsTrigger value="payouts">Payouts & Draw ({payouts.length})</TabsTrigger>}
-          <TabsTrigger value="simulator">Solo Simulator</TabsTrigger>
-        </TabsList>
+      {/* Main Feature Tabs - Mobile optimized */}
+      <Tabs defaultValue={isSolo ? "simulator" : "matrix"} className="space-y-4 sm:space-y-6">
+        <div className="overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full min-w-[320px] sm:min-w-0">
+            {!isSolo && <TabsTrigger value="matrix" className="text-xs sm:text-sm">Matrix</TabsTrigger>}
+            {!isSolo && <TabsTrigger value="members" className="text-xs sm:text-sm">Members ({members.length})</TabsTrigger>}
+            {!isSolo && <TabsTrigger value="payouts" className="text-xs sm:text-sm">Payouts ({payouts.length})</TabsTrigger>}
+            <TabsTrigger value="simulator" className="text-xs sm:text-sm">Simulator</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* TAB 1: PAYMENT MATRIX */}
         {!isSolo && (
-          <TabsContent value="matrix" className="space-y-4 ">
+          <TabsContent value="matrix" className="space-y-4">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-bold text-foreground">Monthly Payment Tracker Matrix</h3>
-                <p className="text-xs text-muted-foreground">Click any cell to record or edit member payment.</p>
+              <div className="text-center sm:text-left">
+                <h3 className="text-base sm:text-lg font-bold text-foreground">Payment Tracker</h3>
+                <p className="text-xs text-muted-foreground">Tap any cell to record payment</p>
               </div>
-              <Button size="sm" onClick={handleOpenAddMember} className="gap-1.5">
+              <Button size="sm" onClick={handleOpenAddMember} className="gap-1.5 w-full sm:w-auto">
                 <Plus className="h-4 w-4" /> Add Member
               </Button>
             </div>
 
-            <PaymentGrid
-              committee={committee}
-              members={members}
-              payments={payments}
-              payouts={payouts}
-              onCellClick={handleCellClick}
-              onPayoutClick={handleOpenRecordPayout}
-              onLuckyDrawClick={handleOpenLuckyDraw}
-              onSendReminderClick={handleSendEmailReminder}
-            />
+            <div className="overflow-x-auto">
+              <PaymentGrid
+                committee={committee}
+                members={members}
+                payments={payments}
+                payouts={payouts}
+                onCellClick={handleCellClick}
+                onPayoutClick={handleOpenRecordPayout}
+                onLuckyDrawClick={handleOpenLuckyDraw}
+                onSendReminderClick={handleSendEmailReminder}
+              />
+            </div>
           </TabsContent>
         )}
 
         {/* TAB 2: MEMBERS MANAGEMENT */}
         {!isSolo && (
           <TabsContent value="members" className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div>
-                <h3 className="text-lg font-bold text-foreground">Committee Members</h3>
-                <p className="text-xs text-muted-foreground">Manage participants and assign payout months.</p>
+                <h3 className="text-base sm:text-lg font-bold text-foreground">Committee Members</h3>
+                <p className="text-xs text-muted-foreground hidden sm:block">Manage participants and assign payout months.</p>
               </div>
-              <Button size="sm" onClick={handleOpenAddMember} className="gap-1.5">
+              <Button size="sm" onClick={handleOpenAddMember} className="gap-1.5 w-full sm:w-auto">
                 <Plus className="h-4 w-4" /> Add Member
               </Button>
             </div>
@@ -399,11 +413,11 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Member Name</TableHead>
-                      <TableHead>Email Address</TableHead>
-                      <TableHead>Phone / WhatsApp</TableHead>
-                      <TableHead>Assigned Payout Month</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Member</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Email</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Phone</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Payout</TableHead>
+                      <TableHead className="text-xs sm:text-sm text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -416,39 +430,52 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
                     ) : (
                       members.map((member) => (
                         <TableRow key={member.id}>
-                          <TableCell className="font-semibold text-foreground">{member.name}</TableCell>
-                          <TableCell className="text-muted-foreground">{member.email || "—"}</TableCell>
-                          <TableCell className="text-muted-foreground">{member.phone || "—"}</TableCell>
+                          <TableCell className="font-semibold text-foreground text-xs sm:text-sm">
+                            {member.name}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-xs sm:text-sm hidden sm:table-cell">
+                            {member.email || "—"}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-xs sm:text-sm hidden md:table-cell">
+                            {member.phone || "—"}
+                          </TableCell>
                           <TableCell>
                             {member.payoutMonthAssigned ? (
-                              <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
-                                Month {member.payoutMonthAssigned}
+                              <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] sm:text-xs">
+                                M{member.payoutMonthAssigned}
                               </Badge>
                             ) : (
-                              <span className="text-xs text-muted-foreground italic">Unassigned (Draw)</span>
+                              <span className="text-[10px] sm:text-xs text-muted-foreground italic">Draw</span>
                             )}
                           </TableCell>
-                          <TableCell className="text-right space-x-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleOpenEditMember(member)}>
-                              <Edit3 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-orange-500 hover:text-orange-600"
-                              title="Remove all payment records"
-                              onClick={() => handleBulkDeleteMemberPayments(member)}
-                            >
-                              <XCircle className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                              onClick={() => handleDeleteMember(member.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-0.5 sm:gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 sm:h-8 sm:w-8"
+                                onClick={() => handleOpenEditMember(member)}
+                              >
+                                <Edit3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 sm:h-8 sm:w-8 text-orange-500 hover:text-orange-600"
+                                title="Remove all payment records"
+                                onClick={() => handleBulkDeleteMemberPayments(member)}
+                              >
+                                <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 sm:h-8 sm:w-8 text-destructive hover:text-destructive"
+                                onClick={() => handleDeleteMember(member.id)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))
@@ -463,55 +490,66 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
         {/* TAB 3: PAYOUTS & LUCKY DRAW HISTORY */}
         {!isSolo && (
           <TabsContent value="payouts" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-bold text-foreground">Payouts & Draw History</h3>
-                <p className="text-xs text-muted-foreground">Track which member received payout for each month.</p>
-              </div>
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-foreground">Payouts & Draw History</h3>
+              <p className="text-xs text-muted-foreground hidden sm:block">Track which member received payout for each month.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {Array.from({ length: committee.totalDurationMonths }).map((_, idx) => {
                 const mNum = idx + 1
                 const payout = payouts.find((p) => p.monthNumber === mNum)
 
                 return (
                   <Card key={mNum} className={`border transition-all ${payout ? "border-amber-500/40 bg-amber-500/5" : "border-border"}`}>
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
-                        <Badge variant="outline">Month {mNum}</Badge>
-                        {payout && <Badge className="bg-amber-500 text-slate-950 font-bold">PAID OUT</Badge>}
+                    <CardHeader className="pb-2 px-4 pt-4 sm:px-6 sm:pt-6">
+                      <div className="flex flex-wrap justify-between items-center gap-2">
+                        <Badge variant="outline" className="text-xs">Month {mNum}</Badge>
+                        {payout && <Badge className="bg-amber-500 text-slate-950 font-bold text-[10px] sm:text-xs">PAID</Badge>}
                       </div>
-                      <CardTitle className="text-lg font-bold mt-1">
-                        {payout ? payout.recipientName : "No Winner Declared Yet"}
+                      <CardTitle className="text-base sm:text-lg font-bold mt-1 break-words">
+                        {payout ? payout.recipientName : "No Winner"}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
+                    <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 space-y-3 text-sm">
                       {payout ? (
-                        <div className="space-y-1 text-xs">
-                          <div className="flex justify-between text-muted-foreground">
-                            <span>Net Received:</span>
-                            <span className="font-bold text-foreground">{committee.currency} {payout.netPayoutAmount.toLocaleString()}</span>
+                        <div className="space-y-1 text-xs sm:text-sm">
+                          <div className="flex flex-wrap justify-between text-muted-foreground">
+                            <span>Net:</span>
+                            <span className="font-bold text-foreground">
+                              {committee.currency} {payout.netPayoutAmount.toLocaleString()}
+                            </span>
                           </div>
                           {payout.commissionBidded ? (
-                            <div className="flex justify-between text-amber-600 dark:text-amber-400">
-                              <span>Commission Discount:</span>
+                            <div className="flex flex-wrap justify-between text-amber-600 dark:text-amber-400">
+                              <span>Discount:</span>
                               <span>{committee.currency} {payout.commissionBidded.toLocaleString()}</span>
                             </div>
                           ) : null}
-                          <div className="flex justify-between text-muted-foreground">
+                          <div className="flex flex-wrap justify-between text-muted-foreground">
                             <span>Date:</span>
-                            <span>{payout.payoutDate}</span>
+                            <span className="text-xs">{payout.payoutDate}</span>
                           </div>
                         </div>
                       ) : (
                         <div className="flex flex-col gap-2 pt-2">
                           <Button
                             size="sm"
-                            className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold gap-1.5 text-xs"
+                            className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold gap-1.5 text-xs sm:text-sm"
                             onClick={() => handleOpenLuckyDraw(mNum)}
                           >
-                            <Gift className="h-4 w-4" /> Spin Lucky Draw
+                            <Gift className="h-4 w-4" /> Lucky Draw
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs gap-1.5"
+                            onClick={() => {
+                              setDrawMonthNumber(mNum)
+                              setIsCommitteeDrawOpen(true)
+                            }}
+                          >
+                            <Sparkles className="h-4 w-4 text-primary" /> Live Draw
                           </Button>
                           <Button
                             size="sm"
@@ -519,7 +557,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
                             className="text-xs"
                             onClick={() => handleOpenRecordPayout(mNum)}
                           >
-                            Record Custom Payout / Bid
+                            Record Payout
                           </Button>
                         </div>
                       )}
@@ -556,7 +594,7 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
         </TabsContent>
       </Tabs>
 
-      {/* MODALS */}
+      {/* MODALS - These remain the same as they handle their own responsiveness */}
       <MemberDialog
         open={isMemberDialogOpen}
         onOpenChange={setIsMemberDialogOpen}
@@ -599,6 +637,18 @@ export default function CommitteeDetailPage({ params }: { params: Promise<{ id: 
         totalPoolAmount={committee.monthlyContribution * (members.length || 1)}
         eligibleMembers={eligibleMembersForDraw}
         onSelectWinner={handleSelectDrawWinner}
+      />
+
+      <CommitteeDrawDialog
+        open={isCommitteeDrawOpen}
+        onOpenChange={setIsCommitteeDrawOpen}
+        committeeId={committee.id}
+        committeeName={committee.name}
+        monthNumber={drawMonthNumber}
+        currency={committee.currency}
+        totalPoolAmount={committee.monthlyContribution * (members.length || 1)}
+        eligibleMembers={eligibleMembersForDraw}
+        onWinnerConfirmed={handleSelectDrawWinner}
       />
     </div>
   )

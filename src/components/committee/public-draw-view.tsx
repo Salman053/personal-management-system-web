@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from "react"
 import { Committee, CommitteeMember, CommitteePayment, CommitteePayout } from "@/types/committee"
-import { getCommitteePublicData } from "@/services/committee"
+import { getCommitteePublicData, listenCommitteePublicData, PublicCommitteeData } from "@/services/committee"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Users, Trophy, Gift, Check, Clock, ShieldCheck, Sparkles, Search, Copy, CheckCircle2 } from "lucide-react"
+import { Users, Trophy, Gift, Check, Clock, ShieldCheck, Sparkles, Search, Copy, CheckCircle2, RefreshCw } from "lucide-react"
+import { CommitteeLiveDrawSection } from "@/components/committee/committee-live-draw-section"
 
 interface PublicDrawViewProps {
   initialCommitteeId?: string
@@ -18,12 +19,8 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
   const [searchId, setSearchId] = useState(initialCommitteeId || "")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<{
-    committee: Committee
-    members: CommitteeMember[]
-    payments: CommitteePayment[]
-    payouts: CommitteePayout[]
-  } | null>(null)
+  const [data, setData] = useState<PublicCommitteeData | null>(null)
+  const [live, setLive] = useState(false)
 
   const fetchPublicData = async (id: string) => {
     if (!id.trim()) return
@@ -33,9 +30,11 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
       const result = await getCommitteePublicData(id.trim())
       if (result) {
         setData(result)
+        setLive(true)
       } else {
         setError("Committee record not found. Please check the Committee ID.")
         setData(null)
+        setLive(false)
       }
     } catch (err) {
       console.error(err)
@@ -45,11 +44,23 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
     }
   }
 
+  // Live subscription: winners wall, matrix, and overview all update in
+  // realtime when the admin records payments / declares winners.
+  useEffect(() => {
+    if (!live || !data?.committee?.id) return
+    const unsub = listenCommitteePublicData(data.committee.id, (updated) => {
+      setData(updated)
+    })
+    return unsub
+  }, [live, data?.committee?.id])
+
   useEffect(() => {
     if (initialCommitteeId) {
       fetchPublicData(initialCommitteeId)
     }
   }, [initialCommitteeId])
+
+
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -98,20 +109,24 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
             {/* Overview Card */}
             <Card className="bg-slate-900/90 border-slate-800 text-white shadow-2xl">
               <CardHeader className="border-b border-slate-800">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <Badge variant="outline" className="border-emerald-500/50 text-emerald-400 mb-2">
-                      ACTIVE COMMITTEE
-                    </Badge>
-                    <CardTitle className="text-2xl sm:text-3xl font-extrabold text-white">
-                      {data.committee.name}
-                    </CardTitle>
-                    {data.committee.description && (
-                      <CardDescription className="text-slate-400 mt-1">
-                        {data.committee.description}
-                      </CardDescription>
+                <div className="flex  items-center justify-between gap-3">
+                  <Badge variant="outline" className="border-emerald-500/50 text-emerald-400 mb-2">
+                    ACTIVE COMMITTEE
+                  </Badge>
+                  <CardTitle className="text-2xl sm:text-3xl font-extrabold text-white inline-flex items-center gap-3">
+                    {data.committee.name}
+                    {live && (
+                      <Badge className="bg-emerald-600 text-white gap-1 ml-2 align-middle">
+                        <span className="size-1.5 rounded-full bg-white animate-pulse" />
+                        LIVE
+                      </Badge>
                     )}
-                  </div>
+                  </CardTitle>
+                  {data.committee.description && (
+                    <CardDescription className="text-slate-400 mt-1">
+                      {data.committee.description}
+                    </CardDescription>
+                  )}
 
                   <div className="text-right p-4 rounded-xl bg-indigo-950/60 border border-indigo-500/30">
                     <span className="text-xs text-indigo-300 block">Monthly Contribution</span>
@@ -146,6 +161,12 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
                 </div>
               </CardContent>
             </Card>
+
+            {/* LIVE LUCKY DRAW - realtime across browsers */}
+            <CommitteeLiveDrawSection
+              committeeId={data.committee.id}
+              committeeName={data.committee.name}
+            />
 
             {/* Payout Winners Wall of Fame */}
             <Card className="bg-slate-900/90 border-slate-800 text-white">
@@ -209,11 +230,18 @@ export function PublicDrawView({ initialCommitteeId }: PublicDrawViewProps) {
                   <TableHeader className="bg-slate-950">
                     <TableRow className="border-slate-800">
                       <TableHead className="text-slate-300 font-bold">Member Name</TableHead>
-                      {Array.from({ length: data.committee.totalDurationMonths }).map((_, i) => (
-                        <TableHead key={i + 1} className="text-center text-slate-300 font-bold min-w-[100px]">
-                          Month {i + 1}
-                        </TableHead>
-                      ))}
+                      {Array.from({ length: data.committee.totalDurationMonths }).map((_, i) => {
+                        const currentMonthDate = new Date(data.committee.startMonth);
+                        currentMonthDate.setMonth(currentMonthDate.getMonth() + i);
+                        const monthLabel = currentMonthDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+                        return (
+                          <TableHead key={i + 1} className="text-center text-slate-300 font-bold min-w-[100px]">
+                            Month {i + 1} ({monthLabel})
+                          </TableHead>
+                        );
+                      })}
+
                     </TableRow>
                   </TableHeader>
                   <TableBody>

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://opencode.ai/config.json",
     "agents": {
         "enable_sub_agents": false,
         "allow_delegation": false

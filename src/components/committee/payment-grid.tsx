@@ -53,25 +53,32 @@ export function PaymentGrid({
                 Member Name
               </TableHead>
               {monthsArray.map((mNum) => {
+                // Calculate dynamic month label matching the header index logic
+                const currentMonthDate = new Date(committee.startMonth);
+                currentMonthDate.setMonth(currentMonthDate.getMonth() + (mNum - 1));
+                const monthLabel = currentMonthDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
                 // Calculate monthly stats
-                const monthPayments = payments.filter((p) => p.monthNumber === mNum)
-                const paidCount = monthPayments.filter((p) => p.status === "paid").length
+                const monthPayments = payments.filter((p) => p.monthNumber === mNum);
+                const paidCount = monthPayments.filter((p) => p.status === "paid").length;
                 const totalCollected = monthPayments
                   .filter((p) => p.status === "paid")
-                  .reduce((sum, p) => sum + (p.amountPaid || 0), 0)
+                  .reduce((sum, p) => sum + (p.amountPaid || 0), 0);
 
                 return (
                   <TableHead key={mNum} className="text-center min-w-[130px] p-3 border-l border-border/40">
                     <div className="font-bold text-foreground">Month {mNum}</div>
-                    <div className="text-xs text-muted-foreground font-medium">
+                    <div className="text-[11px] text-muted-foreground font-medium mb-1">({monthLabel})</div>
+                    <div className="text-xs text-foreground font-semibold">
                       {committee.currency} {totalCollected.toLocaleString()}
                     </div>
                     <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
                       {paidCount}/{members.length} Paid
                     </div>
                   </TableHead>
-                )
+                );
               })}
+
             </TableRow>
           </TableHeader>
 
@@ -139,6 +146,7 @@ export function PaymentGrid({
                   {monthsArray.map((mNum) => {
                     const payment = paymentMap.get(`${member.id}_${mNum}`)
                     const status = payment ? payment.status : "pending"
+
 
                     return (
                       <TableCell

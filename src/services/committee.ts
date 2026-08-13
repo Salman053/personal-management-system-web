@@ -8,6 +8,7 @@ import {
   deleteDoc,
   getDocs,
   getDoc,
+  onSnapshot,
   query,
   where,
   writeBatch,
@@ -313,4 +314,111 @@ export async function getCommitteePublicData(committeeId: string) {
   }) as CommitteePayment[]
 
   return { committee, members, payouts, payments }
+}
+
+export interface PublicCommitteeData {
+  committee: Committee
+  members: CommitteeMember[]
+  payments: CommitteePayment[]
+  payouts: CommitteePayout[]
+}
+
+/**
+ * Realtime subscription to public committee data. Fires onUpdate whenever
+ * any committee doc / member / payment / payout changes, so the public
+ * portal updates without a manual refresh.
+ */
+export function listenCommitteePublicData(
+  committeeId: string,
+  onUpdate: (data: PublicCommitteeData) => void,
+): () => void {
+  let committee: Committee | null = null
+  let members: CommitteeMember[] = []
+  let payments: CommitteePayment[] = []
+  let payouts: CommitteePayout[] = []
+  let pendingCommittee = false
+
+  const emit = () => {
+    if (!committee || pendingCommittee) return
+    onUpdate({ committee, members, payments, payouts })
+  }
+
+  const committeeUnsub = onSnapshot(
+    doc(db, COLLECTIONS.committees, committeeId),
+    (committeeSnap) => {
+      if (!committeeSnap.exists()) {
+        committee = null
+        pendingCommittee = true
+        return
+      }
+      pendingCommittee = false
+      const rawData = committeeSnap.data()
+      committee = {
+        id: committeeSnap.id,
+        ...rawData,
+        monthlyContribution: rawData.monthlyContribution || rawData.monthlyAmount || 10000,
+        totalDurationMonths: rawData.totalDurationMonths || rawData.totalMonths || 12,
+        drawMechanism: rawData.drawMechanism || rawData.payoutMethod || "lucky_draw",
+      } as Committee
+      emit()
+    },
+    (err) => {
+      console.error("Committee snapshot error", err)
+    },
+  )
+
+  const membersUnsub = onSnapshot(
+    query(collection(db, COLLECTIONS.members), where("committeeId", "==", committeeId)),
+    (snap) => {
+      members = snap.docs.map((d) => {
+        const data = d.data()
+        return {
+          id: d.id,
+          ...data,
+          payoutMonthAssigned: data.payoutMonthAssigned || data.payoutMonth,
+        }
+      }) as CommitteeMember[]
+      emit()
+    },
+  )
+
+  const payoutsUnsub = onSnapshot(
+    query(collection(db, COLLECTIONS.payouts), where("committeeId", "==", committeeId)),
+    (snap) => {
+      payouts = snap.docs.map((d) => {
+        const data = d.data()
+        return {
+          id: d.id,
+          ...data,
+          monthNumber: data.monthNumber || data.month,
+          recipientName: data.recipientName || data.memberName,
+          netPayoutAmount: data.netPayoutAmount || data.netPayout || data.grossAmount,
+        }
+      }) as CommitteePayout[]
+      emit()
+    },
+  )
+
+  const paymentsUnsub = onSnapshot(
+    query(collection(db, COLLECTIONS.payments), where("committeeId", "==", committeeId)),
+    (snap) => {
+      payments = snap.docs.map((d) => {
+        const data = d.data()
+        return {
+          id: d.id,
+          ...data,
+          monthNumber: data.monthNumber || data.month,
+          amountPaid: data.amountPaid || data.amount,
+        }
+      }) as CommitteePayment[]
+      emit()
+    },
+  )
+
+  return () => {
+    committeeUnsub()
+    membersUnsub()
+    payoutsUnsub()
+    paymentsUnsub()
+  }
 }

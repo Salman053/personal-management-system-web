@@ -1,0 +1,32 @@
+rules_version = '2';
+
+// Personal Management System - Firestore Rules
+// NOTE: Most collections rely on the existing (permissive/console-managed)
+// rules. This file is mainly required for the PUBLIC lucky_draws collection
+// so members can join a room WITHOUT logging in.
+//
+// To deploy:
+//   firebase deploy --only firestore:rules,firestore:indexes
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────────────────────
+    // PUBLIC: lucky draw rooms. Anyone (including unauthenticated
+    // visitors) can create, join, watch, and complete a room.
+    // ─────────────────────────────────────────────────────────────
+    match /lucky_draws/{drawId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if false;
+    }
+
+    // Fallback: keep this permissive by default so the rest of the
+    // app keeps working the way it currently does. If you already
+    // have stricter rules in the console, keep THIS block minimal
+    // and grant lucky_draws access as above.
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
