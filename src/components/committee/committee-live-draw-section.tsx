@@ -62,8 +62,8 @@ export function CommitteeLiveDrawSection({
     const duration = 3500
     const end = Date.now() + duration
     const frame = () => {
-      confetti({ particleCount: 4, angle: 60, spread: 60, origin: { x: 0 }, colors: CONFETTI_COLORS })
-      confetti({ particleCount: 4, angle: 120, spread: 60, origin: { x: 1 }, colors: CONFETTI_COLORS })
+      confetti({ particleCount: 3, angle: 60, spread: 60, origin: { x: 0 }, colors: CONFETTI_COLORS })
+      confetti({ particleCount: 2, angle: 100, spread: 40, origin: { x: 1 }, colors: CONFETTI_COLORS })
       if (Date.now() < end) requestAnimationFrame(frame)
     }
     frame()

@@ -82,26 +82,18 @@ export function DrawReel({ draw, size = "lg", dark = false }) {
       const frame = () => {
         // Left side confetti
         confetti({
-          particleCount: 5,
+          particleCount: 2,
           angle: 60,
           spread: 80,
           origin: { x: 0, y: 0.5 },
           colors: CONFETTI_COLORS,
           startVelocity: 30,
         })
-        // Right side confetti
-        confetti({
-          particleCount: 5,
-          angle: 120,
-          spread: 80,
-          origin: { x: 1, y: 0.5 },
-          colors: CONFETTI_COLORS,
-          startVelocity: 30,
-        })
+
         // Center burst
         confetti({
-          particleCount: 10,
-          spread: 100,
+          particleCount: 3,
+          spread: 70,
           origin: { x: 0.5, y: 0.3 },
           colors: CONFETTI_COLORS,
           startVelocity: 20,
