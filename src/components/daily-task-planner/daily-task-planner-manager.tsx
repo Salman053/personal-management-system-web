@@ -85,7 +85,7 @@ export default function DailyTaskPlannerManager() {
   }
 
   return (
-    <div className="min-h-screen bg-background ">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">

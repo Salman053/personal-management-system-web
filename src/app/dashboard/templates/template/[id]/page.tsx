@@ -173,7 +173,7 @@ export default function TemplatePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screenflex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="text-muted-foreground">Loading template...</p>
@@ -184,7 +184,7 @@ export default function TemplatePage() {
 
   if (!template) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screenflex items-center justify-center">
         <div className="text-center space-y-4">
           <p className="text-muted-foreground">Template not found</p>
           <Button onClick={() => router.push("/")} variant="outline">
@@ -233,7 +233,7 @@ export default function TemplatePage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-          
+
             <div>
               <h1 className="text-2xl font-semibold text-balance">
                 {template.title}
@@ -398,7 +398,7 @@ export default function TemplatePage() {
         template={template}
         isOpen={showSharing}
         onClose={() => setShowSharing(false)}
-        // onUpdate={(updated) => setTemplate(updated)}
+      // onUpdate={(updated) => setTemplate(updated)}
       />
     </div>
   );

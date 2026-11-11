@@ -133,7 +133,7 @@ export default function ProjectManagementScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-background ">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
@@ -146,7 +146,7 @@ export default function ProjectManagementScreen() {
               Edit Project
             </Button>
             <CooldownButton
-          
+
               label="Send Email"
               cooldownMs={3600000} // 1 hour
               storageKey="emailCooldown"

@@ -127,7 +127,7 @@ export function TemplateManager({ className = "" }: TemplateManagerProps) {
   };
 
   return (
-    <div className={`min-h-screen bg-background ${className}`}>
+    <div className={`min-h-screen${className}`}>
       <div className="container mx-auto py-6">
         <Tabs
           value={activeTab}
