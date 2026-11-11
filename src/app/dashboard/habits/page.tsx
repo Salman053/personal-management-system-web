@@ -216,7 +216,7 @@ export default function HabitsPage() {
           />
           <StatCard
             label="Completion Rate"
-            value={`${Math.round(analytics.averageCompletionRate * 100)}%`}
+            value={`${Math.round(analytics.averageCompletionRate * 100) || 0}%`}
             icon={<BarChart3 className="h-5 w-5" />}
             tone="bg-warning/10 text-warning"
           />
