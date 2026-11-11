@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { Committee, CommitteePayment } from "@/types/committee"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -13,9 +13,9 @@ import { CheckCircle, Circle, Target, Sparkles, TrendingUp, Calendar, ShieldChec
 interface SoloSimulatorProps {
   committee: Committee
   payments: CommitteePayment[]
-  onRecordMonthlyDeposit?: (monthNumber: number) => void
-  onRemoveDeposit?: (payment_id: string, monthNumber: number) => void
-  onRemoveAllDeposits?: () => void
+  onRecordMonthlyDeposit?: (monthNumber: number) => void | Promise<void>
+  onRemoveDeposit?: (payment_id: string, monthNumber: number) => void | Promise<void>
+  onRemoveAllDeposits?: () => void | Promise<void>
 }
 
 export function SoloSimulator({
@@ -27,22 +27,103 @@ export function SoloSimulator({
 }: SoloSimulatorProps) {
   const [customMonthly, setCustomMonthly] = useState(String(committee.monthlyContribution))
   const [customMonths, setCustomMonths] = useState(String(committee.totalDurationMonths))
+  const [pendingMonth, setPendingMonth] = useState<number | null>(null)
+  const [clearing, setClearing] = useState(false)
 
-  // Calculated values
+  // Simulator inputs
   const monthly = Number(customMonthly) || committee.monthlyContribution
   const duration = Number(customMonths) || committee.totalDurationMonths
   const totalTargetLumpSum = monthly * duration
 
-  // Actual saved payments count
-  const paidMonthsCount = payments.filter((p) => p.status === "paid").length
-  const actualSavedAmount = payments
-    .filter((p) => p.status === "paid")
-    .reduce((sum, p) => sum + (p.amountPaid || 0), 0)
+  // De-duplicate paid payments by monthNumber.
+  // If duplicates exist (legacy data), keep the earliest-created one
+  // so the totals match what the timeline grid displays.
+  const uniquePaidByMonth = useMemo(() => {
+    const map = new Map<number, CommitteePayment>()
+    payments
+      .filter((p) => p.status === "paid")
+      .forEach((p) => {
+        const existing = map.get(p.monthNumber)
+        if (!existing) {
+          map.set(p.monthNumber, p)
+          return
+        }
+        const existingTs = (existing as any).createdAt?.seconds ?? 0
+        const currentTs = (p as any).createdAt?.seconds ?? 0
+        if (currentTs < existingTs) map.set(p.monthNumber, p)
+      })
+    return map
+  }, [payments])
 
-  const progressPercentage = Math.min(100, Math.round((actualSavedAmount / totalTargetLumpSum) * 100))
+  const paidMonthsCount = uniquePaidByMonth.size
+  const actualSavedAmount = Array.from(uniquePaidByMonth.values()).reduce(
+    (sum, p) => sum + (p.amountPaid || 0),
+    0,
+  )
+
+  // Duplicate detection (for a warning banner)
+  const duplicateMonths = useMemo(() => {
+    const counts = new Map<number, number>()
+    payments
+      .filter((p) => p.status === "paid")
+      .forEach((p) => counts.set(p.monthNumber, (counts.get(p.monthNumber) || 0) + 1))
+    return Array.from(counts.entries())
+      .filter(([, count]) => count > 1)
+      .map(([m]) => m)
+      .sort((a, b) => a - b)
+  }, [payments])
+
+  const progressPercentage =
+    totalTargetLumpSum > 0
+      ? Math.min(100, Math.round((actualSavedAmount / totalTargetLumpSum) * 100))
+      : 0
+
+  // Guarded handlers
+  const handleRecord = async (monthNumber: number) => {
+    if (!onRecordMonthlyDeposit) return
+    if (pendingMonth !== null) return
+    if (uniquePaidByMonth.has(monthNumber)) return
+    setPendingMonth(monthNumber)
+    try {
+      await onRecordMonthlyDeposit(monthNumber)
+    } finally {
+      setPendingMonth(null)
+    }
+  }
+
+  const handleRemove = async (paymentId: string, monthNumber: number) => {
+    if (!onRemoveDeposit) return
+    if (pendingMonth !== null) return
+    setPendingMonth(monthNumber)
+    try {
+      await onRemoveDeposit(paymentId, monthNumber)
+    } finally {
+      setPendingMonth(null)
+    }
+  }
+
+  const handleClearAll = async () => {
+    if (!onRemoveAllDeposits) return
+    if (clearing) return
+    setClearing(true)
+    try {
+      await onRemoveAllDeposits()
+    } finally {
+      setClearing(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
+      {/* Duplicate warning banner */}
+      {duplicateMonths.length > 0 && (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-300">
+          <strong>Duplicate deposits detected</strong> for month
+          {duplicateMonths.length > 1 ? "s " : " "}
+          {duplicateMonths.join(", ")}. Totals are de-duplicated below, but you should remove the extra entries from your database.
+        </div>
+      )}
+
       {/* Top Banner & Progress */}
       <Card className="bg-gradient-to-br from-emerald-950/40 via-background to-teal-950/30 border-emerald-500/30 shadow-md">
         <CardHeader>
@@ -101,7 +182,9 @@ export function SoloSimulator({
               <ShieldCheck className="h-8 w-8 text-indigo-500 p-1.5 rounded-lg bg-indigo-500/10" />
               <div>
                 <span className="text-xs text-muted-foreground block">Completed Deposits</span>
-                <span className="font-bold text-foreground">{paidMonthsCount} of {duration} Months</span>
+                <span className="font-bold text-foreground">
+                  {paidMonthsCount} of {duration} Months
+                </span>
               </div>
             </div>
           </div>
@@ -157,10 +240,11 @@ export function SoloSimulator({
                 size="sm"
                 variant="outline"
                 className="text-xs gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10 w-full sm:w-auto"
-                onClick={onRemoveAllDeposits}
+                onClick={handleClearAll}
+                disabled={clearing || pendingMonth !== null}
               >
                 <XCircle className="h-3.5 w-3.5" />
-                Clear All Deposits ({paidMonthsCount})
+                {clearing ? "Clearing..." : `Clear All Deposits (${paidMonthsCount})`}
               </Button>
             )}
           </div>
@@ -169,15 +253,15 @@ export function SoloSimulator({
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {Array.from({ length: duration }).map((_, idx) => {
               const mNum = idx + 1
-              const payment = payments.find((p) => p.monthNumber === mNum)
-              const isPaid = payment?.status === "paid"
+              const payment = uniquePaidByMonth.get(mNum)
+              const isPaid = !!payment
+              const isPending = pendingMonth === mNum
+              const isBusy = pendingMonth !== null
 
               return (
                 <div
                   key={mNum}
-                  className={`p-3 rounded-lg border flex items-center justify-between transition-all ${isPaid
-                    ? "border-emerald-500/50 bg-emerald-500/10"
-                    : "border-border bg-card"
+                  className={`p-3 rounded-lg border flex items-center justify-between transition-all ${isPaid ? "border-emerald-500/50 bg-emerald-500/10" : "border-border bg-card"
                     }`}
                 >
                   <div className="flex items-center gap-2">
@@ -195,13 +279,14 @@ export function SoloSimulator({
                   </div>
 
                   <div className="flex items-center gap-1">
-                    {isPaid && onRemoveDeposit && (
+                    {isPaid && onRemoveDeposit && payment && (
                       <Button
                         size="sm"
                         variant="ghost"
                         className="text-xs h-7 w-7 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                         title="Remove this deposit"
-                        onClick={() => onRemoveDeposit(payment.id, mNum)}
+                        onClick={() => handleRemove(payment.id, mNum)}
+                        disabled={isBusy}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -211,9 +296,10 @@ export function SoloSimulator({
                         size="sm"
                         variant={isPaid ? "ghost" : "outline"}
                         className="text-xs h-7 px-2"
-                        onClick={() => onRecordMonthlyDeposit(mNum)}
+                        onClick={() => handleRecord(mNum)}
+                        disabled={isPaid || isBusy}
                       >
-                        {isPaid ? "Paid" : "Record"}
+                        {isPending ? "Saving..." : isPaid ? "Paid" : "Record"}
                       </Button>
                     )}
                   </div>
