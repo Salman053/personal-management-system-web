@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    await authService.signOut().then(()=>{
+    await authService.signOut().then(() => {
       window.location.replace("/")
     })
   }
